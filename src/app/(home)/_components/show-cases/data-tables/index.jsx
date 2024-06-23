@@ -4,36 +4,36 @@ import { DataTableProvider } from '~/components/ui/data-table/context';
 import ShowcaseArticle from '../../article';
 import { paymentColumns } from './config'; // import { locallySortedAndFilteredDataTableStore as locallySortedAndFilteredDataTableStore } from '~/components/ui/data-table/store';
 import { DataTable } from '~/components/ui/data-table';
-import { useDataTable } from '~/components/ui/data-table/store';
-import { useStore } from 'zustand';
+import { useDataTableStore } from '~/components/ui/data-table/store/utils/hooks/data-table-store';
 import { paymentsData } from './utils';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import fetchPaymentsDataPageAction from './actions';
-import { useMemo } from 'react';
+import useDataTableQueryInputs from '~/components/ui/data-table/store/utils/hooks/data-table-query-inputs';
 
 function LocallySortedAndFilteredDataTableStore() {
-  const { columns, dataTableStore: locallySortedAndFilteredDataTableStore } =
-    useDataTable(paymentColumns);
+  const [dataTableStore, columns] = useDataTableStore(paymentColumns);
 
   return (
-    <DataTableProvider store={locallySortedAndFilteredDataTableStore}>
+    <DataTableProvider store={dataTableStore}>
       <DataTable columns={paymentColumns} data={paymentsData} rowIdKey="id" />
     </DataTableProvider>
   );
 }
 
-const defaultLimit = 10;
+const defaultLimit = 50;
 const defaultOffset = 0;
 function ExternallySortedAndFilteredDataTableStore() {
-  const { columns, queryFilters, querySorting, dataTableStore } = useDataTable(
-    paymentColumns,
-    {
-      initialValues: {
-        isFilteringExternal: true,
-        isSortingExternal: true,
-      },
+  const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
+    initialValues: {
+      isFilteringExternal: true,
+      isSortingExternal: true,
     },
-  );
+  });
+
+  const { querySorting, queryFilters } = useDataTableQueryInputs({
+    columns,
+    dataTableStore,
+  });
 
   const getManyInfiniteQuery = useInfiniteQuery({
     queryKey: [

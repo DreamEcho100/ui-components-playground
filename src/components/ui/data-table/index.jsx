@@ -106,6 +106,8 @@ export function DataTable(props) {
     // onStateChange: (state) => {
     //   dataTableStore.setState({ _table: table });
     // },
+
+    // manualFiltering: true,
   });
 
   useMemo(() => {
@@ -146,6 +148,7 @@ export function DataTable(props) {
 
       <TableContainer table={table}>
         <Table
+          isTableHeaderSticky
           style={{
             direction: table.options.columnResizeDirection,
             // width: table.getCenterTotalSize(),
@@ -163,7 +166,7 @@ export function DataTable(props) {
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-                      ctx={header}
+                      header={header}
                       table={table}
                     />
                   );

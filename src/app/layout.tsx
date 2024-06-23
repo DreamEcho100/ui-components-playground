@@ -3,7 +3,16 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Providers from './_components/providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter =
+  // process.env.NODE_ENV === 'production'
+  //   ? Inter({
+  //       subsets: ['latin'],
+  //       preload: true,
+  //       variable: '--font-inter',
+  //       display: 'swap',
+  //     })
+  // 	:
+  {};
 
 export const metadata: Metadata = {
   title: 'Create Next App',

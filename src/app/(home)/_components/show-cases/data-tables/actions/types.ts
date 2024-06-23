@@ -1,7 +1,3 @@
-import type {
-  ColumnFiltersState,
-  SortingState,
-} from '~/components/ui/data-table/store/types';
 import type { Payment } from '../types';
 
 export interface GetManyPaymentActionInput {

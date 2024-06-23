@@ -1,98 +1,13 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ArrowUpDown,
-  EyeOff,
-  ArrowUp,
-  ArrowDown,
-  Settings2,
-  FilterIcon,
-} from 'lucide-react';
+import { FilterIcon } from 'lucide-react';
 
 import { Button } from '~/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 import { DataTableResizeHandle } from './components/resize-handle';
 import { TableHead } from '~/components/ui/table';
 import { Popover, PopoverContent } from '~/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import Filter from './components/filters';
-
-/**
- * @template TData
- *
- * @param {{ column: import("@tanstack/react-table").Column<TData, unknown> }} props
- */
-function Sorting(props) {
-  const clearSorting = props.column.clearSorting;
-  const toggleSorting = props.column.toggleSorting;
-  const getIsSorted = props.column.getIsSorted;
-  const toggleVisibility = props.column.toggleVisibility;
-
-  return (
-    <>
-      <Button
-        variant="ghost"
-        size={null}
-        className="flex-shrink-0 p-1"
-        onClick={() => {
-          const isSorted = getIsSorted();
-
-          if (!isSorted) {
-            toggleSorting(true);
-          } else if (isSorted === 'desc') {
-            toggleSorting(false);
-          } else {
-            clearSorting();
-          }
-        }}
-      >
-        {getIsSorted() === 'asc' ? (
-          <ArrowUp className="w-4 h-4 ms-1" />
-        ) : getIsSorted() === 'desc' ? (
-          <ArrowDown className="w-4 h-4 ms-1" />
-        ) : (
-          <ArrowUpDown className="w-4 h-4 ms-1" />
-        )}
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size={null}
-            className="flex-shrink-0 p-1 hidden"
-          >
-            <Settings2 className="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => toggleSorting(false)}>
-            <ArrowUpIcon className="me-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Asc
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => toggleSorting(true)}>
-            <ArrowDownIcon className="me-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Desc
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => clearSorting()}>
-            <ArrowUpDown className="me-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Clear
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => toggleVisibility(false)}>
-            <EyeOff className="me-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Hide
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
-}
+import Sorting from './components/Sorting';
+import { useMemo, useRef } from 'react';
 
 /**
  * @template TData
@@ -100,8 +15,18 @@ function Sorting(props) {
  *
  * @param {import("./types").DataTableColumnHeaderProps<TData, TValue>} props
  */
-function Content({ ctx, table, title, ...props }) {
+function Content({ header: ctx, table, title, ...props }) {
   const isPlaceholder = ctx.isPlaceholder;
+  const titleRef = useRef(/** @type {HTMLSpanElement | null} */ (null));
+  const utilsRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+
+  const calculatedMinWidth = useMemo(() => {
+    const titleWidth = titleRef.current?.offsetWidth ?? 0;
+    const utilsWidth = utilsRef.current?.offsetWidth ?? 0;
+    const gaps = [titleWidth, utilsWidth].filter(Boolean).length * 8;
+
+    return titleWidth + utilsWidth + gaps;
+  }, []);
 
   if (isPlaceholder) {
     return null;
@@ -113,18 +38,26 @@ function Content({ ctx, table, title, ...props }) {
 
   const canFilter = ctx.column.getCanFilter();
   const filterVariant = ctx.column.columnDef.meta?.filterVariant;
+  const hasFilter = filterVariant && canFilter;
 
   return (
-    <div {...props} className="flex items-center justify-between gap-2">
-      <span>{headerTitle}</span>
-      <div className="flex items-center gap-0.5">
+    <div
+      {...props}
+      className="flex items-center justify-between gap-2"
+      style={{
+        minWidth: `
+          ${calculatedMinWidth}px`,
+      }}
+    >
+      <span ref={titleRef}>{headerTitle}</span>
+      <div className="flex-shrink-0 flex items-center gap-0.5" ref={utilsRef}>
         {canSort && <Sorting column={ctx.column} />}
 
-        {filterVariant && canFilter ? (
+        {hasFilter ? (
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size={null} className="flex-shrink-0 p-1">
-                <FilterIcon className="size-3" />
+                <FilterIcon className="flex-shrink-0 size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
@@ -149,12 +82,12 @@ function Content({ ctx, table, title, ...props }) {
 export function DataTableColumnHeader(props) {
   return (
     <TableHead
-      key={props.ctx.id}
+      key={props.header.id}
       style={{
         width:
-          props.ctx.column.id === 'select'
-            ? props.ctx.column.columnDef.meta?.width
-            : `calc(var(--header-${props.ctx?.id}-size) * 1px)`,
+          props.header.column.id === 'select'
+            ? props.header.column.columnDef.meta?.width
+            : `calc(var(--header-${props.header?.id}-size) * 1px)`,
       }}
     >
       <Content {...props} />

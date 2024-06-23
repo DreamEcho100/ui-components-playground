@@ -51,24 +51,17 @@ function DebouncedInput({
 export default function Filter(props) {
   const { filterVariant } = props.column.columnDef.meta ?? {};
 
-  // const columnFilterValue = props.column.getFilterValue();
-  // const setFilterValue = props.column.setFilterValue;
-
   const dataTableStore = useDataTableContextStore();
-  const columnFilterValue = useStore(dataTableStore, (state) =>
-    state.isFilteringExternal
-      ? state.columnFilters.find((filter) => filter.id === props.column.id)
-          ?.value
-      : props.column.getFilterValue(),
-  );
+  const columnFilterValue = props.column.getFilterValue();
+
   const setFilterValue = useStore(dataTableStore, (state) =>
     state.isFilteringExternal
       ? /** @param {any} value */
         (value) => {
           state.setColumnFilters((old) => {
-            const newFilters = old.filter(
-              (filter) => filter.id !== props.column.id,
-            );
+            // const newFilters = old.filter(
+            //   (filter) => filter.id !== props.column.id,
+            // );
             // newFilters.push({ id: props.column.id, value });
             return [{ id: props.column.id, value }];
           });

@@ -67,6 +67,12 @@ export interface DataTableStoreState<TData> {
 
   _table?: null | Table<TData>;
   getTable: () => Table<TData>;
+
+  __cache: {
+    sorting: Record<string, any>;
+    [key: string]: any;
+  };
+  setCache: (key: string, value: ValueOrUpdater<unknown>) => void;
 }
 
 export type DataTableStoreApi<TData> = StoreApi<DataTableStoreState<TData>>;
