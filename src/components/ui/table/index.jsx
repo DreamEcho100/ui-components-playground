@@ -8,7 +8,7 @@ const Table = forwardRef(
    * @param {import("react").ForwardedRef<HTMLTableElement>} ref
    */
   ({ className, isTableHeaderSticky, ...props }, ref) => (
-    <div className="relative w-full overflow-auto max-h-[90dvh] border-separate">
+    <div className="relative w-full overflow-auto to-h-[90dvh] border-separate">
       <table
         ref={ref}
         className={cn(tableVariants(), className)}

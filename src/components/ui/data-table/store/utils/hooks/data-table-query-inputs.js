@@ -42,10 +42,10 @@ export default function useDataTableQueryInputs(props) {
     for (const filter of filters) {
       const column = columnToFilterInfo[filter.id];
       if (column.type === 'range-number' || column.type === 'range-date') {
-        const [min = null, max = null] =
+        const [from = null, to = null] =
           /** @type {[string, string]} */ (filter.value) ?? [];
-        if (min || max) {
-          formattedFilters[filter.id] = { min, max };
+        if (from || to) {
+          formattedFilters[filter.id] = { from, to };
         }
 
         continue;

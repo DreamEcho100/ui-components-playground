@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '~/components/ui/input';
 import { SelectDropdown } from '~/components/ui/select';
 import { formatDate, isValidDate } from './utils';
 import { useDataTableContextStore } from '~/components/ui/data-table/context';
 import { useStore } from 'zustand';
 
-// A typical debounced input react component
+const defaultDebounceTimeout = 1000;
 /**
  * @param {{
  *  value: string | number
@@ -16,7 +16,7 @@ import { useStore } from 'zustand';
 function DebouncedInput({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = defaultDebounceTimeout,
   ...props
 }) {
   const [value, setValue] = useState(initialValue);
@@ -86,6 +86,7 @@ export default function Filter(props) {
         {...filterVariant.props}
         onValueChange={setFilterValue}
         value={columnFilterValue?.toString()}
+        name="select"
       />
     );
   }
@@ -110,6 +111,7 @@ export default function Filter(props) {
               (old) => [newValue, old?.[1]],
             );
           }}
+          name="from"
         />
         <DebouncedInput
           type="date"
@@ -125,6 +127,7 @@ export default function Filter(props) {
               (old) => [old?.[0], newValue],
             );
           }}
+          name="to"
         />
       </div>
     );
@@ -133,7 +136,14 @@ export default function Filter(props) {
   if (filterVariant.type === 'range-number') {
     return (
       <div className="flex space-x-2">
-        {/* See faceted column filters example for min max values functionality */}
+        {/* 
+				include abbreviation: 
+				exclude abbreviation: 
+				
+
+				 */}
+        {/* <select */}
+        {/* See faceted column filters example for from to values functionality */}
         <DebouncedInput
           type="number"
           value={/** @type {[number, number]} */ (columnFilterValue)?.[0] ?? ''}
@@ -144,6 +154,7 @@ export default function Filter(props) {
             )
           }
           placeholder={`Min`}
+          name="from"
           className="w-24 border shadow rounded"
         />
         <DebouncedInput
@@ -156,6 +167,7 @@ export default function Filter(props) {
             )
           }
           placeholder={`Max`}
+          name="to"
           className="w-24 border shadow rounded"
         />
       </div>
@@ -170,6 +182,7 @@ export default function Filter(props) {
         onChange={(value) => setFilterValue(value)}
         placeholder={`Search...`}
         type="text"
+        name="search"
         value={/** @type {string} */ (columnFilterValue ?? '')}
       />
       // See faceted column filters example for datalist search suggestions

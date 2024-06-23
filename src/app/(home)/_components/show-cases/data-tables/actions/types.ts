@@ -10,8 +10,8 @@ export interface GetManyPaymentActionInput {
   filters?: {
     status?: Payment['status'];
     email?: string;
-    createdAt?: { min: string; max: string };
-    amount?: { min: number; max: number };
+    createdAt?: { from: string; to: string };
+    amount?: { from: number; to: number };
   };
   limit?: number;
   offset?: number;

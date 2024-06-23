@@ -60,7 +60,7 @@ export function handleFilteringAndSortingPaymentData(data, options) {
         }
 
         case 'createdAt': {
-          const { min, max } = columnFilters[key] ?? {};
+          const { from, to } = columnFilters[key] ?? {};
           newData = newData.filter((row) => {
             const date = new Date(row[key]);
             if (!isValidDate(date)) {
@@ -68,8 +68,8 @@ export function handleFilteringAndSortingPaymentData(data, options) {
             }
             const rowValue = date.getTime();
 
-            const startDate = min ? new Date(min).getTime() : null;
-            const endDate = max ? new Date(max).getTime() : null;
+            const startDate = from ? new Date(from).getTime() : null;
+            const endDate = to ? new Date(to).getTime() : null;
 
             if (startDate && !endDate) {
               return rowValue >= startDate;
@@ -83,7 +83,7 @@ export function handleFilteringAndSortingPaymentData(data, options) {
         }
 
         case 'amount': {
-          const { min, max } = columnFilters[key] ?? {};
+          const { from, to } = columnFilters[key] ?? {};
           newData = newData.filter((row) => {
             const rowValue = row[key];
 
@@ -91,8 +91,8 @@ export function handleFilteringAndSortingPaymentData(data, options) {
               return false;
             }
 
-            const startDate = min ? Number(min) : null;
-            const endDate = max ? Number(max) : null;
+            const startDate = from ? Number(from) : null;
+            const endDate = to ? Number(to) : null;
 
             if (startDate && !endDate) {
               return rowValue >= startDate;
