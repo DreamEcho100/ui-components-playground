@@ -29,9 +29,10 @@ const TableHeader = forwardRef(
       ref={ref}
       className={cn(
         [
-          '[&_tr]:border-b',
+          '[&_tr]:border-b [&_tr]:border-solid [&_tr]:border-border',
           'bg-white dark:bg-gray-900 dark:text-white',
-          'group-[[data-is-table-header-sticky="true"]]:sticky group-[[data-is-table-header-sticky="true"]]:top-0',
+          'group-[[data-is-table-header-sticky="true"]]:sticky group-[[data-is-table-header-sticky="true"]]:top-0 group-[[data-is-table-header-sticky="true"]]:z-10',
+          'group-[[data-is-table-header-sticky="true"]]:shadow-[0_0px_1px_1px_hsl(var(--border))]',
         ],
         className,
       )}
@@ -63,7 +64,7 @@ const TableFooter = forwardRef(
     <tfoot
       ref={ref}
       className={cn(
-        'border-t bg-muted/50 font-medium [&>tr]:last:border-b-0',
+        'border-t border-solid border-border bg-muted/50 font-medium [&>tr]:last:border-b-0',
         className,
       )}
       {...props}
@@ -80,7 +81,7 @@ const TableRow = forwardRef(
     <tr
       ref={ref}
       className={cn(
-        'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
+        'border-b border-solid border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
         className,
       )}
       {...props}

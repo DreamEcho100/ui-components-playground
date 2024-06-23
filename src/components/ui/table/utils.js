@@ -30,7 +30,13 @@ export const tableHeadVariants = cva(
     },
   },
 );
-export const tableVariants = cva('w-full caption-bottom text-sm group', {
-  variants: {},
-  defaultVariants: {},
-});
+export const tableVariants = cva(
+  [
+    'w-full caption-bottom text-sm group',
+    // 'data-[is-table-header-sticky="true"]:border-separate',
+  ],
+  {
+    variants: {},
+    defaultVariants: {},
+  },
+);
