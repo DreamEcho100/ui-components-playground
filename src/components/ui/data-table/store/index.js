@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { createStore } from 'zustand';
 
 /**
@@ -126,8 +126,32 @@ export function createDataTableStore(options) {
  * @param {CreateDataTableStoreInitialValues<TData>} [initialValues]
  */
 export function useCreateDataTableStore(columns, initialValues) {
-  return /** @type {const} */ ([
+  const { columnToFilterInfo, filterTypeToColumns } = useMemo(() => {
+    /** @type {Record<string, { type: string }> | undefined} */
+    const columnToFilterInfo = {};
+    /** @type {Record<string, string[]>} */
+    const filterTypeToColumns = {};
+
+    for (const column of columns) {
+      const filterVariantType = column.meta?.filterVariant?.type;
+      const accessorKey = /** @type {{ accessorKey?: string }} */ (column)
+        .accessorKey;
+
+      if (filterVariantType && accessorKey) {
+        columnToFilterInfo[accessorKey] = { type: filterVariantType };
+
+        filterTypeToColumns[filterVariantType] =
+          filterTypeToColumns[filterVariantType] ?? [];
+        filterTypeToColumns[filterVariantType].push(accessorKey);
+      }
+    }
+
+    return { columnToFilterInfo, filterTypeToColumns };
+  }, [columns]);
+  return /** @type {const} */ ({
     columns,
-    useRef(createDataTableStore(initialValues)).current,
-  ]);
+    columnToFilterInfo,
+    filterTypeToColumns,
+    dataTableStore: useRef(createDataTableStore(initialValues)).current,
+  });
 }

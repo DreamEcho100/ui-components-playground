@@ -8,127 +8,104 @@ export function handleFilteringAndSortingPaymentData(data, options) {
   let newData = data;
 
   const sorting = options.sorting;
-  if (sorting && sorting.length > 0) {
-    newData = newData.toSorted((a, b) => {
-      for (const { id, desc } of sorting) {
-        if (
-          id === 'details.lol' ||
-          id === 'details.bruh' ||
-          id === 'details.xd' ||
-          id === 'details'
-        ) {
-          continue;
+  if (sorting) {
+    /** @type {keyof typeof sorting} */
+    let key;
+    for (key in sorting) {
+      switch (key) {
+        case 'createdAt': {
+          newData = newData.sort((a, b) => {
+            const aValue = new Date(a.createdAt).getTime();
+            const bValue = new Date(b.createdAt).getTime();
+            return sorting[key] === 'asc' ? aValue - bValue : bValue - aValue;
+          });
+          break;
         }
 
-        /** @type {number | string} */
-        let aValue;
-        /** @type {number | string} */
-        let bValue;
-
-        if (id === 'createdAt') {
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
-        } else {
-          aValue = a[id];
-          bValue = b[id];
+        case 'amount': {
+          newData = newData.sort((a, b) => {
+            const aValue = a.amount;
+            const bValue = b.amount;
+            return sorting[key] === 'asc' ? aValue - bValue : bValue - aValue;
+          });
+          break;
         }
 
-        if (aValue < bValue) {
-          return desc ? 1 : -1;
-        }
-
-        if (aValue > bValue) {
-          return desc ? -1 : 1;
+        default: {
+          newData = newData.sort((a, b) => {
+            const aValue = a[key];
+            const bValue = b[key];
+            // @ts-ignore
+            return sorting[key] === 'asc' ? aValue - bValue : bValue - aValue;
+          });
+          break;
         }
       }
-
-      return 0;
-    });
+    }
   }
 
-  const columnFilters = options.columnFilters;
-  if (columnFilters && columnFilters.length > 0) {
-    newData = newData.filter((row) => {
-      for (const { id, value } of columnFilters) {
-        if (
-          id === 'details.lol' ||
-          id === 'details.bruh' ||
-          id === 'details.xd' ||
-          id === 'details'
-        ) {
-          continue;
+  const columnFilters = options.filters;
+  if (columnFilters) {
+    /** @type {keyof typeof columnFilters} */
+    let key;
+    for (key in columnFilters) {
+      switch (key) {
+        case 'status':
+        case 'email': {
+          const value = columnFilters[key];
+          newData = newData.filter((row) => {
+            return row[key] === value;
+          });
+          break;
         }
 
-        if (id === 'createdAt') {
-          // const rowValue = new Date(row[id]).getTime();
-          // const filterValue = new Date(/** @type {string} */(value)).getTime();
-          const colValue = row[id];
-          /** @type {Date} */
-          const date = new Date(colValue);
+        case 'createdAt': {
+          const { min, max } = columnFilters[key] ?? {};
+          newData = newData.filter((row) => {
+            const date = new Date(row[key]);
+            if (!isValidDate(date)) {
+              return false;
+            }
+            const rowValue = date.getTime();
 
-          if (!isValidDate(date)) return false;
+            const startDate = min ? new Date(min).getTime() : null;
+            const endDate = max ? new Date(max).getTime() : null;
 
-          const [start, end] = /** @type {[string, string]} */ (value); // value => two date input values
-          let startDate = start ? new Date(start) : null;
-          let endDate = end ? new Date(end) : null;
-          if (!startDate || !isValidDate(startDate)) {
-            startDate = null;
-          }
-          if (!endDate || !isValidDate(endDate)) {
-            endDate = null;
-          }
-
-          //If one filter defined and date is null filter it
-          if ((startDate || endDate) && !date) return false;
-          if (startDate && !endDate) {
-            return date.getTime() >= startDate.getTime();
-          } else if (!startDate && endDate) {
-            return date.getTime() <= endDate.getTime();
-          } else if (startDate && endDate) {
-            return (
-              date.getTime() >= startDate.getTime() &&
-              date.getTime() <= endDate.getTime()
-            );
-          } else return true;
-
-          continue;
+            if (startDate && !endDate) {
+              return rowValue >= startDate;
+            } else if (!startDate && endDate) {
+              return rowValue <= endDate;
+            } else if (startDate && endDate) {
+              return rowValue >= startDate && rowValue <= endDate;
+            } else return true;
+          });
+          break;
         }
 
-        if (id === 'amount') {
-          const colValue = row[id];
-          const [start, end] = /** @type {[number, number]} */ (value);
-          let startDate = start ? Number(start) : null;
-          let endDate = end ? Number(end) : null;
-          if (!startDate || Number.isNaN(startDate)) {
-            startDate = null;
-          }
-          if (!endDate || Number.isNaN(endDate)) {
-            endDate = null;
-          }
+        case 'amount': {
+          const { min, max } = columnFilters[key] ?? {};
+          newData = newData.filter((row) => {
+            const rowValue = row[key];
 
-          if ((startDate || endDate) && !colValue) return false;
-          if (startDate && !endDate) {
-            return colValue >= startDate;
-          }
-          if (!startDate && endDate) {
-            return colValue <= endDate;
-          }
-          if (startDate && endDate) {
-            return colValue >= startDate && colValue <= endDate;
-          }
+            if (typeof rowValue !== 'number') {
+              return false;
+            }
 
-          continue;
-        }
+            const startDate = min ? Number(min) : null;
+            const endDate = max ? Number(max) : null;
 
-        const rowValue = row[id];
-
-        if (rowValue !== value) {
-          return false;
+            if (startDate && !endDate) {
+              return rowValue >= startDate;
+            } else if (!startDate && endDate) {
+              return rowValue <= endDate;
+            } else if (startDate && endDate) {
+              return rowValue >= startDate && rowValue <= endDate;
+            } else return true;
+          });
+          break;
         }
       }
-
-      return true;
-    });
+    }
   }
 
   return newData;

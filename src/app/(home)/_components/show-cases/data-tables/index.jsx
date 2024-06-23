@@ -7,11 +7,12 @@ import { DataTable } from '~/components/ui/data-table';
 import { useCreateDataTableStore } from '~/components/ui/data-table/store';
 import { useStore } from 'zustand';
 import { paymentsData } from './utils';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import fetchPaymentsDataPageAction from './actions';
+import { useMemo } from 'react';
 
 function LocallySortedAndFilteredDataTableStore() {
-  const [columns, locallySortedAndFilteredDataTableStore] =
+  const { columns, dataTableStore: locallySortedAndFilteredDataTableStore } =
     useCreateDataTableStore(paymentColumns);
 
   return (
@@ -21,14 +22,20 @@ function LocallySortedAndFilteredDataTableStore() {
   );
 }
 
+const defaultLimit = 10;
+const defaultOffset = 0;
 function ExternallySortedAndFilteredDataTableStore() {
-  const [columns, externallySortedAndFilteredDataTableStore] =
-    useCreateDataTableStore(paymentColumns, {
-      initialValues: {
-        isFilteringExternal: true,
-        isSortingExternal: true,
-      },
-    });
+  const {
+    columns,
+    columnToFilterInfo,
+    filterTypeToColumns,
+    dataTableStore: externallySortedAndFilteredDataTableStore,
+  } = useCreateDataTableStore(paymentColumns, {
+    initialValues: {
+      isFilteringExternal: true,
+      isSortingExternal: true,
+    },
+  });
   const sorting = useStore(
     externallySortedAndFilteredDataTableStore,
     (state) => state.sorting,
@@ -37,8 +44,43 @@ function ExternallySortedAndFilteredDataTableStore() {
     externallySortedAndFilteredDataTableStore,
     (state) => state.columnFilters,
   );
+  const queryFilters = useMemo(() => {
+    /** @type {Record<string, any>} */
+    const formattedFilters = {};
+
+    for (const filter of filters) {
+      const column = columnToFilterInfo[filter.id];
+      if (column.type === 'range-number' || column.type === 'range-date') {
+        const [min = null, max = null] =
+          /** @type {[string, string]} */ (filter.value) ?? [];
+        if (min || max) {
+          formattedFilters[filter.id] = { min, max };
+        }
+
+        continue;
+      }
+
+      if (column.type === 'select' || column.type === 'text') {
+        formattedFilters[filter.id] = filter.value;
+      }
+    }
+
+    return formattedFilters;
+  }, [columnToFilterInfo, filters]);
+  const querySorting = Object.fromEntries(
+    sorting.map(({ id, desc }) => [id, desc ? 'desc' : 'asc']),
+  );
+
   const getManyInfiniteQuery = useInfiniteQuery({
-    queryKey: ['payments-data', { sorting, filters }],
+    queryKey: [
+      'payments-data',
+      {
+        limit: defaultLimit,
+        offset: defaultOffset,
+        sorting: querySorting,
+        filters: queryFilters,
+      },
+    ],
     queryFn: ({ pageParam }) => fetchPaymentsDataPageAction(pageParam),
     initialData: {
       pageParams: [],
@@ -46,8 +88,12 @@ function ExternallySortedAndFilteredDataTableStore() {
     },
     initialPageParam:
       /** @type {import('./actions/types').GetManyPaymentActionInput} */ ({
-        limit: 10,
+        limit: defaultLimit,
+        offset: defaultOffset,
+        sorting: querySorting,
+        filters: queryFilters,
       }),
+    placeholderData: keepPreviousData,
     getNextPageParam: (lastPage) => {
       const defaultLimit = 10;
       const lastOffset = lastPage?.nextCursor ?? 0;
@@ -56,6 +102,8 @@ function ExternallySortedAndFilteredDataTableStore() {
       const newCursor = {
         offset: lastOffset,
         limit: defaultLimit,
+        filters: queryFilters,
+        sorting: querySorting,
       };
 
       return newCursor;
@@ -63,7 +111,6 @@ function ExternallySortedAndFilteredDataTableStore() {
   });
 
   const isPending = getManyInfiniteQuery.isFetching;
-
   const data = getManyInfiniteQuery.data?.pages.flatMap((page) => page.items);
 
   return (
