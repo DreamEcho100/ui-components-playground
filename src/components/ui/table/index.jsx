@@ -8,7 +8,7 @@ const Table = forwardRef(
    * @param {import("react").ForwardedRef<HTMLTableElement>} ref
    */
   ({ className, isTableHeaderSticky, ...props }, ref) => (
-    <div className="relative w-full overflow-auto to-h-[90dvh] border-separate">
+    <div className="relative w-full overflow-auto max-h-[90dvh] border-separate">
       <table
         ref={ref}
         className={cn(tableVariants(), className)}
@@ -25,7 +25,18 @@ const TableHeader = forwardRef(
    * @param {import('./types').TableHeaderProps} props
    * @param {import("react").ForwardedRef<HTMLTableSectionElement>} ref
    */ ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn('[&_tr]:border-b', className)} {...props} />
+    <thead
+      ref={ref}
+      className={cn(
+        [
+          '[&_tr]:border-b',
+          'bg-white dark:bg-gray-900 dark:text-white',
+          'group-[[data-is-table-header-sticky="true"]]:sticky group-[[data-is-table-header-sticky="true"]]:top-0',
+        ],
+        className,
+      )}
+      {...props}
+    />
   ),
 );
 TableHeader.displayName = 'TableHeader';

@@ -16,11 +16,7 @@ export const tableCellVariants = cva(
   },
 );
 export const tableHeadVariants = cva(
-  [
-    'align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 font-bold',
-    'bg-white dark:bg-gray-900 dark:text-white',
-    'group-[[data-is-table-header-sticky="true"]]:sticky group-[[data-is-table-header-sticky="true"]]:top-0',
-  ],
+  'align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 font-bold',
   {
     variants: {
       size: {

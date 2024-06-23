@@ -130,7 +130,7 @@ export function DataTable(props) {
   //       onChange={(event) =>
   //         table.getColumn('email')?.setFilterValue(event.target.value)
   //       }
-  //       className="to-w-sm border-0"
+  //       className="max-w-sm border-0"
   //     />
 
   //     <DataTableViewOptions table={table} />
