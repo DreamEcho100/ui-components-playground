@@ -9,6 +9,8 @@ import { paymentsData } from './utils';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import fetchPaymentsDataPageAction from './actions';
 import useDataTableQueryInputs from '~/components/ui/data-table/store/utils/hooks/data-table-query-inputs';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 function LocallySortedAndFilteredDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns);
@@ -20,7 +22,7 @@ function LocallySortedAndFilteredDataTableStore() {
   );
 }
 
-const defaultLimit = 50;
+const defaultLimit = 10;
 const defaultOffset = 0;
 function ExternallySortedAndFilteredDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
@@ -59,6 +61,10 @@ function ExternallySortedAndFilteredDataTableStore() {
       }),
     placeholderData: keepPreviousData,
     getNextPageParam: (lastPage) => {
+      if (!lastPage?.nextCursor) {
+        return undefined;
+      }
+
       const lastOffset = lastPage?.nextCursor ?? defaultOffset;
 
       /** @type {import('./actions/types').GetManyPaymentActionInput} */
@@ -71,10 +77,23 @@ function ExternallySortedAndFilteredDataTableStore() {
 
       return newCursor;
     },
+    // refetchInterval
+    // retry
   });
 
   const isPending = getManyInfiniteQuery.isFetching;
   const data = getManyInfiniteQuery.data?.pages.flatMap((page) => page.items);
+
+  const isLoading =
+    getManyInfiniteQuery.isFetching && !getManyInfiniteQuery.isRefetching;
+
+  useEffect(() => {
+    if (!getManyInfiniteQuery.isError) {
+      return;
+    }
+
+    toast.error('Failed to load data\n' + getManyInfiniteQuery.error.message);
+  }, [getManyInfiniteQuery.isError, getManyInfiniteQuery.error]);
 
   return (
     <DataTableProvider store={dataTableStore}>
@@ -83,6 +102,16 @@ function ExternallySortedAndFilteredDataTableStore() {
         data={data}
         rowIdKey="id"
         isPending={isPending}
+        infiniteLoading={{
+          loadMore: (options) =>
+            getManyInfiniteQuery.fetchNextPage().then(options.onSuccess),
+          isPending: getManyInfiniteQuery.isFetchingNextPage,
+          isDisabled:
+            !getManyInfiniteQuery.hasNextPage ||
+            isLoading ||
+            getManyInfiniteQuery.isFetchingNextPage,
+          hasMore: getManyInfiniteQuery.hasNextPage,
+        }}
       />
     </DataTableProvider>
   );

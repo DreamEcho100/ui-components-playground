@@ -16,10 +16,11 @@ import {
   TableRow,
 } from '~/components/ui/table';
 import { useStore } from 'zustand';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { useDataTableContextStore } from './context';
 import { DataTableColumnHeader } from './components/column-header';
 import { dateBetweenFilterFn } from './components/column-header/components/filters/utils';
+import InfiniteLoadingRowTrigger from './components/infinite-loading-row-trigger';
 
 /**
  * @template TData
@@ -154,6 +155,7 @@ export function DataTable(props) {
             // width: table.getCenterTotalSize(),
             // width: '100%'
           }}
+          className={props.isPending ? 'animate-pulse pointer-events-none' : ''}
         >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -175,24 +177,34 @@ export function DataTable(props) {
             ))}
           </TableHeader>
 
-          <TableBody className={props.isPending ? 'animate-pulse' : ''}>
+          <TableBody>
             {table.getRowModel().rows?.length ? (
-              //  When resizing any column we will render this special memoized version of our table body
-              table.getState().columnSizingInfo.isResizingColumn ? (
-                <MemoizedDataTableBody
-                  table={table}
-                  rowIdKey={props.rowIdKey}
-                />
-              ) : (
-                <DataTableBodyContent table={table} rowIdKey={props.rowIdKey} />
-              )
+              <>
+                {
+                  //  When resizing any column we will render this special memoized version of our table body
+                  table.getState().columnSizingInfo.isResizingColumn ? (
+                    <MemoizedDataTableBody
+                      table={table}
+                      rowIdKey={props.rowIdKey}
+                    />
+                  ) : (
+                    <DataTableBodyContent
+                      table={table}
+                      rowIdKey={props.rowIdKey}
+                    />
+                  )
+                }
+                {props.infiniteLoading && (
+                  <InfiniteLoadingRowTrigger {...props.infiniteLoading} />
+                )}
+              </>
             ) : (
               <TableRow>
                 <TableCell
                   colSpan={props.columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {props.isPending ? 'Loading...' : 'No data to display.'}
                 </TableCell>
               </TableRow>
             )}

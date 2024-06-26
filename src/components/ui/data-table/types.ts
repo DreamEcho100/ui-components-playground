@@ -8,12 +8,14 @@ import {
 } from '@tanstack/react-table';
 import { SelectDropdownProps } from '~/components/ui/select/type';
 import { InputProps } from '~/components/ui/input/types';
+import { InfiniteLoadingRowTriggerProps } from './components/infinite-loading-row-trigger/types';
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   rowIdKey?: keyof TData;
   isPending?: boolean;
+  infiniteLoading?: InfiniteLoadingRowTriggerProps;
 }
 
 export type ValueOrUpdater<Value> = Value | ((prevValue: Value) => Value);
