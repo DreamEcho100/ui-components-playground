@@ -4,5 +4,5 @@ export interface InfiniteLoadingRowTriggerProps {
   isDisabled?: boolean;
   hasMore: boolean;
   delayAmountAfterSuccessMS?: number;
-  delayAmountAfterErrorMS?: number;
+  delayAmountBeforeLoadingMS?: number;
 }

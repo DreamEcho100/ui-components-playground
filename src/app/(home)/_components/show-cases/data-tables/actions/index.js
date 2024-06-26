@@ -11,10 +11,6 @@ export default async function fetchPaymentsDataPageAction(input) {
   /** @type {number | null} */
   let nextCursor = null;
 
-  if (offset > 0) {
-    throw new Error('Failed to fetch data');
-  }
-
   if (offset + limit < paymentsData.length) {
     nextCursor = offset + limit;
   }
