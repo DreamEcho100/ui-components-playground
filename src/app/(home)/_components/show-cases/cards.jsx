@@ -38,13 +38,13 @@ export default function CardsShowCase() {
           description: [
             'A card is a flexible and extensible content container and can include a header, footer, and body',
             'It also can be used to display a single piece of content or a collection of content',
-            "If no size is provided, the card will inherit the parent's size, so it's recommended to always provide a size at one of it's parents (for example, in `body` add `data-card-size='default` attribute and `group` class name).",
+            "If no size is provided, the card will inherit the parent's size, so it's recommended to always provide size at one of it's parents (for example, in `body` add `data-card-size='default` attribute and `group` class name).",
             'it comes in different sizes.',
           ],
           content: (
             <>
               <label className="flex flex-wrap items-center gap-1">
-                <span>Select a size:</span>
+                <span>Select size:</span>
                 <select
                   className="w-32 p-2 rounded-md border border-solid border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                   value={size ?? 'null'}

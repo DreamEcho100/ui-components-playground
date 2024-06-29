@@ -47,7 +47,7 @@ export default function ButtonsShowSase() {
           content: (
             <>
               <label className="flex flex-wrap items-center gap-1">
-                <span>Select a size:</span>
+                <span>Select size:</span>
                 <select
                   className="w-32 p-2 rounded-md border border-solid border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                   value={size ?? ''}

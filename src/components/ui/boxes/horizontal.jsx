@@ -1,10 +1,11 @@
 import { cva } from 'class-variance-authority';
+import { useMemo } from 'react';
 import { cn } from '~/lib/utils';
 
 const horizontalBoxSeparator = cva('', {
   variants: {
     h: {
-      '4/5': 'h-4/5 my-[1.25%]',
+      '4/5': 'h-4/5 self-center',
       full: 'h-full',
     },
   },
@@ -14,6 +15,7 @@ const horizontalBoxSeparator = cva('', {
 });
 
 /**
+ * HorizontalContainer component for aligning elements horizontally with optional separators.
  * @param {{
  * 	start?: import('react').ReactNode;
  * 	startSeparator?: boolean;
@@ -24,20 +26,34 @@ const horizontalBoxSeparator = cva('', {
  * }} props
  */
 export default function HorizontalBox(props) {
+  const firstColumn = props.start ? 'auto' : false;
+  const secondColumn = props.startSeparator ? 'auto' : false;
+  const fourthColumn = props.endSeparator ? 'auto' : false;
+  const fifthColumn = props.end ? 'auto' : false;
+
+  const gridTemplateColumns = useMemo(() => {
+    return [firstColumn, secondColumn, '1fr', fourthColumn, fifthColumn]
+      .filter(Boolean)
+      .join(' ');
+  }, [fifthColumn, firstColumn, fourthColumn, secondColumn]);
+
+  const border = 'border border-solid border-input';
+
   return (
     <div
       className={cn(
+        'grid items-center rounded-md overflow-hidden',
+        border,
         props.className,
-        'flex border border-solid border-input rounded-md items-stretch overflow-hidden',
-        props.start && 'ps-2.5',
-        props.end && 'pe-2.5',
       )}
+      style={{ gridTemplateColumns }}
     >
       {props.start}
       {props.start && props.startSeparator && (
         <div
           className={cn(
-            'border border-solid bg-input w-2 h-full flex-shrink-0',
+            'bg-input h-full flex-grow flex-shrink-0 self-center',
+            border,
             horizontalBoxSeparator(),
           )}
         />
@@ -46,7 +62,8 @@ export default function HorizontalBox(props) {
       {props.end && props.endSeparator && (
         <div
           className={cn(
-            'border border-solid bg-input w-2 h-full flex-shrink-0',
+            'h-full flex-grow flex-shrink-0 self-center',
+            border,
             horizontalBoxSeparator(),
           )}
         />

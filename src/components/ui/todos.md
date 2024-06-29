@@ -1,9 +1,5 @@
 # Todos
 
-## Badge component
-
-The badge component will be used to show the status of the item in the collection or the tags/labels/types for an item.
-
 ## Date picker
 
 The date picker will be used to select the date for the item in the collection.
