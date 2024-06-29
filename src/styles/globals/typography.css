@@ -64,7 +64,7 @@ button {
   text-transform: inherit;
 
   border-style: solid;
-  border-width: none;
+  border-width: 0;
 }
 
 button {
