@@ -79,6 +79,18 @@ function ExternallySortedAndFilteredDataTableStore() {
     },
     // refetchInterval
     // retry
+    retry: (failureCount, error) => {
+      // Retry only for specific error types
+      if ('status' in error && error.status === 404) {
+        return false;
+      }
+
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex, error) => {
+      // Custom logic for delay
+      return Math.min(1000 * 2 ** attemptIndex, 30000);
+    },
   });
 
   const isPending = getManyInfiniteQuery.isFetching;

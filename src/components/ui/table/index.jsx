@@ -32,7 +32,7 @@ const TableHeader = forwardRef(
           '[&_tr]:border-b [&_tr]:border-solid [&_tr]:border-border',
           'bg-white dark:bg-gray-900 dark:text-white',
           'group-[[data-is-table-header-sticky="true"]]:sticky group-[[data-is-table-header-sticky="true"]]:top-0 group-[[data-is-table-header-sticky="true"]]:z-10',
-          'group-[[data-is-table-header-sticky="true"]]:shadow-[0_0px_1px_1px_hsl(var(--border))]',
+          'group-[[data-is-table-header-sticky="true"]]:shadow-[0_0rem_0.0625rem_0.0625rem_hsl(var(--border))]',
         ],
         className,
       )}

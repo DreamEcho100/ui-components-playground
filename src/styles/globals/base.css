@@ -1,0 +1,121 @@
+:root {
+  --background: 230 10% 100%;
+  --foreground: 230 5% 10%;
+
+  --card: 230 10% 100%;
+  --card-foreground: 230 5% 15%;
+
+  --popover: 230 10% 100%;
+  --popover-foreground: 230 95% 10%;
+
+  --primary: 230 94.2% 59.6%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 230 10% 90%;
+  --secondary-foreground: 0 0% 0%;
+
+  --muted: 192 10% 95%;
+  --muted-foreground: 230 5% 40%;
+
+  --accent: 192 10% 90%;
+  --accent-foreground: 230 5% 15%;
+
+  --destructive: 0 50% 50%;
+  --destructive-foreground: 230 5% 100%;
+
+  --border: 230 20% 82%;
+  --input: 216 12.2% 83.92%;
+  --ring: 230 94.2% 59.6%;
+
+  --radius: 0.5rem;
+
+  --success: 130 70% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 45 100% 50%;
+  --warning-foreground: 0 0% 0%;
+
+  --info: 210 90% 60%;
+  --info-foreground: 0 0% 100%;
+
+  --dark: 240 5% 10%;
+  --dark-foreground: 0 0% 100%;
+
+  --light: 240 10% 95%;
+  --light-foreground: 0 0% 0%;
+}
+
+.dark {
+  --background: 240 5% 10%;
+  --foreground: 0 0% 100%;
+
+  --card: 240 5% 15%;
+  --card-foreground: 0 0% 100%;
+
+  --popover: 240 5% 10%;
+  --popover-foreground: 0 0% 100%;
+
+  --primary: 230 94.2% 59.6%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 5% 20%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 192 10% 25%;
+  --muted-foreground: 230 5% 65%;
+
+  --accent: 192 10% 25%;
+  --accent-foreground: 230 5% 95%;
+
+  --destructive: 0 50% 50%;
+  --destructive-foreground: 230 5% 100%;
+
+  --border: 230 20% 50%;
+  --input: 216 12.2% 83.92%;
+  --ring: 230 94.2% 59.6%;
+
+  --radius: 0.5rem;
+
+  --success: 130 70% 40%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 45 100% 55%;
+  --warning-foreground: 0 0% 0%;
+
+  --info: 210 90% 60%;
+  --info-foreground: 0 0% 100%;
+
+  --dark: 240 5% 10%;
+  --dark-foreground: 0 0% 100%;
+
+  --light: 240 10% 95%;
+  --light-foreground: 0 0% 0%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object,
+picture {
+  display: block;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}

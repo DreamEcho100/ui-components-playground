@@ -22,7 +22,7 @@ import {
 } from 'react-aria-components';
 
 import { cn } from '~/lib/utils';
-import { buttonVariants } from '@/registry/default/ui/button';
+import { buttonVariants } from '~/components/jolly-ui/button';
 
 const _Calendar = Calendar;
 

@@ -15,8 +15,8 @@ import {
 } from 'react-aria-components';
 
 import { cn } from '~/lib/utils';
-import { Button } from '@/registry/default/ui/button';
-import { Popover } from '@/registry/default/ui/popover';
+import { Button } from '~/components/jolly-ui/button';
+import { Popover } from '~/components/jolly-ui/popover';
 
 const _DatePicker = DatePicker;
 

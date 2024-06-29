@@ -87,8 +87,9 @@ export function DataTableColumnHeader(props) {
         width:
           props.header.column.id === 'select'
             ? props.header.column.columnDef.meta?.width
-            : `calc(var(--header-${props.header?.id}-size) * 1px)`,
+            : `calc(var(--header-${props.header?.id}-size) * 0.0625rem)`,
       }}
+      className="relative"
     >
       <Content {...props} />
     </TableHead>

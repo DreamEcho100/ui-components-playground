@@ -282,7 +282,7 @@ function DataTableBodyContent(props) {
                 width:
                   cell.column.id === 'select'
                     ? cell.column.columnDef.meta?.width
-                    : `calc(var(--col-${cell.column.id}-size) * 1px)`,
+                    : `calc(var(--col-${cell.column.id}-size) * 0.0625rem)`,
               }}
             >
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
