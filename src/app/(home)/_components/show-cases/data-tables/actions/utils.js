@@ -24,6 +24,47 @@ function idToItemGenerator(items) {
   return idToFilter;
 }
 
+import { z } from 'zod';
+
+export const GetManyPaymentActionSchema = z
+  .object({
+    sorting: z.array(
+      z.object({
+        id: z.enum(['createdAt', 'status', 'amount', 'email']),
+        desc: z.boolean(),
+      }),
+    ),
+    filters: z.array(
+      z.union([
+        z.object({
+          id: z.literal('status'),
+          value: z.enum(['pending', 'paid', 'failed']),
+        }),
+        z.object({
+          id: z.literal('email'),
+          value: z.string(),
+        }),
+        z.object({
+          id: z.literal('createdAt'),
+          value: z.object({
+            from: z.string().optional(),
+            to: z.string().optional(),
+          }),
+        }),
+        z.object({
+          id: z.literal('amount'),
+          value: z.object({
+            from: z.number().optional(),
+            to: z.number().optional(),
+          }),
+        }),
+      ]),
+    ),
+    limit: z.number().optional(),
+    offset: z.number().optional(),
+  })
+  .strict();
+
 /**
  * @param {import('../types').Payment[]} data
  * @param {import('./types').GetManyPaymentActionInput} options
