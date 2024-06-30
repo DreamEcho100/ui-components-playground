@@ -46,14 +46,14 @@ export const postRouter = createTRPCRouter({
       //   }),
       // );
       return await handleCursorPageQuery(input, async (params) => {
+        /**
+         * @typedef {string | number | boolean | null | undefined | Date} BaseTypes
+         */
+
         /** @type {Prisma.PostWhereInput} */
         const where = {
           createdAt: params.createdAt,
         };
-
-        /**
-         * @typedef {string | number | boolean | null | undefined | Date} BaseTypes
-         */
 
         if (input.filters) {
           for (const filter of input.filters) {
@@ -72,11 +72,11 @@ export const postRouter = createTRPCRouter({
                   /** @type {Exclude<typeof where.createdAt,BaseTypes>} */ (
                     where.createdAt ??= {}
                   );
-                item.gte = filter.value.from
-                  ? new Date(filter.value.from)
+                item.gte = filter.value[0]
+                  ? new Date(filter.value[0])
                   : undefined;
-                item.lte = filter.value.to
-                  ? new Date(filter.value.to)
+                item.lte = filter.value[1]
+                  ? new Date(filter.value[1])
                   : undefined;
                 break;
               }
@@ -86,11 +86,11 @@ export const postRouter = createTRPCRouter({
                   /** @type {Exclude<typeof where.updatedAt,BaseTypes>} */ (
                     where.updatedAt ??= {}
                   );
-                item.gte = filter.value.from
-                  ? new Date(filter.value.from)
+                item.gte = filter.value[0]
+                  ? new Date(filter.value[0])
                   : undefined;
-                item.lte = filter.value.to
-                  ? new Date(filter.value.to)
+                item.lte = filter.value[1]
+                  ? new Date(filter.value[1])
                   : undefined;
                 break;
               }
@@ -98,9 +98,21 @@ export const postRouter = createTRPCRouter({
           }
         }
 
+        /** @type {Prisma.PostOrderByWithRelationInput} */
+        const orderBy = params.defaultOrderBy;
+
+        if (input.sorting) {
+          for (const sort of input.sorting) {
+            // if (sort.id === "createdAt") {
+            // 	throw new Error("Cannot sort by createdAt");
+            // }
+            orderBy[sort.id] = sort.desc ? "desc" : "asc";
+          }
+        }
+
         return ctx.prisma.post.findMany({
           take: params.take,
-          orderBy: params.defaultOrderBy,
+          orderBy,
           where,
         });
       });

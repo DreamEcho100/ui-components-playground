@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Input } from '~/components/ui/input';
-import { SelectDropdown } from '~/components/ui/select';
-import { formatDate, isValidDate } from './utils';
-import { useDataTableContextStore } from '~/components/ui/data-table/context';
-import { useStore } from 'zustand';
+import { useEffect, useState } from "react";
+import { Input } from "~/components/ui/input";
+import { SelectDropdown } from "~/components/ui/select";
+import { formatDate, isValidDate } from "./utils";
+import { useDataTableContextStore } from "~/components/ui/data-table/context";
+import { useStore } from "zustand";
 
 const defaultDebounceTimeout = 1000;
 /**
@@ -80,7 +80,7 @@ export default function Filter(props) {
     return null;
   }
 
-  if (filterVariant.type === 'select') {
+  if (filterVariant.type === "select") {
     return (
       <SelectDropdown
         {...filterVariant.props}
@@ -91,7 +91,7 @@ export default function Filter(props) {
     );
   }
 
-  if (filterVariant.type === 'range-date') {
+  if (filterVariant.type === "range-date") {
     const values = /** @type {[Date, Date]} */ (columnFilterValue);
     const startDate = values?.[0];
     const endDate = values?.[1];
@@ -99,32 +99,56 @@ export default function Filter(props) {
       <div className="flex space-x-2">
         <DebouncedInput
           type="date"
-          value={startDate ? formatDate(startDate) : ''}
+          value={startDate ? formatDate(startDate) : ""}
           onChange={(value) => {
             const newValue =
-              isValidDate(value) && value !== '' && value !== 'Invalid Date'
+              isValidDate(value) && value !== "" && value !== "Invalid Date"
                 ? new Date(value)
                 : null;
 
             setFilterValue(
               /** @param {[Date, Date]} old  */
-              (old) => [newValue, old?.[1]],
+              (old) => {
+                const item1 = newValue;
+                const item2 = old?.[1];
+
+                if (
+                  (!item1 && !item2) ||
+                  (item1 && item2 && item1.getTime() > item2.getTime())
+                ) {
+                  return;
+                }
+
+                return [item1, item2];
+              },
             );
           }}
           name="from"
         />
         <DebouncedInput
           type="date"
-          value={endDate ? formatDate(endDate) : ''}
+          value={endDate ? formatDate(endDate) : ""}
           onChange={(value) => {
             const newValue =
-              isValidDate(value) && value !== '' && value !== 'Invalid Date'
+              isValidDate(value) && value !== "" && value !== "Invalid Date"
                 ? new Date(value)
                 : null;
 
             setFilterValue(
               /** @param {[Date, Date]} old  */
-              (old) => [old?.[0], newValue],
+              (old) => {
+                const item1 = old?.[0];
+                const item2 = newValue;
+
+                if (
+                  (!item1 && !item2) ||
+                  (item1 && item2 && item1.getTime() > item2.getTime())
+                ) {
+                  return;
+                }
+
+                return [item1, item2];
+              },
             );
           }}
           name="to"
@@ -133,7 +157,7 @@ export default function Filter(props) {
     );
   }
 
-  if (filterVariant.type === 'range-number') {
+  if (filterVariant.type === "range-number") {
     return (
       <div className="flex space-x-2">
         {/* 
@@ -146,44 +170,70 @@ export default function Filter(props) {
         {/* See faceted column filters example for from to values functionality */}
         <DebouncedInput
           type="number"
-          value={/** @type {[number, number]} */ (columnFilterValue)?.[0] ?? ''}
+          value={/** @type {[number, number]} */ (columnFilterValue)?.[0] ?? ""}
           onChange={(value) =>
             setFilterValue(
               /** @param {[number, number]} old  */
-              (old) => [value, old?.[1]],
+              (old) => {
+                const item1 = typeof value === "number" ? value : Number(value);
+                const item2 = old?.[1];
+
+                if (
+                  isNaN(item1) ||
+                  (!item1 && !item2) ||
+                  (item1 && item2 && item1 > item2)
+                ) {
+                  return;
+                }
+
+                return [item1, item2];
+              },
             )
           }
           placeholder={`Min`}
           name="from"
-          className="w-24 border shadow rounded"
+          className="w-24 rounded border shadow"
         />
         <DebouncedInput
           type="number"
-          value={/** @type {[number, number]} */ (columnFilterValue)?.[1] ?? ''}
+          value={/** @type {[number, number]} */ (columnFilterValue)?.[1] ?? ""}
           onChange={(value) =>
             setFilterValue(
               /** @param {[number, number]} old  */
-              (old) => [old?.[0], value],
+              (old) => {
+                const item1 = old?.[0];
+                const item2 = typeof value === "number" ? value : Number(value);
+
+                if (
+                  isNaN(item2) ||
+                  (!item1 && !item2) ||
+                  (item1 && item2 && item1 > item2)
+                ) {
+                  return;
+                }
+
+                return [item1, item2];
+              },
             )
           }
           placeholder={`Max`}
           name="to"
-          className="w-24 border shadow rounded"
+          className="w-24 rounded border shadow"
         />
       </div>
     );
   }
 
-  if (filterVariant.type === 'text') {
+  if (filterVariant.type === "text") {
     return (
       <DebouncedInput
         {...filterVariant?.props}
-        className="w-36 border shadow rounded"
+        className="w-36 rounded border shadow"
         onChange={(value) => setFilterValue(value)}
         placeholder={`Search...`}
         type="text"
         name="search"
-        value={/** @type {string} */ (columnFilterValue ?? '')}
+        value={/** @type {string} */ (columnFilterValue ?? "")}
       />
       // See faceted column filters example for datalist search suggestions
     );

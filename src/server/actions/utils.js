@@ -48,17 +48,17 @@ export const getManyPaymentActionSchema = z
         }),
         z.object({
           id: z.literal("createdAt"),
-          value: z.object({
-            from: z.string().optional(),
-            to: z.string().optional(),
-          }),
+          value: z.tuple([
+            z.string().nullish().optional(), // from
+            z.string().nullish().optional(), // to
+          ]),
         }),
         z.object({
           id: z.literal("amount"),
-          value: z.object({
-            from: z.number().optional(),
-            to: z.number().optional(),
-          }),
+          value: z.tuple([
+            z.number().nullish().optional(), // from
+            z.number().nullish().optional(), // to
+          ]),
         }),
       ]),
     ),
@@ -94,9 +94,10 @@ export function handleFilteringAndSortingPaymentData(data, options) {
         }
 
         case "createdAt": {
-          const { from, to } = /** @type {{ to?: String; from?: String; }}  */ (
-            filter.value ?? {}
-          );
+          const [from, to] =
+            /** @type {[to: string | undefined, from: string | undefined]}  */ (
+              filter.value ?? {}
+            );
           newData = newData.filter((row) => {
             const date = new Date(row.createdAt);
             if (!isValidDate(date)) {
@@ -119,9 +120,10 @@ export function handleFilteringAndSortingPaymentData(data, options) {
         }
 
         case "amount": {
-          const { from, to } = /** @type {{ to?: String; from?: String; }}  */ (
-            filter.value ?? {}
-          );
+          const [from, to] =
+            /** @type {[to: string | undefined, from: string | undefined]}  */ (
+              filter.value ?? {}
+            );
           newData = newData.filter((row) => {
             const rowValue = row.amount;
 

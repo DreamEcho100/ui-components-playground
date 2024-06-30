@@ -16,17 +16,17 @@ export const getManyPostsSchema = z
         }),
         z.object({
           id: z.literal("createdAt"),
-          value: z.object({
-            from: z.string().optional(),
-            to: z.string().optional(),
-          }),
+          value: z.tuple([
+            z.string().nullish(), // from
+            z.string().nullish(), // to
+          ]),
         }),
         z.object({
           id: z.literal("updatedAt"),
-          value: z.object({
-            from: z.string().optional(),
-            to: z.string().optional(),
-          }),
+          value: z.tuple([
+            z.string().nullish(), // from
+            z.string().nullish(), // to
+          ]),
         }),
       ]),
     ),

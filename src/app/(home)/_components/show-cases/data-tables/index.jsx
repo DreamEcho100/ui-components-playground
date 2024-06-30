@@ -31,6 +31,7 @@ function RqDataTableStore() {
     initialValues: {
       isFilteringExternal: true,
       isSortingExternal: true,
+      sorting: [{ id: "createdAt", desc: true }],
     },
   });
 
@@ -138,6 +139,7 @@ function TrpcDataTableStore() {
     initialValues: {
       isFilteringExternal: true,
       isSortingExternal: true,
+      sorting: [{ id: "createdAt", desc: true }],
     },
   });
 

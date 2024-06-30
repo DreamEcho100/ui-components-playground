@@ -19,7 +19,8 @@ The add button will be on the header of the page/collection.
 
 1. [x] Refactor the data table to be more useful and reusable with API filters and sorting.
 2. [x] Add trpc to the project.
-3. [x] Connect the trpc to the data table.
+3. [|] Connect the trpc to the data table.
+   - Should , if the sorting is not multiple, to use the dominate sorting as the cursor.
 4. [ ] Refactor and make useful components and utils for the combination of trpc and data table.
 5. [ ] Add all the current components to the main project.
 6. [ ] Start refactoring the API for the search according to the new data table.
