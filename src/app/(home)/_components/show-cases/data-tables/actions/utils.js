@@ -1,22 +1,24 @@
 import { isValidDate } from '~/components/ui/data-table/components/column-header/components/filters/utils';
 
 /**
- * @template {{ id: string; }} T
+ * @template {string} K
+ * @template {{ [Key in K]: string; }} T
  *
- * @param {T[]} [items]
+ * @param {T[]} items
+ * @param {K} key
  */
-function idToItemGenerator(items) {
-  /** @type {Map<string, Set<{ id: string; } & Record<string, unknown>>>} */
+function idToItemGenerator(items, key) {
+  /** @type {Map<string, Set<{ [Key in K]: string; } & Record<string, unknown>>>} */
   const idToFilter = new Map();
 
   if (items) {
     for (const item of items) {
-      const filterSet = idToFilter.get(item.id);
+      const filterSet = idToFilter.get(item[key]);
 
       if (filterSet) {
         filterSet.add(item);
       } else {
-        idToFilter.set(item.id, new Set([item]));
+        idToFilter.set(item[key], new Set([item]));
       }
     }
   }
@@ -72,10 +74,12 @@ export const GetManyPaymentActionSchema = z
 export function handleFilteringAndSortingPaymentData(data, options) {
   let newData = data;
 
-  const idToFilter = idToItemGenerator(options.filters);
-  const idToSorting = idToItemGenerator(options.sorting);
+  const idToFilter =
+    options.filters && idToItemGenerator(options.filters, 'id');
+  const idToSorting =
+    options.sorting && idToItemGenerator(options.sorting, 'id');
 
-  idToFilter.forEach((value, key) => {
+  idToFilter?.forEach((value, key) => {
     value.forEach((filter) => {
       switch (filter.id) {
         case 'status':
@@ -141,7 +145,7 @@ export function handleFilteringAndSortingPaymentData(data, options) {
     });
   });
 
-  idToSorting.forEach((value, key) => {
+  idToSorting?.forEach((value, key) => {
     value.forEach((sorting) => {
       switch (sorting.id) {
         case 'createdAt': {
