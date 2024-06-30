@@ -9,7 +9,7 @@ import TextareasShowCase from './_components/show-cases/textareas';
 import DataTablesShowCase from './_components/show-cases/data-tables';
 import { Input } from '~/components/ui/input';
 import BadgesShowCase from './_components/show-cases/badges';
-import { Button } from '~/components/ui/button';
+import TypographyShowcase from './_components/show-cases/typography';
 
 export default function Home() {
   return (
@@ -56,6 +56,7 @@ export default function Home() {
         </div>
       </HorizontalBox>
 
+      <TypographyShowcase />
       <ButtonsShowSase />
       <AccordionsShowCase />
       <CardsShowCase />

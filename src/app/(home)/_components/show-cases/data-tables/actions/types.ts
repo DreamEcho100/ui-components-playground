@@ -2,17 +2,16 @@ import type { Payment } from '../types';
 
 export interface GetManyPaymentActionInput {
   sorting?: {
-    createdAt?: 'asc' | 'desc';
-    status?: 'asc' | 'desc';
-    amount?: 'asc' | 'desc';
-    email?: 'asc' | 'desc';
-  };
-  filters?: {
-    status?: Payment['status'];
-    email?: string;
-    createdAt?: { from: string; to: string };
-    amount?: { from: number; to: number };
-  };
+    id: 'createdAt' | 'status' | 'amount' | 'email';
+    desc: boolean;
+  }[];
+  filters?: (
+    | { id: 'status'; value: Payment['status'] }
+    | { id: 'email'; value: string }
+    | { id: 'createdAt'; value: { from?: string; to?: string } }
+    | { id: 'amount'; value: { from?: number; to?: number } }
+  )[];
+
   limit?: number;
   offset?: number;
 }

@@ -14,3 +14,11 @@ To be able to display the options as a `ReactNode` and not only as a string or n
 Adding an item of an entity can be on the same page of it's collection
 There will be a button the opens the accordion with the form in it to add the item
 The add button will be on the header of the page/collection.
+
+##
+
+1. Add trpc to the project.
+2. Connect the trpc to the data table.
+3. Refactor and make useful components and utils for the combination of trpc and data table.
+4. Add all the current components to the main project.
+5. Start refactoring the API for the search according to the new data table.

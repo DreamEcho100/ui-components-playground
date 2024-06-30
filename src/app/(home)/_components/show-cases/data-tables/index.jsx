@@ -11,6 +11,7 @@ import fetchPaymentsDataPageAction from './actions';
 import useDataTableQueryInputs from '~/components/ui/data-table/store/utils/hooks/data-table-query-inputs';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { useStore } from 'zustand';
 
 function LocallySortedAndFilteredDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns);
@@ -37,6 +38,9 @@ function ExternallySortedAndFilteredDataTableStore() {
     dataTableStore,
   });
 
+  const sorting = useStore(dataTableStore, (state) => state.sorting);
+  const filters = useStore(dataTableStore, (state) => state.columnFilters);
+
   const getManyInfiniteQuery = useInfiniteQuery({
     queryKey: [
       'payments-data',
@@ -56,8 +60,8 @@ function ExternallySortedAndFilteredDataTableStore() {
       /** @type {import('./actions/types').GetManyPaymentActionInput} */ ({
         limit: defaultLimit,
         offset: defaultOffset,
-        sorting: querySorting,
-        filters: queryFilters,
+        sorting,
+        filters,
       }),
     placeholderData: keepPreviousData,
     getNextPageParam: (lastPage) => {
@@ -67,13 +71,13 @@ function ExternallySortedAndFilteredDataTableStore() {
 
       const lastOffset = lastPage?.nextCursor ?? defaultOffset;
 
-      /** @type {import('./actions/types').GetManyPaymentActionInput} */
-      const newCursor = {
-        offset: lastOffset,
-        limit: defaultLimit,
-        filters: queryFilters,
-        sorting: querySorting,
-      };
+      const newCursor =
+        /** @type {import('./actions/types').GetManyPaymentActionInput} */ ({
+          offset: lastOffset,
+          limit: defaultLimit,
+          filters,
+          sorting,
+        });
 
       return newCursor;
     },

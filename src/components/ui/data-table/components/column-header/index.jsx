@@ -45,8 +45,8 @@ function Content({ header: ctx, table, title, ...props }) {
       {...props}
       className="flex items-center justify-between gap-2"
       style={{
-        minWidth: `
-          ${calculatedMinWidth}px`,
+        minWidth:
+          calculatedMinWidth > 0 ? `${calculatedMinWidth}px` : 'max-content',
       }}
     >
       <span ref={titleRef}>{headerTitle}</span>

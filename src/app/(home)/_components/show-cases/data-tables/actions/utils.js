@@ -1,68 +1,58 @@
 import { isValidDate } from '~/components/ui/data-table/components/column-header/components/filters/utils';
 
 /**
+ * @template {{ id: string; }} T
+ *
+ * @param {T[]} [items]
+ */
+function idToItemGenerator(items) {
+  /** @type {Map<string, Set<{ id: string; } & Record<string, unknown>>>} */
+  const idToFilter = new Map();
+
+  if (items) {
+    for (const item of items) {
+      const filterSet = idToFilter.get(item.id);
+
+      if (filterSet) {
+        filterSet.add(item);
+      } else {
+        idToFilter.set(item.id, new Set([item]));
+      }
+    }
+  }
+
+  return idToFilter;
+}
+
+/**
  * @param {import('../types').Payment[]} data
  * @param {import('./types').GetManyPaymentActionInput} options
  */
 export function handleFilteringAndSortingPaymentData(data, options) {
   let newData = data;
 
-  const sorting = options.sorting;
-  if (sorting) {
-    /** @type {keyof typeof sorting} */
-    let key;
-    for (key in sorting) {
-      switch (key) {
-        case 'createdAt': {
-          newData = newData.sort((a, b) => {
-            const aValue = new Date(a.createdAt).getTime();
-            const bValue = new Date(b.createdAt).getTime();
-            return sorting[key] === 'asc' ? aValue - bValue : bValue - aValue;
-          });
-          break;
-        }
+  const idToFilter = idToItemGenerator(options.filters);
+  const idToSorting = idToItemGenerator(options.sorting);
 
-        case 'amount': {
-          newData = newData.sort((a, b) => {
-            const aValue = a.amount;
-            const bValue = b.amount;
-            return sorting[key] === 'asc' ? aValue - bValue : bValue - aValue;
-          });
-          break;
-        }
-
-        default: {
-          newData = newData.sort((a, b) => {
-            const aValue = a[key];
-            const bValue = b[key];
-            // @ts-ignore
-            return sorting[key] === 'asc' ? aValue - bValue : bValue - aValue;
-          });
-          break;
-        }
-      }
-    }
-  }
-
-  const columnFilters = options.filters;
-  if (columnFilters) {
-    /** @type {keyof typeof columnFilters} */
-    let key;
-    for (key in columnFilters) {
-      switch (key) {
+  idToFilter.forEach((value, key) => {
+    value.forEach((filter) => {
+      switch (filter.id) {
         case 'status':
         case 'email': {
-          const value = columnFilters[key];
+          const filterValue = filter.value;
           newData = newData.filter((row) => {
-            return row[key] === value;
+            const rowValue = row[/** @type {'status' | 'email'} */ (filter.id)];
+            return rowValue.includes(/** @type {string} */ (filterValue));
           });
           break;
         }
 
         case 'createdAt': {
-          const { from, to } = columnFilters[key] ?? {};
+          const { from, to } = /** @type {{ to?: String; from?: String; }}  */ (
+            filter.value ?? {}
+          );
           newData = newData.filter((row) => {
-            const date = new Date(row[key]);
+            const date = new Date(row.createdAt);
             if (!isValidDate(date)) {
               return false;
             }
@@ -83,9 +73,11 @@ export function handleFilteringAndSortingPaymentData(data, options) {
         }
 
         case 'amount': {
-          const { from, to } = columnFilters[key] ?? {};
+          const { from, to } = /** @type {{ to?: String; from?: String; }}  */ (
+            filter.value ?? {}
+          );
           newData = newData.filter((row) => {
-            const rowValue = row[key];
+            const rowValue = row.amount;
 
             if (typeof rowValue !== 'number') {
               return false;
@@ -105,8 +97,42 @@ export function handleFilteringAndSortingPaymentData(data, options) {
           break;
         }
       }
-    }
-  }
+    });
+  });
+
+  idToSorting.forEach((value, key) => {
+    value.forEach((sorting) => {
+      switch (sorting.id) {
+        case 'createdAt': {
+          newData = newData.toSorted((a, b) => {
+            const aValue = new Date(a.createdAt).getTime();
+            const bValue = new Date(b.createdAt).getTime();
+            return sorting.value === 'asc' ? aValue - bValue : bValue - aValue;
+          });
+          break;
+        }
+
+        case 'amount': {
+          newData = newData.toSorted((a, b) => {
+            const aValue = a.amount;
+            const bValue = b.amount;
+            return sorting.value === 'asc' ? aValue - bValue : bValue - aValue;
+          });
+          break;
+        }
+
+        default: {
+          newData = newData.toSorted((a, b) => {
+            const aValue = a[/** @type {keyof typeof a} */ (sorting.id)];
+            const bValue = b[/** @type {keyof typeof a} */ (sorting.id)];
+            // @ts-ignore
+            return sorting.value === 'asc' ? aValue - bValue : bValue - aValue;
+          });
+          break;
+        }
+      }
+    });
+  });
 
   return newData;
 }
@@ -114,8 +140,6 @@ export function handleFilteringAndSortingPaymentData(data, options) {
 /** @param {number} periodMs */
 export async function sleep(periodMs) {
   await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(null);
-    }, 1000);
+    setTimeout(resolve, periodMs);
   });
 }
