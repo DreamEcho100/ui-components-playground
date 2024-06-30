@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { posts } from "~/server/db/schema";
+import { getManyPostsSchema, handleCursorPageQuery } from "./utils";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
@@ -28,4 +29,21 @@ export const postRouter = createTRPCRouter({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
     });
   }),
+
+  getMany: publicProcedure
+    .input(getManyPostsSchema)
+    .query(async ({ ctx, input }) => {
+      // return ctx.db.query.posts.findMany();
+      // return ctx.prisma.post.findMany();
+      // return await handleCursorPageQuery(input, (params) =>
+      //   ctx.prisma.post.findMany({
+      //     take: params.take,
+      //     orderBy: params.defaultOrderBy,
+      //     where: {
+      //       createdAt: params.createdAt,
+      //     },
+      //   }),
+      // );
+      // const
+    }),
 });

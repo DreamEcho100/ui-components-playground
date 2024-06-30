@@ -1,0 +1,19 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL_PRISMA")
+}
+
+model Post {
+  id        Int                       @id @default(autoincrement())
+  name      Unsupported("text(256)")?
+  createdAt Int                       @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at")
+  updatedAt Int?
+
+  @@index([name], map: "name_idx")
+  @@map("ui-components-playground_post")
+}

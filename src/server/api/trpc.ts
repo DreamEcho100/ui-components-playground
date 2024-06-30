@@ -11,6 +11,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
+import { prisma } from "~/server/db-prisma/db";
 
 /**
  * 1. CONTEXT
@@ -27,6 +28,7 @@ import { db } from "~/server/db";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
     db,
+    prisma,
     ...opts,
   };
 };
