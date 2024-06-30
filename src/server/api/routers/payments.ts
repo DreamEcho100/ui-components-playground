@@ -3,7 +3,7 @@ import { getManyPaymentActionSchema } from "~/server/actions/utils";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
-export const postRouter = createTRPCRouter({
+export const paymentsRouter = createTRPCRouter({
   getMany: publicProcedure
     .input(getManyPaymentActionSchema)
     .query(({ input }) => {

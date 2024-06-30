@@ -8,11 +8,11 @@ import { useDataTableStore } from "~/components/ui/data-table/store/utils/hooks/
 
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import fetchPaymentsDataPageAction from "../../../../../server/actions";
-import useDataTableQueryInputs from "~/components/ui/data-table/store/utils/hooks/data-table-query-inputs";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useStore } from "zustand";
 import { paymentsData } from "~/config/utils";
+import { api } from "~/trpc/react";
 
 function LocallySortedAndFilteredDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns);
@@ -24,19 +24,14 @@ function LocallySortedAndFilteredDataTableStore() {
   );
 }
 
-const defaultLimit = 10;
-const defaultOffset = 0;
-function ExternallySortedAndFilteredDataTableStore() {
+const rqDefaultLimit = 10;
+const rqDefaultCursor = 0;
+function RqDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
     initialValues: {
       isFilteringExternal: true,
       isSortingExternal: true,
     },
-  });
-
-  const { querySorting, queryFilters } = useDataTableQueryInputs({
-    columns,
-    dataTableStore,
   });
 
   const sorting = useStore(dataTableStore, (state) => state.sorting);
@@ -46,10 +41,10 @@ function ExternallySortedAndFilteredDataTableStore() {
     queryKey: [
       "payments-data",
       {
-        limit: defaultLimit,
-        offset: defaultOffset,
-        sorting: querySorting,
-        filters: queryFilters,
+        limit: rqDefaultLimit,
+        cursor: rqDefaultCursor,
+        sorting,
+        filters,
       },
     ],
     queryFn: ({ pageParam }) => fetchPaymentsDataPageAction(pageParam),
@@ -59,8 +54,8 @@ function ExternallySortedAndFilteredDataTableStore() {
     },
     initialPageParam:
       /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
-        limit: defaultLimit,
-        offset: defaultOffset,
+        limit: rqDefaultLimit,
+        cursor: rqDefaultCursor,
         sorting,
         filters,
       }),
@@ -70,12 +65,12 @@ function ExternallySortedAndFilteredDataTableStore() {
         return undefined;
       }
 
-      const lastOffset = lastPage?.nextCursor ?? defaultOffset;
+      const lastOffset = lastPage?.nextCursor ?? rqDefaultCursor;
 
       const newCursor =
         /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
-          offset: lastOffset,
-          limit: defaultLimit,
+          cursor: lastOffset,
+          limit: rqDefaultLimit,
           filters,
           sorting,
         });
@@ -134,6 +129,89 @@ function ExternallySortedAndFilteredDataTableStore() {
   );
 }
 
+const trpcDefaultLimit = 10;
+const trpcDefaultCursor = 0;
+/** @type {any[]} */
+const defaultEmptyData = [];
+function TrpcDataTableStore() {
+  const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
+    initialValues: {
+      isFilteringExternal: true,
+      isSortingExternal: true,
+    },
+  });
+
+  const sorting = useStore(dataTableStore, (state) => state.sorting);
+  const filters = useStore(dataTableStore, (state) => state.columnFilters);
+
+  const getManyInfiniteQuery = api.payments.getMany.useInfiniteQuery(
+    /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
+      limit: trpcDefaultLimit,
+      cursor: trpcDefaultCursor,
+      sorting,
+      filters,
+    }),
+    {
+      initialData: {
+        pageParams: [],
+        pages: [],
+      },
+      placeholderData: keepPreviousData,
+      getNextPageParam: (lastPage) => lastPage?.nextCursor,
+      getPreviousPageParam: (lastPage) => lastPage?.prevCursor,
+      retry: (failureCount, error) => {
+        // Retry only for specific error types
+        if ("status" in error && error.status === 404) {
+          return false;
+        }
+
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex, error) => {
+        // Custom logic for delay
+        return Math.min(1000 * 2 ** attemptIndex, 30000);
+      },
+    },
+  );
+
+  const isPending = getManyInfiniteQuery.isFetching;
+  const data =
+    getManyInfiniteQuery.data?.pages.flatMap((page) => page.items) ??
+    defaultEmptyData;
+
+  const isLoading =
+    getManyInfiniteQuery.isFetching && !getManyInfiniteQuery.isRefetching;
+
+  useEffect(() => {
+    if (!getManyInfiniteQuery.isError) {
+      return;
+    }
+
+    toast.error("Failed to load data\n" + getManyInfiniteQuery.error.message);
+  }, [getManyInfiniteQuery.isError, getManyInfiniteQuery.error]);
+
+  return (
+    <DataTableProvider store={dataTableStore}>
+      <DataTable
+        columns={columns}
+        data={data}
+        rowIdKey="id"
+        isPending={isPending}
+        infiniteLoading={{
+          loadMore: (options) =>
+            getManyInfiniteQuery.fetchNextPage().then(options.onSuccess),
+          isPending: getManyInfiniteQuery.isFetchingNextPage,
+          isDisabled:
+            !getManyInfiniteQuery.hasNextPage ||
+            isLoading ||
+            getManyInfiniteQuery.isFetchingNextPage,
+          hasMore: getManyInfiniteQuery.hasNextPage,
+        }}
+      />
+    </DataTableProvider>
+  );
+}
+
 export default function DataTablesShowCase() {
   return (
     <ShowcaseArticle
@@ -151,11 +229,18 @@ export default function DataTablesShowCase() {
         //     'Locally Sorted and Filtered Data Table is a table component that displays data in a tabular format with sorting and filtering capabilities.',
         //   content: <LocallySortedAndFilteredDataTableStore />,
         // },
+        // {
+        //   title: "Externally Sorted and Filtered Data Table",
+        //   description:
+        //     "Externally Sorted and Filtered Data Table is a table component that displays data in a tabular format with sorting and filtering capabilities.",
+        //   content: <RqDataTableStore />,
+        // },
         {
-          title: "Externally Sorted and Filtered Data Table",
+          // TrpcDataTableStore
+          title: "Externally Sorted and Filtered Data Table (trpc)",
           description:
             "Externally Sorted and Filtered Data Table is a table component that displays data in a tabular format with sorting and filtering capabilities.",
-          content: <ExternallySortedAndFilteredDataTableStore />,
+          content: <TrpcDataTableStore />,
         },
       ]}
     />

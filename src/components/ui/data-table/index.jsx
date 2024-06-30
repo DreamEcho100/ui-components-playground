@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   flexRender,
@@ -6,7 +6,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -14,13 +14,13 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from '~/components/ui/table';
-import { useStore } from 'zustand';
-import { memo, useEffect, useMemo, useRef } from 'react';
-import { useDataTableContextStore } from './context';
-import { DataTableColumnHeader } from './components/column-header';
-import { dateBetweenFilterFn } from './components/column-header/components/filters/utils';
-import InfiniteLoadingRowTrigger from './components/infinite-loading-row-trigger';
+} from "~/components/ui/table";
+import { useStore } from "zustand";
+import { memo, useEffect, useMemo, useRef } from "react";
+import { useDataTableContextStore } from "./context";
+import { DataTableColumnHeader } from "./components/column-header";
+import { dateBetweenFilterFn } from "./components/column-header/components/filters/utils";
+import InfiniteLoadingRowTrigger from "./components/infinite-loading-row-trigger";
 
 /**
  * @template TData
@@ -142,7 +142,7 @@ export function DataTable(props) {
     <div className="flex flex-col">
       <div className="p-4">
         <p className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </p>
       </div>
@@ -155,7 +155,7 @@ export function DataTable(props) {
             // width: table.getCenterTotalSize(),
             // width: '100%'
           }}
-          className={props.isPending ? 'animate-pulse pointer-events-none' : ''}
+          className={props.isPending ? "pointer-events-none animate-pulse" : ""}
         >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -204,7 +204,7 @@ export function DataTable(props) {
                   colSpan={props.columns.length}
                   className="h-24 text-center"
                 >
-                  {props.isPending ? 'Loading...' : 'No data to display.'}
+                  {props.isPending ? "Loading..." : "No data to display."}
                 </TableCell>
               </TableRow>
             )}
@@ -232,8 +232,7 @@ function TableContainer(props) {
     const headers = props.table.getFlatHeaders();
     /** @type {{ [key: string]: number }} */
     const colSizes = {};
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i];
+    for (const header of headers) {
       colSizes[`--header-${header.id}-size`] = header.getSize();
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
     }
@@ -273,14 +272,14 @@ function DataTableBodyContent(props) {
               /** @type {string} */ (row.original[props.rowIdKey])) ??
             row.id
           }
-          data-state={row.getIsSelected() && 'selected'}
+          data-state={row.getIsSelected() && "selected"}
         >
           {row.getVisibleCells().map((cell) => (
             <TableCell
               key={cell.id}
               style={{
                 width:
-                  cell.column.id === 'select'
+                  cell.column.id === "select"
                     ? cell.column.columnDef.meta?.width
                     : `calc(var(--col-${cell.column.id}-size) * 0.0625rem)`,
               }}

@@ -9,10 +9,14 @@ datasource db {
 }
 
 model Post {
-  id        Int                       @id @default(autoincrement())
-  name      Unsupported("text(256)")?
-  createdAt Int                       @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at")
-  updatedAt Int?
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at")
+  updatedAt DateTime? @updatedAt
+
+  status    String? @default("DRAFT")
+  content   String? @default("")
+  viewCount Int?    @default(0)
 
   @@index([name], map: "name_idx")
   @@map("ui-components-playground_post")

@@ -1,8 +1,8 @@
-import { cn } from '~/lib/utils';
-import { badgeVariants } from './utils';
-import { forwardRef } from 'react';
+import { cn } from "~/lib/utils";
+import { badgeVariants } from "./utils";
+import { forwardRef } from "react";
 
-const Badge = forwardRef(
+const Chip = forwardRef(
   /**
    * @param {import('./types').BadgeProps} props
    * @param {import('react').ForwardedRef<HTMLDivElement>} ref
@@ -18,6 +18,6 @@ const Badge = forwardRef(
   },
 );
 
-Badge.displayName = 'Badge';
+Chip.displayName = "Chip";
 
-export { Badge };
+export { Chip };

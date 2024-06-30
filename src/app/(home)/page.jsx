@@ -1,33 +1,33 @@
-import HorizontalBox from '~/components/ui/boxes/horizontal';
-import InputsShowCase from './_components/show-cases/Inputs';
-import AccordionsShowCase from './_components/show-cases/accordions';
-import ButtonsShowSase from './_components/show-cases/buttons';
-import CardsShowCase from './_components/show-cases/cards';
-import ComboboxesShowSase from './_components/show-cases/comboboxes';
-import SelectDropdownsShowcase from './_components/show-cases/select-dropdowns';
-import TextareasShowCase from './_components/show-cases/textareas';
-import DataTablesShowCase from './_components/show-cases/data-tables';
-import { Input } from '~/components/ui/input';
-import BadgesShowCase from './_components/show-cases/badges';
-import TypographyShowcase from './_components/show-cases/typography';
+import HorizontalBox from "~/components/ui/boxes/horizontal";
+import InputsShowCase from "./_components/show-cases/Inputs";
+import AccordionsShowCase from "./_components/show-cases/accordions";
+import ButtonsShowSase from "./_components/show-cases/buttons";
+import CardsShowCase from "./_components/show-cases/cards";
+import ComboboxesShowSase from "./_components/show-cases/comboboxes";
+import SelectDropdownsShowcase from "./_components/show-cases/select-dropdowns";
+import TextareasShowCase from "./_components/show-cases/textareas";
+import DataTablesShowCase from "./_components/show-cases/data-tables";
+import { Input } from "~/components/ui/input";
+import ChipsShowCase from "./_components/show-cases/chips";
+import TypographyShowcase from "./_components/show-cases/typography";
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 py-8 flex flex-col gap-8">
+    <main className="container mx-auto flex flex-col gap-8 px-4 py-8">
       <HorizontalBox
         className="w-fit"
-        start={<span className="text-2xl px-1">🏠</span>}
+        start={<span className="px-1 text-2xl">🏠</span>}
         startSeparator
-        end={<span className="text-2xl px-1">🏠</span>}
+        end={<span className="px-1 text-2xl">🏠</span>}
         endSeparator
       >
-        <h1 className="text-4xl font-bold px-2">Home</h1>
+        <h1 className="px-2 text-4xl font-bold">Home</h1>
       </HorizontalBox>
 
       <HorizontalBox
         className="w-fit"
         start={
-          <label className="text-2xl px-2 py-1" htmlFor="search">
+          <label className="px-2 py-1 text-2xl" htmlFor="search">
             🔍
           </label>
         }
@@ -35,7 +35,7 @@ export default function Home() {
       >
         <Input
           placeholder="Search"
-          className="border-0 ring-inset h-full"
+          className="h-full border-0 ring-inset"
           id="search"
           type="search"
         />
@@ -47,7 +47,7 @@ export default function Home() {
       </HorizontalBox> */}
       <HorizontalBox
         className="bg-warning text-warning-foreground"
-        start={<span className="text-2xl px-4">🛈</span>}
+        start={<span className="px-4 text-2xl">🛈</span>}
         startSeparator
       >
         <div className="p-4">
@@ -65,7 +65,7 @@ export default function Home() {
       <InputsShowCase />
       <TextareasShowCase />
       <DataTablesShowCase />
-      <BadgesShowCase />
+      <ChipsShowCase />
     </main>
   );
 }
