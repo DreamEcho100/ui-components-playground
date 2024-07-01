@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { useStore } from "zustand";
 import { paymentsData } from "~/config/utils";
 import { api } from "~/trpc/react";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/unstable-core-do-not-import";
+// import { TRPC_ERROR_CODES_BY_KEY, TRPC_ERROR_CODES_BY_NUMBER } from "@trpc/server/shared";
 
 function LocallySortedAndFilteredDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns);
@@ -163,11 +165,16 @@ function TrpcDataTableStore() {
       getPreviousPageParam: (lastPage) => lastPage?.prevCursor,
       retry: (failureCount, error) => {
         // Retry only for specific error types
-        if ("status" in error && error.status === 404) {
-          return false;
+        if (
+          error.shape?.code &&
+          (error.shape.code === TRPC_ERROR_CODES_BY_KEY.INTERNAL_SERVER_ERROR ||
+            error.shape.code === TRPC_ERROR_CODES_BY_KEY.TIMEOUT ||
+            error.shape.code === TRPC_ERROR_CODES_BY_KEY.TOO_MANY_REQUESTS)
+        ) {
+          return failureCount < 3;
         }
 
-        return failureCount < 3;
+        return false;
       },
       retryDelay: (attemptIndex, error) => {
         // Custom logic for delay
