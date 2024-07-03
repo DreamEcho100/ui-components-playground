@@ -28,45 +28,61 @@ function idToItemGenerator(items, key) {
 
 import { z } from "zod";
 
-export const getManyPaymentActionSchema = z
-  .object({
-    sorting: z.array(
+const createdAtCursor = z.object({
+  cursorName: z.literal("createdAt"),
+  cursor: z.coerce.date().nullish().optional(),
+});
+const amountCursor = z.object({
+  cursorName: z.literal("amount"),
+  cursor: z.number(),
+});
+const emailCursor = z.object({
+  cursorName: z.literal("email"),
+  cursor: z.string().email(),
+});
+const statusCursor = z.object({
+  cursorName: z.literal("status"),
+  cursor: z.string(),
+});
+
+export const base = z.object({
+  filters: z.array(
+    z.union([
       z.object({
-        id: z.enum(["createdAt", "status", "amount", "email"]),
-        desc: z.boolean(),
+        id: z.literal("status"),
+        value: z.enum(["pending", "paid", "failed"]),
       }),
-    ),
-    filters: z.array(
-      z.union([
-        z.object({
-          id: z.literal("status"),
-          value: z.enum(["pending", "paid", "failed"]),
-        }),
-        z.object({
-          id: z.literal("email"),
-          value: z.string(),
-        }),
-        z.object({
-          id: z.literal("createdAt"),
-          value: z.tuple([
-            z.string().nullish().optional(), // from
-            z.string().nullish().optional(), // to
-          ]),
-        }),
-        z.object({
-          id: z.literal("amount"),
-          value: z.tuple([
-            z.number().nullish().optional(), // from
-            z.number().nullish().optional(), // to
-          ]),
-        }),
-      ]),
-    ),
-    limit: z.number().optional(),
-    cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
-    direction: z.enum(["forward", "backward"]), // optional, useful for bi-directional query
-  })
-  .strict();
+      z.object({
+        id: z.literal("email"),
+        value: z.string(),
+      }),
+      z.object({
+        id: z.literal("createdAt"),
+        value: z.tuple([
+          z.string().nullish().optional(), // from
+          z.string().nullish().optional(), // to
+        ]),
+      }),
+      z.object({
+        id: z.literal("amount"),
+        value: z.tuple([
+          z.number().nullish().optional(), // from
+          z.number().nullish().optional(), // to
+        ]),
+      }),
+    ]),
+  ),
+  limit: z.number().optional(),
+  sortDirection: z.enum(["asc", "desc"]).default("asc"),
+  direction: z.enum(["forward", "backward"]), // optional, useful for bi-directional query
+});
+
+export const getManyPaymentActionSchema = z.discriminatedUnion("cursorName", [
+  createdAtCursor.merge(base),
+  amountCursor.merge(base),
+  emailCursor.merge(base),
+  statusCursor.merge(base),
+]);
 
 /**
  * @param {import("~/config/types").Payment[]} data
@@ -77,8 +93,8 @@ export function handleFilteringAndSortingPaymentData(data, options) {
 
   const idToFilter =
     options.filters && idToItemGenerator(options.filters, "id");
-  const idToSorting =
-    options.sorting && idToItemGenerator(options.sorting, "id");
+  // const idToSorting =
+  //   options.sorting && idToItemGenerator(options.sorting, "id");
 
   idToFilter?.forEach((value, key) => {
     value.forEach((filter) => {
@@ -148,42 +164,46 @@ export function handleFilteringAndSortingPaymentData(data, options) {
     });
   });
 
-  idToSorting?.forEach((value, key) => {
-    value.forEach((sorting) => {
-      switch (sorting.id) {
-        case "createdAt": {
-          newData = newData.toSorted((a, b) => {
-            const aValue = new Date(a.createdAt).getTime();
-            const bValue = new Date(b.createdAt).getTime();
-            return sorting.value === "asc" ? aValue - bValue : bValue - aValue;
-          });
-          break;
-        }
+  switch (options.cursorName) {
+    case "amount": {
+      newData = newData.toSorted((a, b) => {
+        const aValue = a.amount;
+        const bValue = b.amount;
+        return options.sortDirection === "asc"
+          ? aValue - bValue
+          : bValue - aValue;
+      });
+      break;
+    }
 
-        case "amount": {
-          newData = newData.toSorted((a, b) => {
-            const aValue = a.amount;
-            const bValue = b.amount;
-            return sorting.value === "asc" ? aValue - bValue : bValue - aValue;
-          });
-          break;
-        }
-
-        default: {
-          newData = newData.toSorted((a, b) => {
-            const aValue = a[/** @type {keyof typeof a} */ (sorting.id)];
-            const bValue = b[/** @type {keyof typeof a} */ (sorting.id)];
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    case "email": {
+      newData = newData.toSorted((a, b) => {
+        const aValue = a[options.cursorName];
+        const bValue = b[options.cursorName];
+        return options.sortDirection === "asc"
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            return sorting.value === "asc" ? aValue - bValue : bValue - aValue;
-          });
-          break;
-        }
-      }
-    });
-  });
+            aValue - bValue
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            bValue - aValue;
+      });
+      break;
+    }
 
-  return newData;
+    default: {
+      newData = newData.toSorted((a, b) => {
+        const aValue = new Date(a.createdAt).getTime();
+        const bValue = new Date(b.createdAt).getTime();
+        return options.sortDirection === "asc"
+          ? aValue - bValue
+          : bValue - aValue;
+      });
+      break;
+    }
+  }
+
+  return options.direction === "forward" ? newData : newData.reverse();
 }
 
 /** @param {number} periodMs */

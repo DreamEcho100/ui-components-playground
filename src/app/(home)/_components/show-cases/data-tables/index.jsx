@@ -27,7 +27,6 @@ function LocallySortedAndFilteredDataTableStore() {
 }
 
 const rqDefaultLimit = 10;
-const rqDefaultCursor = 0;
 function RqDataTableStore() {
   const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
     initialValues: {
@@ -37,7 +36,7 @@ function RqDataTableStore() {
     },
   });
 
-  const sorting = useStore(dataTableStore, (state) => state.sorting);
+  const sorting = useStore(dataTableStore, (state) => state.sorting[0]);
   const filters = useStore(dataTableStore, (state) => state.columnFilters);
 
   const getManyInfiniteQuery = useInfiniteQuery({
@@ -45,7 +44,6 @@ function RqDataTableStore() {
       "payments-data",
       {
         limit: rqDefaultLimit,
-        cursor: rqDefaultCursor,
         sorting,
         filters,
       },
@@ -58,8 +56,9 @@ function RqDataTableStore() {
     initialPageParam:
       /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
         limit: rqDefaultLimit,
-        cursor: rqDefaultCursor,
-        sorting,
+        cursorName: sorting?.id,
+        sortDirection: sorting?.desc ? "desc" : "asc",
+        direction: "forward",
         filters,
       }),
     placeholderData: keepPreviousData,
@@ -68,14 +67,16 @@ function RqDataTableStore() {
         return undefined;
       }
 
-      const lastOffset = lastPage?.nextCursor ?? rqDefaultCursor;
+      const lastOffset = lastPage?.nextCursor;
 
       const newCursor =
         /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
-          cursor: lastOffset,
           limit: rqDefaultLimit,
           filters,
-          sorting,
+          cursorName: sorting?.id,
+          sortDirection: sorting?.desc ? "desc" : "asc",
+          cursor: lastOffset,
+          direction: "forward",
         });
 
       return newCursor;
@@ -133,7 +134,6 @@ function RqDataTableStore() {
 }
 
 const trpcDefaultLimit = 10;
-const trpcDefaultCursor = 0;
 /** @type {any[]} */
 const defaultEmptyData = [];
 function TrpcDataTableStore() {
@@ -145,21 +145,19 @@ function TrpcDataTableStore() {
     },
   });
 
-  const sorting = useStore(dataTableStore, (state) => state.sorting);
+  const sorting = useStore(dataTableStore, (state) => state.sorting[0]);
   const filters = useStore(dataTableStore, (state) => state.columnFilters);
 
   const getManyInfiniteQuery = api.payments.getMany.useInfiniteQuery(
     /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
       limit: trpcDefaultLimit,
-      cursor: trpcDefaultCursor,
-      sorting,
+      cursorName: sorting?.id,
+      sortDirection: sorting?.desc ? "desc" : "asc",
+      direction: "forward",
       filters,
     }),
     {
-      initialData: {
-        pageParams: [],
-        pages: [],
-      },
+      initialData: { pageParams: [], pages: [] },
       placeholderData: keepPreviousData,
       getNextPageParam: (lastPage) => lastPage?.nextCursor,
       getPreviousPageParam: (lastPage) => lastPage?.prevCursor,
