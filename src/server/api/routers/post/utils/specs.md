@@ -1,4 +1,4 @@
-# Specs
+# Specs _(not up to date)_
 
 I'm are working on a project using Next.js, TRPC, Prisma, and Zod to build an endpoint.
 
@@ -7,8 +7,9 @@ I'm are working on a project using Next.js, TRPC, Prisma, and Zod to build an en
 - Bi-directional querying.
 - Pagination:
   - It will be used by `useInfiniteQuery` on the client-side.
-  - Infinite scrolling by using cursors.
-  - There will be no offset-based pagination because it's not efficient for large datasets.
+  - The cursor/offset will be generated based on the sorting field.
+  - Will be using cursors like `createdAt` or `updatedAt` fields to generate the cursor if it's in the sorting fields.
+  - Else it will use the offset.
 - Sorting capabilities:
   - Allowing sorting with multiple fields if needed and if not then the input validation will require the array field to be a **max** of one item.
 - Filtering capabilities:
