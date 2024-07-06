@@ -11,9 +11,9 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await handleCursorPageQuery({
         input,
-        getItems: async ({ input, take, skip, orderBy, ...params }) => {
+        setupFilters: (_where, input) => {
           /** @type {Prisma.PostWhereInput & { AND: any[] }} */
-          const where = { ...params.where, AND: [] };
+          const where = { ..._where, AND: [] };
 
           if (input.filters) {
             for (const filter of input.filters) {
@@ -59,6 +59,9 @@ export const postRouter = createTRPCRouter({
             }
           }
 
+          return where;
+        },
+        getItems: async ({ take, skip, orderBy, where }) => {
           return ctx.prisma.post.findMany({ take, orderBy, where, skip });
         },
         defaults: { cursorName: "createdAt" },

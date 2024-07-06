@@ -57,6 +57,12 @@ export const getManyPostsSchema = z.object({
 
 /**
  * @typedef {z.infer<typeof getManyPostsSchema>} GetManyPostsActionInput
+ **/
+
+/**
+ * @template {Record<string, any>} Input
+ * @template R
+ * @typedef {(where: { createAt?: { gte?: Date; lte?: Date }; updatedAt?: { gte?: Date; lte?: Date }; }, input: Input) => R} SetupFilters
  */
 
 /**
@@ -66,11 +72,14 @@ export const getManyPostsSchema = z.object({
  * 	direction?: "forward" | "backward";
  * }} input
  * @param {{
+ *  setupFilters: SetupFilters<any, Record<string, any>>
  *  defaultCursorName: string;
  *  isMultiSorting?: boolean;
  * }} options
  */
 function generateCursorPageQueryIndicators(input, options) {
+  /** @type {Record<string, any>} */
+  const where = {};
   /** @type {Record<string, any>} */
   const orderBy = {};
 
@@ -93,8 +102,6 @@ function generateCursorPageQueryIndicators(input, options) {
     }
   }
 
-  /** @type {Record<string, any>} */
-  const where = {};
   /** @type {number | undefined} */
   let skip;
   switch (cursorBy) {
@@ -131,7 +138,7 @@ function generateCursorPageQueryIndicators(input, options) {
     }
   }
 
-  return { skip, where, cursorBy, orderBy };
+  return { skip, where: options.setupFilters(where, input), cursorBy, orderBy };
 }
 
 /**
@@ -143,13 +150,11 @@ function generateCursorPageQueryIndicators(input, options) {
  * 		input: Input;
  * 		limit: number;
  * 		take: number;
- * 		where: {
- * 			createAt?: { gte?: Date; lte?: Date };
- * 			updatedAt?: { gte?: Date; lte?: Date };
- * 		};
  * 		skip?: number;
+ * 		where: Record<string, any>;
  * 		orderBy?: Record<string, any>;
  * 	}) => Promise<Item[]>;
+ *  setupFilters: SetupFilters<Input, Record<string, any>>;
  * 	input: Input;
  * 	defaults: { cursorName: string; limit?: number; }
  *  isMultiSorting?: boolean;
@@ -172,6 +177,7 @@ export const handleCursorPageQuery = async (options) => {
   const { skip, where, cursorBy, orderBy } = generateCursorPageQueryIndicators(
     options.input,
     {
+      setupFilters: options.setupFilters,
       defaultCursorName: options.defaults.cursorName,
       isMultiSorting: options.isMultiSorting,
     },
