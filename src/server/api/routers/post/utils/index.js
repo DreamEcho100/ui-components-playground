@@ -1,19 +1,9 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-const createdAtCursor = z.object({
-  cursorBy: z.literal("createdAt"),
-  cursor: z.coerce.date().nullish().optional(),
-});
-const updatedAtCursor = z.object({
-  cursorBy: z.literal("updatedAt"),
-  cursor: z.coerce.date().nullish().optional(),
-});
-const viewCountCursor = z.object({
-  cursorBy: z.literal("viewCount"),
-  cursor: z.number().nullish().optional(),
-});
-
-const base = z.object({
+// const defaultCursorName = "createdAt";
+const maxSorting = 1;
+export const getManyPostsSchema = z.object({
   filters: z.array(
     z.union([
       z.object({
@@ -57,42 +47,143 @@ const base = z.object({
         z.object({ id: z.literal("status"), desc: z.boolean() }),
       ]),
     )
-    .min(1)
+    .max(maxSorting)
     .optional()
     .default([{ id: "createdAt", desc: true }]),
   limit: z.number().optional(),
+  cursor: z.unknown().nullish().optional(),
   direction: z.enum(["forward", "backward"]).optional().default("forward"), // optional, useful for bi-directional query
 });
 
-export const getManyPostsSchema = z.discriminatedUnion("cursorBy", [
-  createdAtCursor.merge(base).strict(),
-  updatedAtCursor.merge(base).strict(),
-  viewCountCursor.merge(base).strict(),
-]);
+/**
+ * @typedef {z.infer<typeof getManyPostsSchema>} GetManyPostsActionInput
+ */
 
 /**
- * @template {{ limit?: number | null | undefined; direction?: "forward" | "backward"; }} Input
- * @template {Record<string, unknown>} Item
- * @template {{ nextCursor: any; prevCursor: any; items: Item[]; }} ResolvedTo
- *
  * @param {{
- *  getItems: (params: { input: Input; limit: number; take: number; }) => Promise<Item[]>;
- * 	input: Input;
- * 	defaultLimit?: number;
- * 	resolveTo: (options: { items: Item[]; input: Input; limit: number; }) => ResolvedTo;
+ * 	sorting?: { id: string; desc: boolean; }[];
+ * 	cursor?: unknown;
+ * 	direction?: "forward" | "backward";
+ * }} input
+ * @param {{
+ *  defaultCursorName: string;
+ *  isMultiSorting?: boolean;
  * }} options
  */
-{
+function generateCursorPageQueryIndicators(input, options) {
+  /** @type {Record<string, any>} */
+  const orderBy = {};
+
+  let cursorBy;
+
+  if (options.isMultiSorting) {
+    throw new Error("Multi-sorting is not supported yet");
+  } else {
+    const sort = input.sorting?.[0];
+    if (sort) {
+      orderBy[sort.id] = sort.desc ? "desc" : "asc";
+    }
+    switch (sort?.id) {
+      case "createdAt":
+      case "updatedAt":
+        cursorBy = sort.id;
+        break;
+      default:
+        cursorBy = options.defaultCursorName;
+    }
+  }
+
+  /** @type {Record<string, any>} */
+  const where = {};
+  /** @type {number | undefined} */
+  let skip;
+  switch (cursorBy) {
+    case "createdAt":
+    case "updatedAt": {
+      // cursor pagination
+      const schema = z.coerce.date().nullish().optional();
+
+      const cursor = schema.safeParse(input.cursor);
+
+      if (!cursor.success) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid cursor" });
+      }
+
+      if (cursor.data) {
+        where[cursorBy] =
+          input.direction === "forward"
+            ? { gte: new Date(cursor.data) }
+            : { lte: new Date(cursor.data) };
+      }
+      break;
+    }
+
+    default: {
+      // offset pagination
+      const schema = z.number().nullish().optional();
+      const cursor = schema.safeParse(input.cursor);
+      if (!cursor.success) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid cursor" });
+      }
+
+      skip = cursor.data ?? 0;
+      break;
+    }
+  }
+
+  return { skip, where, cursorBy, orderBy };
 }
 
-/** @type {import("./types").handleCursorPageQuery} */
+/**
+ * @template {{ limit?: number | null | undefined; sorting?: { id: string; desc: boolean }[]; direction?: "forward" | "backward"; }} Input
+ * @template {Record<string, unknown>} Item
+ *
+ * @param {{
+ *  getItems: (params: {
+ * 		input: Input;
+ * 		limit: number;
+ * 		take: number;
+ * 		where: {
+ * 			createAt?: { gte?: Date; lte?: Date };
+ * 			updatedAt?: { gte?: Date; lte?: Date };
+ * 		};
+ * 		skip?: number;
+ * 		orderBy?: Record<string, any>;
+ * 	}) => Promise<Item[]>;
+ * 	input: Input;
+ * 	defaults: { cursorName: string; limit?: number; }
+ *  isMultiSorting?: boolean;
+ * }} options
+ */
 export const handleCursorPageQuery = async (options) => {
-  const limit = options.input.limit ?? options?.defaultLimit ?? 10;
+  const limit = options.input.limit ?? options?.defaults.limit ?? 10;
+
+  if (
+    !options.isMultiSorting &&
+    options.input.sorting &&
+    options.input.sorting.length > 1
+  ) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Multi-sorting is not supported",
+    });
+  }
+
+  const { skip, where, cursorBy, orderBy } = generateCursorPageQueryIndicators(
+    options.input,
+    {
+      defaultCursorName: options.defaults.cursorName,
+      isMultiSorting: options.isMultiSorting,
+    },
+  );
 
   const items = await options.getItems({
     input: options.input,
     limit,
     take: limit + 1, // Fetch one extra record to check for prev/next pages
+    skip,
+    where,
+    orderBy,
   });
   // .then((items) => {
   //   if (options.input.direction === "backward") {
@@ -101,5 +192,32 @@ export const handleCursorPageQuery = async (options) => {
   //   return items;
   // });
 
-  return options.resolveTo({ items, input: options.input, limit });
+  // return options.resolveTo({ items, input: options.input, limit });
+
+  switch (cursorBy) {
+    case "createdAt":
+    case "updatedAt": {
+      // cursor pagination
+
+      const lastItem = items.length > limit ? items.pop() : null;
+      const nextCursor = /** @type {string|null} */ (
+        lastItem ? lastItem[cursorBy] : null
+      );
+      const prevCursor = /** @type {string|null} */ (
+        items[0]?.[cursorBy] ?? null
+      );
+
+      return { items, nextCursor, prevCursor };
+    }
+
+    default: {
+      // offset pagination
+
+      const lastItem = items.length > limit ? items.pop() : null;
+      const nextCursor = lastItem ? limit + (skip ?? 0) : null;
+      const prevCursor = skip ?? 0;
+
+      return { items, nextCursor, prevCursor };
+    }
+  }
 };

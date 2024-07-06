@@ -1,6 +1,7 @@
 export type handleCursorPageQuery = <
   Input extends {
     limit?: number | null | undefined;
+    sorting?: { id: string; desc: boolean }[];
     direction?: "forward" | "backward";
   },
   Item extends Record<string, unknown>,
@@ -16,12 +17,17 @@ export type handleCursorPageQuery = <
     input: Input;
     limit: number;
     take: number;
+    where: {
+      createAt?: { gte?: Date; lte?: Date };
+      updatedAt?: { gte?: Date; lte?: Date };
+    };
+    skip?: number;
   }) => Promise<Item[]>;
   input: Input;
   defaultLimit?: number;
-  resolveTo: (options: {
-    items: Item[];
-    input: Input;
-    limit: number;
-  }) => ResolvedTo;
+  // resolveTo: (options: {
+  //   items: Item[];
+  //   input: Input;
+  //   limit: number;
+  // }) => ResolvedTo;
 }) => Promise<ResolvedTo>;

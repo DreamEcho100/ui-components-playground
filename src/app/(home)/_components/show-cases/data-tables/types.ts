@@ -1,4 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import type { Payment } from "~/config/types";
+import type { BasicPost, Payment } from "~/config/types";
 
 export type PaymentColumn = ColumnDef<Payment>;
+export type BasicPostColumn = ColumnDef<BasicPost>;

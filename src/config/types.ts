@@ -10,3 +10,12 @@ export interface Payment {
   };
   createdAt: string;
 }
+
+export interface BasicPost {
+  id: string;
+  name: string;
+  createdAt: string;
+  updateAt: string | null;
+  viewCount: number;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+}

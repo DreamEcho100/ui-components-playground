@@ -11,13 +11,10 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await handleCursorPageQuery({
         input,
-        getItems: async ({ input, take }) => {
+        getItems: async ({ input, take, skip, orderBy, ...params }) => {
           /** @type {Prisma.PostWhereInput & { AND: any[] }} */
-          const where = {
-            AND: [],
-          };
+          const where = { ...params.where, AND: [] };
 
-          let stopCursor = false;
           if (input.filters) {
             for (const filter of input.filters) {
               switch (filter.id) {
@@ -34,8 +31,6 @@ export const postRouter = createTRPCRouter({
                 }
 
                 case "viewCount": {
-                  stopCursor = true;
-
                   const [from, to] = filter.value ?? {};
                   where.AND.push({
                     viewCount: {
@@ -48,8 +43,6 @@ export const postRouter = createTRPCRouter({
 
                 case "createdAt":
                 case "updatedAt": {
-                  stopCursor = true;
-
                   where.AND.push({
                     [filter.id]: {
                       gte: filter.value[0]
@@ -66,47 +59,9 @@ export const postRouter = createTRPCRouter({
             }
           }
 
-          if (!stopCursor) {
-            switch (input.cursorBy) {
-              case "viewCount": {
-                if (input.cursor) {
-                  where[input.cursorBy] = {
-                    [input.direction === "forward" ? "gt" : "lt"]: input.cursor,
-                  };
-                }
-                break;
-              }
-
-              case "createdAt":
-              case "updatedAt": {
-                if (input.cursor) {
-                  where[input.cursorBy] =
-                    input.direction === "forward"
-                      ? { gt: new Date(input.cursor) }
-                      : { lt: new Date(input.cursor) };
-                }
-                break;
-              }
-            }
-          }
-
-          /** @type {Prisma.PostOrderByWithRelationInput} */
-          const orderBy = {};
-          if (input.sorting) {
-            for (const sort of input.sorting) {
-              orderBy[sort.id] = sort.desc ? "desc" : "asc";
-            }
-          }
-
-          return ctx.prisma.post.findMany({ take, orderBy, where });
+          return ctx.prisma.post.findMany({ take, orderBy, where, skip });
         },
-        resolveTo: ({ items, input, limit }) => {
-          const lastItem = items.length < limit ? null : items.pop();
-          const nextCursor = lastItem ? lastItem[input.cursorBy] : null;
-          const prevCursor = items[0]?.[input.cursorBy] ?? null;
-
-          return { items, nextCursor, prevCursor };
-        },
+        defaults: { cursorName: "createdAt" },
       });
     }),
 

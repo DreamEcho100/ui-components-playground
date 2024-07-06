@@ -4,7 +4,7 @@ import { CreatePost } from "~/app/posts/_components/create-post";
 import { api } from "~/trpc/server";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+  const hello = await api.posts.hello({ text: "from tRPC" });
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
@@ -49,7 +49,7 @@ export default async function Home() {
 }
 
 async function CrudShowcase() {
-  const latestPost = await api.post.getLatest();
+  const latestPost = await api.posts.getLatest();
 
   return (
     <div className="w-full max-w-xs">

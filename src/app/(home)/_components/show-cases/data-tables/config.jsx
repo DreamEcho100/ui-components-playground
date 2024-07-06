@@ -1,5 +1,5 @@
 "use client";
-/** @import { PaymentColumn } from './types.ts' */
+/** @import { PaymentColumn, BasicPostColumn } from './types.ts' */
 
 import { MoreHorizontal } from "lucide-react";
 
@@ -114,5 +114,64 @@ export const paymentColumns = [
     },
     enableSorting: false,
     enableHiding: false,
+  },
+];
+
+/** @type {BasicPostColumn[]} */
+export const basicPostColumns = [
+  defaultDataTableSelectColumn,
+  {
+    accessorKey: "name",
+    meta: {
+      header: "Name",
+      filterVariant: { type: "text" },
+    },
+  },
+  {
+    accessorKey: "status",
+    meta: {
+      header: "Status",
+      filterVariant: {
+        type: "select",
+        props: {
+          placeholder: "All",
+          options: [
+            { label: "All", value: "" },
+            { label: "Draft", value: "DRAFT" },
+            { label: "Published", value: "PUBLISHED" },
+            { label: "Archived", value: "ARCHIVED" },
+          ],
+        },
+      },
+    },
+  },
+  {
+    accessorKey: "viewCount",
+    meta: {
+      header: "View Count",
+      filterVariant: {
+        type: "range-number",
+      },
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    meta: {
+      header: "Created At",
+      filterVariant: {
+        type: "range-date",
+      },
+    },
+    filterFn: "dateBetweenFilterFn",
+  },
+  {
+    accessorKey: "updateAt",
+    meta: {
+      header: "Updated At",
+      filterVariant: {
+        type: "range-date",
+      },
+    },
+    filterFn: "dateBetweenFilterFn",
   },
 ];

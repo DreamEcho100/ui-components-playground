@@ -3,7 +3,7 @@
 
 import { DataTableProvider } from "~/components/ui/data-table/context";
 import ShowcaseArticle from "../../article";
-import { paymentColumns } from "./config"; // import { locallySortedAndFilteredDataTableStore as locallySortedAndFilteredDataTableStore } from '~/components/ui/data-table/store';
+import { basicPostColumns, paymentColumns } from "./config"; // import { locallySortedAndFilteredDataTableStore as locallySortedAndFilteredDataTableStore } from '~/components/ui/data-table/store';
 import { DataTable } from "~/components/ui/data-table";
 import { useDataTableStore } from "~/components/ui/data-table/store/utils/hooks/data-table-store";
 
@@ -22,7 +22,7 @@ function LocallySortedAndFilteredDataTableStore() {
 
   return (
     <DataTableProvider store={dataTableStore}>
-      <DataTable columns={paymentColumns} data={paymentsData} rowIdKey="id" />
+      <DataTable columns={columns} data={paymentsData} rowIdKey="id" />
     </DataTableProvider>
   );
 }
@@ -136,7 +136,7 @@ const trpcDefaultLimit = 10;
 /** @type {any[]} */
 const defaultEmptyData = [];
 function TrpcDataTableStore() {
-  const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
+  const [dataTableStore, columns] = useDataTableStore(basicPostColumns, {
     initialValues: {
       isFilteringExternal: true,
       isSortingExternal: true,
@@ -144,15 +144,13 @@ function TrpcDataTableStore() {
     },
   });
 
-  const sorting = useStore(dataTableStore, (state) => state.sorting[0]);
+  const sorting = useStore(dataTableStore, (state) => state.sorting);
   const filters = useStore(dataTableStore, (state) => state.columnFilters);
 
-  const getManyInfiniteQuery = api.payments.getMany.useInfiniteQuery(
-    /** @type {GetManyPaymentActionInput} */ ({
+  const getManyInfiniteQuery = api.posts.getMany.useInfiniteQuery(
+    /** @type {import("~/server/api/routers/post/utils").GetManyPostsActionInput} */ ({
       limit: trpcDefaultLimit,
-      sortBy: sorting?.id,
-      sortDir: sorting?.desc ? "desc" : "asc",
-      direction: "forward",
+      sorting,
       filters,
     }),
     {
