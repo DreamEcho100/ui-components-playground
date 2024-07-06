@@ -14,6 +14,9 @@ export default function useIsIntersecting(props) {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       const [entry] = entries;
+
+      if (!entry) return;
+
       setIsIntersecting(entry.isIntersecting);
     }, props.intersectionObserverInit);
 
