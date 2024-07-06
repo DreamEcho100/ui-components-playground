@@ -4,14 +4,13 @@ import { CalendarIcon } from "lucide-react";
 import {
   DatePicker,
   DateRangePicker,
-  DateRangePickerProps,
-  DateValue,
+  type DateRangePickerProps,
+  type DateValue,
   Dialog,
-  DialogProps,
+  type DialogProps,
   Group,
-  GroupProps,
-  PopoverProps,
-  RangeCalendarProps,
+  type GroupProps,
+  type PopoverProps,
 } from "react-aria-components";
 
 import { cn } from "~/lib/utils";

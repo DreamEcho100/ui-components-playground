@@ -18,16 +18,13 @@ export interface TableProps
   isTableHeaderSticky?: boolean;
 }
 
-export interface TableHeaderProps
-  extends HTMLAttributes<HTMLTableSectionElement> {}
+export type TableHeaderProps = HTMLAttributes<HTMLTableSectionElement>
 
-export interface TableBodyProps
-  extends HTMLAttributes<HTMLTableSectionElement> {}
+export type TableBodyProps = HTMLAttributes<HTMLTableSectionElement>
 
-export interface TableFooterProps
-  extends HTMLAttributes<HTMLTableSectionElement> {}
+export type TableFooterProps = HTMLAttributes<HTMLTableSectionElement>
 
-export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {}
+export type TableRowProps = HTMLAttributes<HTMLTableRowElement>
 
 export type TableHeadVariants = VariantProps<typeof tableHeadVariants>;
 export interface TableHeadProps
@@ -39,5 +36,4 @@ export interface TableCellProps
   extends TdHTMLAttributes<HTMLTableDataCellElement>,
     TableCellVariants {}
 
-export interface TableCaptionProps
-  extends HTMLAttributes<HTMLTableCaptionElement> {}
+export type TableCaptionProps = HTMLAttributes<HTMLTableCaptionElement>

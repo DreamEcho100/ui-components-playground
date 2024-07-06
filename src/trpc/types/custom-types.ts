@@ -7,7 +7,7 @@ import type {
   AnyClientTypes,
   RouterRecord,
 } from "@trpc/server/unstable-core-do-not-import";
-import { AppRouter } from "~/server/api/root";
+import { type AppRouter } from "~/server/api/root";
 
 // import type { AppRouter } from "./root";
 

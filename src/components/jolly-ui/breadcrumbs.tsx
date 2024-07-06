@@ -3,11 +3,11 @@
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 import {
   Breadcrumb,
-  BreadcrumbProps,
+  type BreadcrumbProps,
   Breadcrumbs,
-  BreadcrumbsProps,
+  type BreadcrumbsProps,
   Link,
-  LinkProps,
+  type LinkProps,
 } from "react-aria-components";
 
 import { cn } from "~/lib/utils";
@@ -53,7 +53,7 @@ const BreadcrumbSeparator = ({
     className={cn("[&>svg]:size-3.5", className)}
     {...props}
   >
-    {children || <ChevronRight />}
+    {children ?? <ChevronRight />}
   </span>
 );
 
@@ -72,7 +72,7 @@ const BreadcrumbEllipsis = ({
   </span>
 );
 
-interface BreadcrumbPageProps extends Omit<LinkProps, "href"> {}
+type BreadcrumbPageProps = Omit<LinkProps, "href">;
 
 const BreadcrumbPage = ({ className, ...props }: BreadcrumbPageProps) => (
   <Link className={cn("font-normal text-foreground", className)} {...props} />

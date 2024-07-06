@@ -14,4 +14,5 @@ export interface DataTableRowSelectionCellProps<TData, TValue> {
   "aria-label"?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DataTableSelectColumn = DisplayColumnDef<any>;

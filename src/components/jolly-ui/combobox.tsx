@@ -9,16 +9,16 @@ import {
   Group,
   Header,
   Input,
-  InputProps,
+  type InputProps,
   ListBox,
   ListBoxItem,
-  ListBoxItemProps,
-  ListBoxProps,
+  type ListBoxItemProps,
+  type ListBoxProps,
   Popover,
-  PopoverProps,
+  type PopoverProps,
   Section,
   Separator,
-  SeparatorProps,
+  type SeparatorProps,
 } from "react-aria-components";
 
 import { cn } from "~/lib/utils";

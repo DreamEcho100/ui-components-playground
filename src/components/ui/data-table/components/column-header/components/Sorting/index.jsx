@@ -7,7 +7,7 @@ import {
   ArrowDown,
   Settings2,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { Button } from "~/components/ui/button";
 import { useDataTableContextStore } from "~/components/ui/data-table/context";
@@ -56,9 +56,11 @@ export default function Sorting(props) {
      */
     (key, value, isMulti) => {
       const setCache = dataTableStore.getState().setCache;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const currentValue = dataTableStore.getState().__cache.sorting[key];
 
       if (currentValue) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         clearTimeout(currentValue);
       }
 
@@ -68,11 +70,13 @@ export default function Sorting(props) {
         (prev) => {
           if (isMulti) {
             const cache = { ...prev };
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             cache[key] = value;
 
             return cache;
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           return { [key]: value };
         },
       );

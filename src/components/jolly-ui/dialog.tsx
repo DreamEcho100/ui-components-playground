@@ -7,12 +7,12 @@ import {
   Dialog as _Dialog,
   DialogTrigger as _DialogTrigger,
   Button,
-  DialogProps,
+  type DialogProps,
   Heading,
-  HeadingProps,
+  type HeadingProps,
   Modal,
   ModalOverlay,
-  ModalOverlayProps,
+  type ModalOverlayProps,
 } from "react-aria-components";
 
 import { cn } from "~/lib/utils";
@@ -39,11 +39,11 @@ const Dialog = _Dialog;
 
 const DialogOverlay = ({
   className,
-  isDismissible = true,
+  isDismissable = true,
   ...props
 }: ModalOverlayProps) => (
   <ModalOverlay
-    isDismissible={isDismissible}
+    isDismissable={isDismissable}
     className={(values) =>
       cn(
         "fixed inset-0 z-50 bg-black/80 data-[exiting]:duration-300 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in-0 data-[exiting]:fade-out-0",

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { DropZone, DropZoneProps } from "react-aria-components";
+import { DropZone, type DropZoneProps } from "react-aria-components";
 
 import { cn } from "~/lib/utils";
 

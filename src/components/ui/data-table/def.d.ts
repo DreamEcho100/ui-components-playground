@@ -1,7 +1,4 @@
-import type { ColumnMeta, RowData } from "@tanstack/react-table";
-import type { ReactNode } from "react";
-import type { SelectDropdownProps } from "../select/type";
-import type { InputProps } from "~/components/jolly-ui/input";
+import type { RowData } from "@tanstack/react-table";
 import type {
   RangeDateFilter,
   RangeNumberFilter,

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { DialogTrigger, Popover, PopoverProps } from "react-aria-components";
+import { DialogTrigger, Popover, type PopoverProps } from "react-aria-components";
 
 import { cn } from "~/lib/utils";
 

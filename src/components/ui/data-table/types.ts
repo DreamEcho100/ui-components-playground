@@ -1,14 +1,14 @@
-import { ColumnResizeMode } from "@tanstack/react-table";
+import { type ColumnResizeMode } from "@tanstack/react-table";
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  RowSelectionState,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type RowSelectionState,
+  type SortingState,
+  type VisibilityState,
 } from "@tanstack/react-table";
-import { SelectDropdownProps } from "~/components/ui/select/type";
-import { InputProps } from "~/components/ui/input/types";
-import { InfiniteLoadingRowTriggerProps } from "./components/infinite-loading-row-trigger/types";
+import { type SelectDropdownProps } from "~/components/ui/select/type";
+import { type InputProps } from "~/components/ui/input/types";
+import { type InfiniteLoadingRowTriggerProps } from "./components/infinite-loading-row-trigger/types";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
