@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import ShowcaseArticle from '../article';
+import ShowcaseArticle from "../article";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '~/components/ui/accordion';
+} from "~/components/ui/accordion";
 
 export default function AccordionsShowCase() {
   return (
     <ShowcaseArticle
       header={{
-        title: 'Accordion',
-        description: 'Accordions are used to toggle the visibility of content.',
+        title: "Accordion",
+        description: "Accordions are used to toggle the visibility of content.",
       }}
       sections={[
         {
-          title: 'Default',
-          description: 'The default accordion.',
+          title: "Default",
+          description: "The default accordion.",
           content: (
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
@@ -45,8 +45,8 @@ export default function AccordionsShowCase() {
           ),
         },
         {
-          title: 'Multiple Open',
-          description: 'Multiple sections can be open at the same time.',
+          title: "Multiple Open",
+          description: "Multiple sections can be open at the same time.",
           content: (
             <Accordion type="multiple" className="w-full">
               <AccordionItem value="item-1">

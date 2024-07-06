@@ -1,4 +1,6 @@
 "use client";
+/** @import { DataTableProps, TableSetters, TableState } from './types.ts' */
+/** @import { PropsWithChildren } from 'react' */
 
 import {
   flexRender,
@@ -16,7 +18,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { useStore } from "zustand";
-import { memo, useEffect, useMemo, useRef } from "react";
+import { memo, useMemo } from "react";
 import { useDataTableContextStore } from "./context";
 import { DataTableColumnHeader } from "./components/column-header";
 import { dateBetweenFilterFn } from "./components/column-header/components/filters/utils";
@@ -26,7 +28,7 @@ import InfiniteLoadingRowTrigger from "./components/infinite-loading-row-trigger
  * @template TData
  * @template TValue
  *
- * @param {import("./types").DataTableProps<TData, TValue>} props
+ * @param {DataTableProps<TData, TValue>} props
  */
 export function DataTable(props) {
   const dataTableStore = useDataTableContextStore();
@@ -62,7 +64,7 @@ export function DataTable(props) {
   const dataTableSetters = useMemo(() => {
     const store = dataTableStore.getState();
 
-    return /** @type {import("./types").TableSetters} */ ({
+    return /** @type {TableSetters} */ ({
       setColumnFilters: store.setColumnFilters,
       setColumnVisibility: store.setColumnVisibility,
       setRowSelection: store.setRowSelection,
@@ -95,14 +97,10 @@ export function DataTable(props) {
     state: {
       sorting: sorting,
       columnFilters: columnFilters,
-      columnVisibility:
-        /** @type {import("./types").TableState['columnVisibility']} */ (
-          columnVisibility
-        ),
-      rowSelection:
-        /** @type {import("./types").TableState['rowSelection']} */ (
-          rowSelection
-        ),
+      columnVisibility: /** @type {TableState['columnVisibility']} */ (
+        columnVisibility
+      ),
+      rowSelection: /** @type {TableState['rowSelection']} */ (rowSelection),
     },
     // onStateChange: (state) => {
     //   dataTableStore.setState({ _table: table });
@@ -218,7 +216,7 @@ export function DataTable(props) {
 /**
  * @template TData
  *
- * @param {import('react').PropsWithChildren<{ table: import('@tanstack/react-table').Table<TData> }>} props
+ * @param {PropsWithChildren<{ table: import('@tanstack/react-table').Table<TData> }>} props
  */
 function TableContainer(props) {
   const columnSizingInfo = props.table.getState().columnSizingInfo;
@@ -257,7 +255,7 @@ function TableContainer(props) {
 /**
  * @template TData
  *
- * @param {import('react').PropsWithChildren<{
+ * @param {PropsWithChildren<{
  * 	table: import('@tanstack/react-table').Table<TData>;
  * 	rowIdKey?: keyof TData;
  * }>} props

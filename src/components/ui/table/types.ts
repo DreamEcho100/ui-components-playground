@@ -1,15 +1,15 @@
-import type { VariantProps } from 'class-variance-authority';
+import type { VariantProps } from "class-variance-authority";
 import type {
   TableHTMLAttributes,
   ThHTMLAttributes,
   TdHTMLAttributes,
   HTMLAttributes,
-} from 'react';
+} from "react";
 import type {
   tableVariants,
   tableHeadVariants,
   tableCellVariants,
-} from './utils';
+} from "./utils";
 
 export type TableVariants = VariantProps<typeof tableVariants>;
 export interface TableProps

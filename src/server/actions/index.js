@@ -1,9 +1,10 @@
 "use server";
+/** @import { GetManyPaymentActionInput } from './types.ts' */
 
 import { paymentsData } from "~/config/utils";
 import { handleFilteringAndSortingPaymentData, sleep } from "./utils";
 
-/** @param {import("./types").GetManyPaymentActionInput} input */
+/** @param {GetManyPaymentActionInput} input */
 export default async function fetchPaymentsDataPageAction(input) {
   // const offset = input.cursor ?? 0;
   const limit = input.limit ?? 10;
@@ -25,8 +26,14 @@ export default async function fetchPaymentsDataPageAction(input) {
   // }
   // const prevCursor = offset - limit;
 
-  switch (input.cursorName) {
+  switch (input.sortBy) {
     case "amount": {
+      if (!input.cursor) {
+        slicedFilteredItems = filteredItems.slice(0, limit);
+        nextCursor = filteredItems[limit]?.amount;
+        prevCursor = filteredItems[0]?.amount;
+        break;
+      }
       for (let i = 0; i < filteredItems.length; i++) {
         if (
           /** @type {typeof filteredItems[number]} */ (filteredItems[i])
@@ -41,6 +48,12 @@ export default async function fetchPaymentsDataPageAction(input) {
     }
 
     case "email": {
+      if (!input.cursor) {
+        slicedFilteredItems = filteredItems.slice(0, limit);
+        nextCursor = filteredItems[limit]?.email;
+        prevCursor = filteredItems[0]?.email;
+        break;
+      }
       for (let i = 0; i < filteredItems.length; i++) {
         if (
           /** @type {typeof filteredItems[number]} */ (filteredItems[i])
@@ -55,6 +68,12 @@ export default async function fetchPaymentsDataPageAction(input) {
     }
 
     default: {
+      if (!input.cursor) {
+        slicedFilteredItems = filteredItems.slice(0, limit);
+        nextCursor = filteredItems[limit]?.createdAt;
+        prevCursor = filteredItems[0]?.createdAt;
+        break;
+      }
       for (let i = 0; i < filteredItems.length; i++) {
         const date = new Date(
           /** @type {typeof filteredItems[number]} */ (

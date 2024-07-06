@@ -1,5 +1,5 @@
-import type { Table } from '@tanstack/react-table';
+import type { Table } from "@tanstack/react-table";
 
 export interface DataTableViewOptionsProps<TData> {
-	table: Table<TData>;
+  table: Table<TData>;
 }

@@ -1,4 +1,5 @@
 "use client";
+/** @import { BadgeProps } from '~/components/ui/chip/types.ts' */
 
 import { Chip } from "~/components/ui/chip";
 import ShowcaseArticle from "../article";
@@ -22,14 +23,10 @@ const badgeRounded = /** @type {const} */ (["md", "square", "pill"]);
 
 export default function ChipsShowCase() {
   const [size, setSize] = useState(
-    /** @type {import('~/components/ui/chip/types').BadgeProps['size'] | null} */ (
-      "md"
-    ),
+    /** @type {BadgeProps['size'] | null} */ ("md"),
   );
   const [rounded, setRounded] = useState(
-    /** @type {import('~/components/ui/chip/types').BadgeProps['rounded'] | null} */ (
-      "pill"
-    ),
+    /** @type {BadgeProps['rounded'] | null} */ ("pill"),
   );
 
   return (

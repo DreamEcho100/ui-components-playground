@@ -1,14 +1,14 @@
-import { ColumnResizeMode } from '@tanstack/react-table';
+import { ColumnResizeMode } from "@tanstack/react-table";
 import {
   ColumnDef,
   ColumnFiltersState,
   RowSelectionState,
   SortingState,
   VisibilityState,
-} from '@tanstack/react-table';
-import { SelectDropdownProps } from '~/components/ui/select/type';
-import { InputProps } from '~/components/ui/input/types';
-import { InfiniteLoadingRowTriggerProps } from './components/infinite-loading-row-trigger/types';
+} from "@tanstack/react-table";
+import { SelectDropdownProps } from "~/components/ui/select/type";
+import { InputProps } from "~/components/ui/input/types";
+import { InfiniteLoadingRowTriggerProps } from "./components/infinite-loading-row-trigger/types";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,21 +45,21 @@ export interface TableState {
 //
 //
 export interface SelectFilter {
-  type: 'select';
-  props: Omit<SelectDropdownProps<unknown>, 'value' | 'onChange'>;
+  type: "select";
+  props: Omit<SelectDropdownProps<unknown>, "value" | "onChange">;
 }
 export interface TextFilter {
-  type: 'text';
-  props?: Omit<InputProps, 'value' | 'onChange'>;
+  type: "text";
+  props?: Omit<InputProps, "value" | "onChange">;
 }
 export interface RangeNumberFilter {
-  type: 'range-number';
-  minProps?: Omit<InputProps, 'value' | 'onChange'>;
-  maxProps?: Omit<InputProps, 'value' | 'onChange'>;
+  type: "range-number";
+  minProps?: Omit<InputProps, "value" | "onChange">;
+  maxProps?: Omit<InputProps, "value" | "onChange">;
 }
 
 export interface RangeDateFilter {
-  type: 'range-date';
-  minProps?: Omit<InputProps, 'value' | 'onChange'>;
-  maxProps?: Omit<InputProps, 'value' | 'onChange'>;
+  type: "range-date";
+  minProps?: Omit<InputProps, "value" | "onChange">;
+  maxProps?: Omit<InputProps, "value" | "onChange">;
 }

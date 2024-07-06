@@ -1,6 +1,6 @@
-import { getLocalTimeZone } from '@internationalized/date';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { getLocalTimeZone } from "@internationalized/date";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import {
   DatePicker,
   DateRangePicker,
@@ -12,11 +12,11 @@ import {
   GroupProps,
   PopoverProps,
   RangeCalendarProps,
-} from 'react-aria-components';
+} from "react-aria-components";
 
-import { cn } from '~/lib/utils';
-import { Button } from '~/components/jolly-ui/button';
-import { Popover } from '~/components/jolly-ui/popover';
+import { cn } from "~/lib/utils";
+import { Button } from "~/components/jolly-ui/button";
+import { Popover } from "~/components/jolly-ui/popover";
 
 const _DatePicker = DatePicker;
 
@@ -31,14 +31,14 @@ const _DatePickerButton = ({ date, ...props }: _DatePickerButtonProps) => (
     <Button
       variant="outline"
       className={cn(
-        'w-[280px] justify-start text-left font-normal',
-        !date && 'text-muted-foreground',
+        "w-[280px] justify-start text-left font-normal",
+        !date && "text-muted-foreground",
       )}
     >
       <CalendarIcon className="mr-2 h-4 w-4" />
 
       {date ? (
-        format(date?.toDate(getLocalTimeZone()), 'PPP')
+        format(date?.toDate(getLocalTimeZone()), "PPP")
       ) : (
         <span>Pick a date</span>
       )}
@@ -47,7 +47,7 @@ const _DatePickerButton = ({ date, ...props }: _DatePickerButtonProps) => (
 );
 
 export interface _DateRangePickerButtonProps extends GroupProps {
-  date?: DateRangePickerProps<DateValue>['value'];
+  date?: DateRangePickerProps<DateValue>["value"];
 }
 
 const _DateRangePickerButton = ({
@@ -58,16 +58,16 @@ const _DateRangePickerButton = ({
     <Button
       variant="outline"
       className={cn(
-        'w-[280px] justify-start text-left font-normal',
-        !date && 'text-muted-foreground',
+        "w-[280px] justify-start text-left font-normal",
+        !date && "text-muted-foreground",
       )}
     >
       <CalendarIcon className="mr-2 h-4 w-4" />
 
       {date?.end ? (
         <>
-          {format(date.start.toDate(getLocalTimeZone()), 'LLL dd, y')} -{' '}
-          {format(date.end.toDate(getLocalTimeZone()), 'LLL dd, y')}
+          {format(date.start.toDate(getLocalTimeZone()), "LLL dd, y")} -{" "}
+          {format(date.end.toDate(getLocalTimeZone()), "LLL dd, y")}
         </>
       ) : (
         <span>Pick a date</span>
@@ -80,12 +80,12 @@ const _DatePickerContent = ({
   className,
   popoverClassName,
   ...props
-}: DialogProps & { popoverClassName?: PopoverProps['className'] }) => (
+}: DialogProps & { popoverClassName?: PopoverProps["className"] }) => (
   <Popover
     className={(values) =>
       cn(
-        'w-auto p-3',
-        typeof popoverClassName === 'function'
+        "w-auto p-3",
+        typeof popoverClassName === "function"
           ? popoverClassName(values)
           : popoverClassName,
       )
@@ -93,7 +93,7 @@ const _DatePickerContent = ({
   >
     <Dialog
       className={cn(
-        'flex w-full flex-col space-y-4 outline-none sm:flex-row sm:space-x-4 sm:space-y-0',
+        "flex w-full flex-col space-y-4 outline-none sm:flex-row sm:space-x-4 sm:space-y-0",
         className,
       )}
       {...props}

@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import useIsIntersecting from './utils';
+import { useEffect, useRef, useState } from "react";
+import useIsIntersecting from "./utils";
+/** @import { InfiniteLoadingRowTriggerProps } from './types.ts' */
 
 const defaultDelayAmountAfterSuccessMS = 1500;
 const defaultDelayAmountBeforeLoadingMS = 1000;
 
 /**
- * @param {import("./types").InfiniteLoadingRowTriggerProps} props
+ * @param {InfiniteLoadingRowTriggerProps} props
  */
 export default function InfiniteLoadingRowTrigger(props) {
   const ref = useRef(/** @type {HTMLTableRowElement | null} */ (null));
@@ -20,12 +21,12 @@ export default function InfiniteLoadingRowTrigger(props) {
     /**
      * @type {'idle' | 'loading' | 'success'}
      */
-    ('idle'),
+    ("idle"),
   );
   const loadMore = props.loadMore;
 
   useEffect(() => {
-    if (status !== 'idle') {
+    if (status !== "idle") {
       return;
     }
 
@@ -34,8 +35,8 @@ export default function InfiniteLoadingRowTrigger(props) {
     }
 
     const timeoutId = setTimeout(() => {
-      setStatus('loading');
-      loadMore({ onSuccess: () => setStatus('success') });
+      setStatus("loading");
+      void loadMore({ onSuccess: () => setStatus("success") });
     }, delayAmountBeforeLoadingMS);
 
     return () => {
@@ -50,12 +51,12 @@ export default function InfiniteLoadingRowTrigger(props) {
   ]);
 
   useEffect(() => {
-    if (status !== 'success' || isDisabled) {
+    if (status !== "success" || isDisabled) {
       return;
     }
 
     const timeoutId = setTimeout(() => {
-      setStatus('idle');
+      setStatus("idle");
     }, delayAmountAfterSuccessMS);
 
     return () => {

@@ -1,5 +1,5 @@
-import type { Table, Header } from '@tanstack/react-table';
-import type { ReactNode } from 'react';
+import type { Table, Header } from "@tanstack/react-table";
+import type { ReactNode } from "react";
 
 export interface DataTableColumnHeaderProps<TData, TValue> {
   header: Header<TData, TValue>;

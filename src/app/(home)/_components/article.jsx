@@ -13,12 +13,12 @@
  */
 export default function ShowcaseArticle(props) {
   return (
-    <article className="flex flex-col gap-4 w-full border border-solid border-gray-300 dark:border-gray-700 p-4 rounded-md dark:bg-gray-800 dark:text-gray-300">
+    <article className="flex w-full flex-col gap-4 rounded-md border border-solid border-gray-300 p-4 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
       <header>
         <h2>{props.header.title}</h2>
         {/* <p>{props.header.description}</p> */}
         {Array.isArray(props.header.description) ? (
-          <ul className="list-disc list-inside ms-2">
+          <ul className="ms-2 list-inside list-disc">
             {props.header.description.map((desc) => (
               <li key={desc}>{desc}</li>
             ))}
@@ -27,13 +27,13 @@ export default function ShowcaseArticle(props) {
           <p>{props.header.description}</p>
         )}
       </header>
-      <div className="flex flex-col gap-4 w-full">
+      <div className="flex w-full flex-col gap-4">
         {props.sections.map((section) => (
-          <section key={section.title} className="flex flex-col gap-4 w-full">
+          <section key={section.title} className="flex w-full flex-col gap-4">
             <header className="flex flex-col gap-0.5">
               <h3>{section.title}</h3>
               {Array.isArray(section.description) ? (
-                <ul className="list-disc list-inside ms-2">
+                <ul className="ms-2 list-inside list-disc">
                   {section.description.map((desc) => (
                     <li key={desc}>{desc}</li>
                   ))}

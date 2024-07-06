@@ -1,21 +1,22 @@
-'use client';
+"use client";
+/** @import { DataTableViewOptionsProps } from './types.ts' */
 
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-import { Columns4 } from 'lucide-react';
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { Columns4 } from "lucide-react";
 
-import { Button } from '~/components/ui/button';
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from '~/components/ui/dropdown-menu';
+} from "~/components/ui/dropdown-menu";
 
 /**
  * @template TData
  *
- * @param {import("./types").DataTableViewOptionsProps<TData>} props
+ * @param {DataTableViewOptionsProps<TData>} props
  */
 export function DataTableViewOptions(props) {
   return (
@@ -24,7 +25,7 @@ export function DataTableViewOptions(props) {
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto h-8 lg:flex border-0"
+          className="ml-auto h-8 border-0 lg:flex"
         >
           <Columns4 className="mr-2 h-4 w-4" />
           View
@@ -37,7 +38,7 @@ export function DataTableViewOptions(props) {
           .getAllColumns()
           .filter(
             (column) =>
-              typeof column.accessorFn !== 'undefined' && column.getCanHide(),
+              typeof column.accessorFn !== "undefined" && column.getCanHide(),
           )
           .map((column) => {
             return (

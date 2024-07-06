@@ -1,10 +1,11 @@
-'use client';
+"use client";
+/** @import { PaymentColumn } from './types.ts' */
 
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from "lucide-react";
 
-import { Button } from '~/components/ui/button';
+import { Button } from "~/components/ui/button";
 
-import { defaultDataTableSelectColumn } from '~/components/ui/data-table/components/row-selection';
+import { defaultDataTableSelectColumn } from "~/components/ui/data-table/components/row-selection";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,80 +13,80 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
+} from "~/components/ui/dropdown-menu";
 
-/** @type {import("./types").PaymentColumn[]} */
+/** @type {PaymentColumn[]} */
 export const paymentColumns = [
   defaultDataTableSelectColumn,
   {
-    accessorKey: 'status',
+    accessorKey: "status",
     meta: {
-      header: 'Status',
+      header: "Status",
       filterVariant: {
-        type: 'select',
+        type: "select",
         props: {
-          placeholder: 'All',
+          placeholder: "All",
           options: [
             // { label: 'All', value: '' },
-            { label: 'Pending', value: 'pending' },
-            { label: 'Processing', value: 'processing' },
-            { label: 'Success', value: 'success' },
-            { label: 'Failed', value: 'failed' },
+            { label: "Pending", value: "pending" },
+            { label: "Processing", value: "processing" },
+            { label: "Success", value: "success" },
+            { label: "Failed", value: "failed" },
           ],
         },
       },
     },
   },
   {
-    accessorKey: 'email',
+    accessorKey: "email",
     meta: {
-      header: 'Email',
-      filterVariant: { type: 'text' },
+      header: "Email",
+      filterVariant: { type: "text" },
     },
   },
   {
-    accessorKey: 'amount',
+    accessorKey: "amount",
     meta: {
-      header: 'amount',
+      header: "amount",
       filterVariant: {
-        type: 'range-number',
+        type: "range-number",
       },
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
+      const amount = parseFloat(row.getValue("amount"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
       }).format(amount);
 
       return <div className="font-medium">{formatted}</div>;
     },
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: "createdAt",
     meta: {
-      header: 'created at',
+      header: "created at",
       filterVariant: {
-        type: 'range-date',
+        type: "range-date",
       },
     },
-    filterFn: 'dateBetweenFilterFn',
+    filterFn: "dateBetweenFilterFn",
     cell: ({ row }) => {
-      const date = new Date(row.getValue('createdAt'));
-      const formatted = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
+      const date = new Date(row.getValue("createdAt"));
+      const formatted = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
       }).format(date);
 
       return <div className="font-medium">{formatted}</div>;
     },
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       const payment = row.original;
 

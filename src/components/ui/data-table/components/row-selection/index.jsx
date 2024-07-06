@@ -1,10 +1,12 @@
-import { Checkbox } from '~/components/ui/checkbox';
+/** @import { DataTableRowSelectionCellProps, DataTableRowSelectionHeaderProps, DataTableSelectColumn } from './types.ts' */
+
+import { Checkbox } from "~/components/ui/checkbox";
 
 /**
  * @template TData
  * @template TValue
  *
- * @param {import("./types").DataTableRowSelectionHeaderProps<TData, TValue>} props
+ * @param {DataTableRowSelectionHeaderProps<TData, TValue>} props
  */
 export function DataTableRowSelectionHeader({ headerContext: ctx, ...props }) {
   const hasAnyRowsSelected = ctx.table.getSelectedRowModel().rows.length;
@@ -14,7 +16,7 @@ export function DataTableRowSelectionHeader({ headerContext: ctx, ...props }) {
       checked={
         hasAnyRowsSelected
           ? ctx.table.getIsAllPageRowsSelected() ||
-            (ctx.table.getIsSomePageRowsSelected() && 'indeterminate')
+            (ctx.table.getIsSomePageRowsSelected() && "indeterminate")
           : false
       }
       // checked={
@@ -22,7 +24,7 @@ export function DataTableRowSelectionHeader({ headerContext: ctx, ...props }) {
       // }
       // onChange={table.getToggleAllRowsSelectedHandler()}
       onCheckedChange={(value) => ctx.table.toggleAllPageRowsSelected(!!value)}
-      aria-label={props['aria-label'] ?? 'Select all'}
+      aria-label={props["aria-label"] ?? "Select all"}
     />
   );
 }
@@ -31,7 +33,7 @@ export function DataTableRowSelectionHeader({ headerContext: ctx, ...props }) {
  * @template TData
  * @template TValue
  *
- * @param {import("./types").DataTableRowSelectionCellProps<TData, TValue>} props
+ * @param {DataTableRowSelectionCellProps<TData, TValue>} props
  */
 export function DataTableRowSelectionCell({ cell: ctx, ...props }) {
   return (
@@ -39,7 +41,7 @@ export function DataTableRowSelectionCell({ cell: ctx, ...props }) {
       {...props}
       checked={ctx.row.getIsSelected()}
       onCheckedChange={(value) => ctx.row.toggleSelected(!!value)}
-      aria-label={props['aria-label'] ?? 'Select row'}
+      aria-label={props["aria-label"] ?? "Select row"}
     />
   );
 }
@@ -47,16 +49,16 @@ export function DataTableRowSelectionCell({ cell: ctx, ...props }) {
 /**
  * @template TData
  *
- * @type {import('./types').DataTableSelectColumn}
+ * @type {DataTableSelectColumn}
  */
 export const defaultDataTableSelectColumn = {
-  id: 'select',
+  id: "select",
   header: (ctx) => <DataTableRowSelectionHeader headerContext={ctx} />,
   cell: (ctx) => <DataTableRowSelectionCell cell={ctx} />,
   enableSorting: false,
   enableHiding: false,
   enableResizing: false,
   meta: {
-    width: '2rem',
+    width: "2rem",
   },
 };

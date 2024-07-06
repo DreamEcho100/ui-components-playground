@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { getLocalTimeZone, today } from '@internationalized/date';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import * as React from "react";
+import { getLocalTimeZone, today } from "@internationalized/date";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Button,
   Calendar,
@@ -19,10 +19,10 @@ import {
   Heading,
   RangeCalendar,
   RangeCalendarStateContext,
-} from 'react-aria-components';
+} from "react-aria-components";
 
-import { cn } from '~/lib/utils';
-import { buttonVariants } from '~/components/jolly-ui/button';
+import { cn } from "~/lib/utils";
+import { buttonVariants } from "~/components/jolly-ui/button";
 
 const _Calendar = Calendar;
 
@@ -37,9 +37,9 @@ const _CalendarHeading = ({
       <Button
         slot="next"
         className={cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 data-[hovered]:opacity-100',
-          'absolute right-1 text-popover-foreground',
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 data-[hovered]:opacity-100",
+          "absolute right-1 text-popover-foreground",
         )}
       >
         <ChevronRight className="h-4 w-4" />
@@ -47,9 +47,9 @@ const _CalendarHeading = ({
       <Button
         slot="previous"
         className={cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 data-[hovered]:opacity-100',
-          'absolute left-1 text-popover-foreground',
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 data-[hovered]:opacity-100",
+          "absolute left-1 text-popover-foreground",
         )}
       >
         <ChevronLeft className="h-4 w-4" />
@@ -60,7 +60,7 @@ const _CalendarHeading = ({
 
 const _CalendarGrid = ({ className, ...props }: CalendarGridProps) => (
   <CalendarGrid
-    className={cn('mt-4 w-full border-collapse space-y-1', className)}
+    className={cn("mt-4 w-full border-collapse space-y-1", className)}
     {...props}
   />
 );
@@ -69,7 +69,7 @@ const _CalendarGridHeader = ({
   className,
   ...props
 }: CalendarGridHeaderProps) => (
-  <CalendarGridHeader className={cn('[&>tr]:flex', className)} {...props} />
+  <CalendarGridHeader className={cn("[&>tr]:flex", className)} {...props} />
 );
 
 const _CalendarHeaderCell = ({
@@ -78,7 +78,7 @@ const _CalendarHeaderCell = ({
 }: CalendarHeaderCellProps) => (
   <CalendarHeaderCell
     className={cn(
-      'w-9 rounded-md text-[0.8rem] font-normal text-muted-foreground',
+      "w-9 rounded-md text-[0.8rem] font-normal text-muted-foreground",
       className,
     )}
     {...props}
@@ -88,8 +88,8 @@ const _CalendarHeaderCell = ({
 const _CalendarGridBody = ({ className, ...props }: CalendarGridBodyProps) => (
   <CalendarGridBody
     className={cn(
-      '[&>tr>td]:p-0 [&>tr]:mt-2 [&>tr]:flex [&>tr]:w-full',
-      '[&>tr>td:first-child>div]:rounded-l-md [&>tr>td:last-child>div]:rounded-r-md',
+      "[&>tr>td]:p-0 [&>tr]:mt-2 [&>tr]:flex [&>tr]:w-full",
+      "[&>tr>td:first-child>div]:rounded-l-md [&>tr>td:last-child>div]:rounded-r-md",
       className,
     )}
     {...props}
@@ -102,23 +102,23 @@ const _CalendarCell = ({ className, date, ...props }: CalendarCellProps) => {
     <CalendarCell
       className={(values) =>
         cn(
-          'inline-flex h-9 w-9 items-center justify-center whitespace-nowrap rounded-md  p-0 text-sm font-normal ring-offset-background transition-colors data-[disabled]:pointer-events-none data-[hovered]:bg-accent data-[hovered]:text-accent-foreground data-[disabled]:opacity-50 data-[selected]:opacity-100',
+          "inline-flex h-9 w-9 items-center justify-center whitespace-nowrap rounded-md  p-0 text-sm font-normal ring-offset-background transition-colors data-[disabled]:pointer-events-none data-[hovered]:bg-accent data-[hovered]:text-accent-foreground data-[disabled]:opacity-50 data-[selected]:opacity-100",
           date.compare(today(getLocalTimeZone())) === 0 &&
-            'bg-accent text-accent-foreground',
-          values.isDisabled && 'text-muted-foreground opacity-50',
+            "bg-accent text-accent-foreground",
+          values.isDisabled && "text-muted-foreground opacity-50",
           values.isFocusVisible &&
             values.isFocused &&
-            'outline-none ring-2 ring-ring ring-offset-2',
+            "outline-none ring-2 ring-ring ring-offset-2",
           values.isSelected &&
             isRange &&
-            'rounded-none bg-accent text-accent-foreground',
+            "rounded-none bg-accent text-accent-foreground",
           ((values.isSelected && !isRange) ||
             values.isSelectionStart ||
             values.isSelectionEnd) &&
-            'rounded-md bg-primary text-primary-foreground data-[focused]:bg-primary data-[hovered]:bg-primary data-[focused]:text-primary-foreground data-[hovered]:text-primary-foreground',
+            "rounded-md bg-primary text-primary-foreground data-[focused]:bg-primary data-[hovered]:bg-primary data-[focused]:text-primary-foreground data-[hovered]:text-primary-foreground",
           values.isOutsideMonth &&
-            'text-muted-foreground opacity-50 data-[selected]:bg-accent/50 data-[selected]:text-muted-foreground data-[selected]:opacity-30',
-          typeof className === 'function' ? className(values) : className,
+            "text-muted-foreground opacity-50 data-[selected]:bg-accent/50 data-[selected]:text-muted-foreground data-[selected]:opacity-30",
+          typeof className === "function" ? className(values) : className,
         )
       }
       date={date}

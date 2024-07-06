@@ -1,6 +1,6 @@
-import { VariantProps } from 'class-variance-authority';
-import { HTMLAttributes } from '../card';
-import { badgeVariants } from './utils';
+import type { VariantProps } from "class-variance-authority";
+import type { HTMLAttributes } from "../card";
+import type { badgeVariants } from "./utils";
 
 export interface BadgeProps
   extends HTMLAttributes<HTMLDivElement>,

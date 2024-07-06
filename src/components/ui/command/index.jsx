@@ -1,23 +1,25 @@
-'use client';
+"use client";
+/** @import { ElementRef, ForwardedRef, ComponentPropsWithoutRef } from 'react' */
+/** @import { CommandDialogProps } from './types.ts' */
 
-import { forwardRef } from 'react';
-import { Command as CommandPrimitive } from 'cmdk';
-import { Search } from 'lucide-react';
+import { forwardRef } from "react";
+import { Command as CommandPrimitive } from "cmdk";
+import { Search } from "lucide-react";
 
-import { cn } from '~/lib/utils';
-import { Dialog, DialogContent } from '~/components/ui/dialog';
-import { commandItemDefaultClassName } from './utils';
+import { cn } from "~/lib/utils";
+import { Dialog, DialogContent } from "~/components/ui/dialog";
+import { commandItemDefaultClassName } from "./utils";
 
 const Command = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive>} props
-   * @param {import('react').ForwardedRef<import('react').ElementRef<typeof CommandPrimitive>>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive>} props
+   * @param {ForwardedRef<ElementRef<typeof CommandPrimitive>>} ref
    */
   ({ className, ...props }, ref) => (
     <CommandPrimitive
       ref={ref}
       className={cn(
-        'flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
+        "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
         className,
       )}
       {...props}
@@ -26,7 +28,7 @@ const Command = forwardRef(
 );
 Command.displayName = CommandPrimitive.displayName;
 
-/** @param {import('./types').CommandDialogProps} props  */
+/** @param {CommandDialogProps} props  */
 const CommandDialog = ({ children, ...props }) => {
   return (
     <Dialog {...props}>
@@ -41,8 +43,8 @@ const CommandDialog = ({ children, ...props }) => {
 
 const CommandInput = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive.Input>} props
-   * @param {import('react').ForwardedRef<import('react').ElementRef<typeof CommandPrimitive.Input>>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive.Input>} props
+   * @param {ForwardedRef<ElementRef<typeof CommandPrimitive.Input>>} ref
    */
   ({ className, ...props }, ref) => (
     <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
@@ -50,7 +52,7 @@ const CommandInput = forwardRef(
       <CommandPrimitive.Input
         ref={ref}
         className={cn(
-          'flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+          "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}
@@ -63,14 +65,14 @@ CommandInput.displayName = CommandPrimitive.Input.displayName;
 
 const CommandList = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive.List>} props
-   * @param {import('react').ForwardedRef<import('react').ElementRef<typeof CommandPrimitive.List>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive.List>} props
+   * @param {ForwardedRef<ElementRef<typeof CommandPrimitive.List>>} ref
    */
   ({ className, ...props }, ref) => (
     <CommandPrimitive.List
       ref={ref}
       className={cn(
-        'max-h-[300px] overflow-y-auto overflow-x-hidden',
+        "max-h-[300px] overflow-y-auto overflow-x-hidden",
         className,
       )}
       {...props}
@@ -82,8 +84,8 @@ CommandList.displayName = CommandPrimitive.List.displayName;
 
 const CommandEmpty = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>} props
-   * @param {import('react').ForwardedRef<HTMLDivElement>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>} props
+   * @param {ForwardedRef<HTMLDivElement>} ref
    */
   (props, ref) => (
     <CommandPrimitive.Empty
@@ -98,14 +100,14 @@ CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
 const CommandGroup = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive.Group>} props
-   * @param {import('react').ForwardedRef<HTMLDivElement>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive.Group>} props
+   * @param {ForwardedRef<HTMLDivElement>} ref
    */
   ({ className, ...props }, ref) => (
     <CommandPrimitive.Group
       ref={ref}
       className={cn(
-        'overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground',
+        "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground",
         className,
       )}
       {...props}
@@ -117,13 +119,13 @@ CommandGroup.displayName = CommandPrimitive.Group.displayName;
 
 const CommandSeparator = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>} props
-   * @param {import('react').ForwardedRef<HTMLDivElement>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>} props
+   * @param {ForwardedRef<HTMLDivElement>} ref
    */
   ({ className, ...props }, ref) => (
     <CommandPrimitive.Separator
       ref={ref}
-      className={cn('-mx-1 h-px bg-border', className)}
+      className={cn("-mx-1 h-px bg-border", className)}
       {...props}
     />
   ),
@@ -132,8 +134,8 @@ CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
 const CommandItem = forwardRef(
   /**
-   * @param {import('react').ComponentPropsWithoutRef<typeof CommandPrimitive.Item>} props
-   * @param {import('react').ForwardedRef<HTMLDivElement>} ref
+   * @param {ComponentPropsWithoutRef<typeof CommandPrimitive.Item>} props
+   * @param {ForwardedRef<HTMLDivElement>} ref
    */
   ({ className, ...props }, ref) => (
     <CommandPrimitive.Item
@@ -147,20 +149,20 @@ const CommandItem = forwardRef(
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 /**
- * @param {import('react').ComponentPropsWithoutRef<'span'>} props
+ * @param {ComponentPropsWithoutRef<'span'>} props
  */
 const CommandShortcut = ({ className, ...props }) => {
   return (
     <span
       className={cn(
-        'ml-auto text-xs tracking-widest text-muted-foreground',
+        "ml-auto text-xs tracking-widest text-muted-foreground",
         className,
       )}
       {...props}
     />
   );
 };
-CommandShortcut.displayName = 'CommandShortcut';
+CommandShortcut.displayName = "CommandShortcut";
 
 export {
   Command,

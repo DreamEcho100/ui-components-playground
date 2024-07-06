@@ -1,9 +1,11 @@
-import { useMemo, useRef } from 'react';
-import { createStore, useStore } from 'zustand';
+/** @import { ValueOrUpdater } from '../types.ts' */
+/** @import { DataTableStoreState } from './types.ts' */
+
+import { createStore } from "zustand";
 
 /**
  * @template TData
- * @typedef {import("./types").DataTableStoreState<TData>} DataTableStoreState
+ * @typedef {DataTableStoreState<TData>} DataTableStoreState
  */
 
 /**
@@ -23,15 +25,17 @@ import { createStore, useStore } from 'zustand';
 const valueOrUpdater =
   (set, get, name) =>
   /**
-   * @param {import('../types').ValueOrUpdater<DataTableStoreState<TData>>[TKey]} valueOrUpdater
+   * @param {ValueOrUpdater<DataTableStoreState<TData>>[TKey]} valueOrUpdater
    */
   (valueOrUpdater) => {
     const store = get();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const newValue =
-      typeof valueOrUpdater === 'function'
+      typeof valueOrUpdater === "function"
         ? valueOrUpdater(store[name])
         : valueOrUpdater;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     set({ [name]: newValue });
   };
 
@@ -60,23 +64,23 @@ export function createDataTableStore(options) {
      * @param { (partial: Partial<DataTableStoreState<TData>> | ((store: DataTableStoreState<TData>) => Partial<DataTableStoreState<TData>>), replace?: boolean | undefined) => void} set
      * @returns {DataTableStoreState<TData>}
      */ (set, get) => {
-      const defaultSetColumnFilters = valueOrUpdater(set, get, 'columnFilters');
-      const defaultSetSorting = valueOrUpdater(set, get, 'sorting');
-      const defaultSetRowSelection = valueOrUpdater(set, get, 'rowSelection');
+      const defaultSetColumnFilters = valueOrUpdater(set, get, "columnFilters");
+      const defaultSetSorting = valueOrUpdater(set, get, "sorting");
+      const defaultSetRowSelection = valueOrUpdater(set, get, "rowSelection");
       const defaultSetColumnVisibility = valueOrUpdater(
         set,
         get,
-        'columnVisibility',
+        "columnVisibility",
       );
       const defaultSetColumnResizeMode = valueOrUpdater(
         set,
         get,
-        'columnResizeMode',
+        "columnResizeMode",
       );
       const defaultSetColumnResizeDirection = valueOrUpdater(
         set,
         get,
-        'columnResizeDirection',
+        "columnResizeDirection",
       );
 
       return {
@@ -93,11 +97,11 @@ export function createDataTableStore(options) {
         setSorting: defaultSetSorting,
 
         columnResizeMode:
-          options?.initialValues?.columnResizeMode ?? 'onChange',
+          options?.initialValues?.columnResizeMode ?? "onChange",
         setColumnResizeMode: defaultSetColumnResizeMode,
 
         columnResizeDirection:
-          options?.initialValues?.columnResizeDirection ?? 'ltr',
+          options?.initialValues?.columnResizeDirection ?? "ltr",
         setColumnResizeDirection: defaultSetColumnResizeDirection,
 
         _table: null,
@@ -106,7 +110,7 @@ export function createDataTableStore(options) {
 
           if (!table) {
             throw new Error(
-              'Table not initialized. Make sure to set `table` before calling getTable',
+              "Table not initialized. Make sure to set `table` before calling getTable",
             );
           }
 
@@ -123,8 +127,9 @@ export function createDataTableStore(options) {
               ...state,
               __cache: {
                 ...state.__cache,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 [key]:
-                  typeof value === 'function'
+                  typeof value === "function"
                     ? value(state.__cache[key])
                     : value,
               },

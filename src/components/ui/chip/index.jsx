@@ -1,11 +1,14 @@
+/** @import { ForwardedRef } from 'react' */
+/** @import { BadgeProps } from './types.ts' */
+
 import { cn } from "~/lib/utils";
 import { badgeVariants } from "./utils";
 import { forwardRef } from "react";
 
 const Chip = forwardRef(
   /**
-   * @param {import('./types').BadgeProps} props
-   * @param {import('react').ForwardedRef<HTMLDivElement>} ref
+   * @param {BadgeProps} props
+   * @param {ForwardedRef<HTMLDivElement>} ref
    */
   ({ className, variant, size, rounded, ...props }, ref) => {
     return (

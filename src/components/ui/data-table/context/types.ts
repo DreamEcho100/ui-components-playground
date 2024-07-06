@@ -1,5 +1,5 @@
-import type { DataTableStoreApi } from '../store/types';
+import type { DataTableStoreApi } from "../store/types";
 
 export interface DataTableContextState<TData> {
-	store: DataTableStoreApi<TData>;
+  store: DataTableStoreApi<TData>;
 }

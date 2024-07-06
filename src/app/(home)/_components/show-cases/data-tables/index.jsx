@@ -1,4 +1,5 @@
 "use client";
+/** @import { GetManyPaymentActionInput } from '~/server/actions/types.ts' */
 
 import { DataTableProvider } from "~/components/ui/data-table/context";
 import ShowcaseArticle from "../../article";
@@ -53,14 +54,13 @@ function RqDataTableStore() {
       pageParams: [],
       pages: [],
     },
-    initialPageParam:
-      /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
-        limit: rqDefaultLimit,
-        cursorName: sorting?.id,
-        sortDirection: sorting?.desc ? "desc" : "asc",
-        direction: "forward",
-        filters,
-      }),
+    initialPageParam: /** @type {GetManyPaymentActionInput} */ ({
+      limit: rqDefaultLimit,
+      sortBy: sorting?.id,
+      sortDir: sorting?.desc ? "desc" : "asc",
+      direction: "forward",
+      filters,
+    }),
     placeholderData: keepPreviousData,
     getNextPageParam: (lastPage) => {
       if (!lastPage?.nextCursor) {
@@ -69,15 +69,14 @@ function RqDataTableStore() {
 
       const lastOffset = lastPage?.nextCursor;
 
-      const newCursor =
-        /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
-          limit: rqDefaultLimit,
-          filters,
-          cursorName: sorting?.id,
-          sortDirection: sorting?.desc ? "desc" : "asc",
-          cursor: lastOffset,
-          direction: "forward",
-        });
+      const newCursor = /** @type {GetManyPaymentActionInput} */ ({
+        limit: rqDefaultLimit,
+        filters,
+        sortBy: sorting?.id,
+        sortDir: sorting?.desc ? "desc" : "asc",
+        cursor: lastOffset,
+        direction: "forward",
+      });
 
       return newCursor;
     },
@@ -149,10 +148,10 @@ function TrpcDataTableStore() {
   const filters = useStore(dataTableStore, (state) => state.columnFilters);
 
   const getManyInfiniteQuery = api.payments.getMany.useInfiniteQuery(
-    /** @type {import('../../../../../server/actions/types').GetManyPaymentActionInput} */ ({
+    /** @type {GetManyPaymentActionInput} */ ({
       limit: trpcDefaultLimit,
-      cursorName: sorting?.id,
-      sortDirection: sorting?.desc ? "desc" : "asc",
+      sortBy: sorting?.id,
+      sortDir: sorting?.desc ? "desc" : "asc",
       direction: "forward",
       filters,
     }),

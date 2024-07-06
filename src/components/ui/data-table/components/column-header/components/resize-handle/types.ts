@@ -1,6 +1,6 @@
-import { Header, Table } from '@tanstack/react-table';
+import { Header, Table } from "@tanstack/react-table";
 
 export interface DataTableResizeHandleProps<TData, TValue> {
-	header: Header<TData, unknown>;
-	table: Table<TData>;
+  header: Header<TData, unknown>;
+  table: Table<TData>;
 }

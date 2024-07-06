@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Check, Minus } from 'lucide-react';
+import * as React from "react";
+import { Check, Minus } from "lucide-react";
 import {
   Checkbox,
   CheckboxGroup,
   type CheckboxProps,
-} from 'react-aria-components';
+} from "react-aria-components";
 
-import { cn } from '~/lib/utils';
+import { cn } from "~/lib/utils";
 
-import { labelVariants } from './label';
+import { labelVariants } from "./label";
 
 const _CheckboxGroup = CheckboxGroup;
 
@@ -18,9 +18,9 @@ const _Checkbox = ({ className, children, ...props }: CheckboxProps) => (
   <Checkbox
     className={(values) =>
       cn(
-        'group flex items-center gap-x-2  data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 ',
+        "group flex items-center gap-x-2  data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 ",
         labelVariants,
-        typeof className === 'function' ? className(values) : className,
+        typeof className === "function" ? className(values) : className,
       )
     }
     {...props}
@@ -34,7 +34,7 @@ const _Checkbox = ({ className, children, ...props }: CheckboxProps) => (
             <Check className="h-4 w-[0.875rem]" />
           ) : null}
         </div>
-        {typeof children === 'function' ? children(values) : children}
+        {typeof children === "function" ? children(values) : children}
       </>
     )}
   </Checkbox>

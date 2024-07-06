@@ -1,13 +1,15 @@
-'use client';
-import { forwardRef } from 'react';
+"use client";
+/** @import { ForwardedRef } from 'react' */
+/** @import { ButtonProps } from './types.ts' */
 
-import { cn } from '~/lib/utils';
-import { buttonVariants } from './utils';
+import { forwardRef } from "react";
+import { cn } from "~/lib/utils";
+import { buttonVariants } from "./utils";
 
 const Button = forwardRef(
   /**
-   * @param {import('./types').ButtonProps} props
-   * @param {import('react').ForwardedRef<HTMLButtonElement>} ref
+   * @param {ButtonProps} props
+   * @param {ForwardedRef<HTMLButtonElement>} ref
    */
   ({ className, variant, size, ...props }, ref) => {
     return (
@@ -20,6 +22,6 @@ const Button = forwardRef(
     );
   },
 );
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export { Button };

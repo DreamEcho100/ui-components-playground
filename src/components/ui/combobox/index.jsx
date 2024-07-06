@@ -1,8 +1,10 @@
-'use client';
+"use client";
+/** @import { ReactNode, Key } from 'react'*/
+/** @import { ComboboxProps } from './types.ts'*/
 
-import { useEffect, useRef, useState } from 'react';
-import { CommandList } from 'cmdk';
-import { CheckIcon, ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import { CommandList } from "cmdk";
+import { CheckIcon, ChevronDown } from "lucide-react";
 
 import {
   Command,
@@ -10,19 +12,19 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from '~/components/ui/command';
+} from "~/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '~/components/ui/popover';
-import { cn } from '~/lib/utils';
-import { commandItemDefaultClassName } from '../command/utils';
-import { Button } from '../button';
+} from "~/components/ui/popover";
+import { cn } from "~/lib/utils";
+import { commandItemDefaultClassName } from "../command/utils";
+import { Button } from "../button";
 
 /**
  * @template Option
- * @param {import('./types').ComboboxProps<Option>} props
+ * @param {ComboboxProps<Option>} props
  */
 export function Combobox(props) {
   const internalOpenStateControl = useState(false);
@@ -34,10 +36,10 @@ export function Combobox(props) {
   const query = props.externalQuery?.[0];
   const setQuery = props.externalQuery?.[1];
 
-  const displayValue = /** @type {import('react').ReactNode} */ (
-    typeof props.getDisplay === 'function'
+  const displayValue = /** @type {ReactNode} */ (
+    typeof props.getDisplay === "function"
       ? props.getDisplay(props.value)
-      : props.value ?? 'Select ...'
+      : props.value ?? "Select ..."
   );
 
   const commandInputRef = useRef(/** @type {HTMLInputElement | null} */ (null));
@@ -57,7 +59,7 @@ export function Combobox(props) {
     config.buttonResizeObserver = new ResizeObserver(() => {
       if (!buttonRef.current) return;
       popoverContentRef.current?.style.setProperty(
-        'width',
+        "width",
         `${buttonRef.current.offsetWidth}px`,
       );
     });
@@ -84,7 +86,7 @@ export function Combobox(props) {
         <Button
           type="button"
           role="combobox"
-          aria-describedby={props['aria-describedby']}
+          aria-describedby={props["aria-describedby"]}
           name={props.name}
           variant="outline"
           className="w-full justify-between border-input"
@@ -110,7 +112,7 @@ export function Combobox(props) {
                 return;
               }
 
-              node.value = query ?? '';
+              node.value = query ?? "";
               commandInputRef.current = node;
             }}
             placeholder="Search..."
@@ -132,15 +134,15 @@ export function Combobox(props) {
             <CommandList>
               {props.data.map((option) => {
                 const label =
-                  typeof props.getOptionLabel === 'function'
+                  typeof props.getOptionLabel === "function"
                     ? props.getOptionLabel(option)
-                    : option + '';
+                    : option + "";
 
                 return (
                   <CommandItem
                     key={
-                      /** @type {import('react').Key} */ (
-                        typeof props.getOptionKey === 'function'
+                      /** @type {Key} */ (
+                        typeof props.getOptionKey === "function"
                           ? props.getOptionKey(option)
                           : option
                       )
@@ -153,7 +155,7 @@ export function Combobox(props) {
                         currentQuery.toLowerCase() ===
                         commandInputRef.current?.value.toLowerCase()
                       ) {
-                        commandInputRef.current.value = '';
+                        commandInputRef.current.value = "";
                         // props.setSelected(undefined);
                         props.handleClearOnReselect?.(option, props.onChange);
                       } else {
@@ -164,14 +166,14 @@ export function Combobox(props) {
                       setOpen(false);
                     }}
                   >
-                    {label ?? 'Select'}
+                    {label ?? "Select"}
                     <CheckIcon
                       className={cn(
-                        'mr-auto h-4 w-4',
+                        "mr-auto h-4 w-4",
                         commandInputRef.current?.value.toLowerCase() ===
                           label.toLowerCase()
-                          ? 'opacity-100'
-                          : 'opacity-0',
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
                   </CommandItem>

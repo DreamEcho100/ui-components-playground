@@ -6,18 +6,18 @@ import {
   ArrowUp,
   ArrowDown,
   Settings2,
-} from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useStore } from 'zustand';
-import { Button } from '~/components/ui/button';
-import { useDataTableContextStore } from '~/components/ui/data-table/context';
+} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useStore } from "zustand";
+import { Button } from "~/components/ui/button";
+import { useDataTableContextStore } from "~/components/ui/data-table/context";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
+} from "~/components/ui/dropdown-menu";
 
 const defaultClearSortTimeout = 1500;
 const defaultToggleSortTimeout = 1500;
@@ -63,7 +63,7 @@ export default function Sorting(props) {
       }
 
       setCache(
-        'sorting',
+        "sorting",
         /** @param {Record<string, any>} prev  */
         (prev) => {
           if (isMulti) {
@@ -136,15 +136,15 @@ export default function Sorting(props) {
       setSortingTimeoutCache(`set-sorting-timeout-${props.column.id}`, null);
 
       const newIsSorted =
-        (typeof desc === 'boolean' ? (desc ? 'desc' : 'asc') : undefined) ??
-        (isInternallySorted === 'asc' ? 'desc' : 'asc');
+        (typeof desc === "boolean" ? (desc ? "desc" : "asc") : undefined) ??
+        (isInternallySorted === "asc" ? "desc" : "asc");
 
       setIsInternallySorted(newIsSorted);
 
       setSortingTimeoutCache(
         `set-sorting-timeout-${props.column.id}`,
         setTimeout(() => {
-          _toggleSorting(newIsSorted === 'desc', isMulti);
+          _toggleSorting(newIsSorted === "desc", isMulti);
           setSortingTimeoutCache(
             `set-sorting-timeout-${props.column.id}`,
             null,
@@ -180,7 +180,7 @@ export default function Sorting(props) {
     return () => {
       setSortingTimeoutCache(`set-sorting-timeout-${props.column.id}`, null);
       setSortingTimeoutCache(`set-sorting-timeout-${props.column.id}`, null);
-      dataTableStore.getState().setCache('sorting', {});
+      dataTableStore.getState().setCache("sorting", {});
     };
   }, [dataTableStore, props.column.id, setSortingTimeoutCache]);
 
@@ -196,19 +196,19 @@ export default function Sorting(props) {
 
           if (!isInternallySorted) {
             toggleSorting(true, isMulti);
-          } else if (isInternallySorted === 'desc') {
+          } else if (isInternallySorted === "desc") {
             toggleSorting(false, isMulti);
           } else {
             clearSorting();
           }
         }}
       >
-        {isInternallySorted === 'asc' ? (
-          <ArrowUp className="flex-shrink-0 size-4 ms-1" />
-        ) : isInternallySorted === 'desc' ? (
-          <ArrowDown className="flex-shrink-0 size-4 ms-1" />
+        {isInternallySorted === "asc" ? (
+          <ArrowUp className="ms-1 size-4 flex-shrink-0" />
+        ) : isInternallySorted === "desc" ? (
+          <ArrowDown className="ms-1 size-4 flex-shrink-0" />
         ) : (
-          <ArrowUpDown className="flex-shrink-0 size-4 ms-1" />
+          <ArrowUpDown className="ms-1 size-4 flex-shrink-0" />
         )}
       </Button>
       <DropdownMenu>
@@ -216,7 +216,7 @@ export default function Sorting(props) {
           <Button
             variant="ghost"
             size={null}
-            className="flex-shrink-0 p-1 hidden"
+            className="hidden flex-shrink-0 p-1"
           >
             <Settings2 className="size-4" />
           </Button>

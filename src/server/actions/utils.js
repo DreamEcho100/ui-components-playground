@@ -1,5 +1,8 @@
 import { isValidDate } from "~/components/ui/data-table/components/column-header/components/filters/utils";
 
+/** @import { Payment } from '~/config/types.ts' */
+/** @import { GetManyPaymentActionInput } from './types.ts' */
+
 /**
  * @template {string} K
  * @template {{ [Key in K]: string; }} T
@@ -29,20 +32,20 @@ function idToItemGenerator(items, key) {
 import { z } from "zod";
 
 const createdAtCursor = z.object({
-  cursorName: z.literal("createdAt"),
+  sortBy: z.literal("createdAt"),
   cursor: z.coerce.date().nullish().optional(),
 });
 const amountCursor = z.object({
-  cursorName: z.literal("amount"),
-  cursor: z.number(),
+  sortBy: z.literal("amount"),
+  cursor: z.number().nullish().optional(),
 });
 const emailCursor = z.object({
-  cursorName: z.literal("email"),
-  cursor: z.string().email(),
+  sortBy: z.literal("email"),
+  cursor: z.string().email().nullish().optional(),
 });
 const statusCursor = z.object({
-  cursorName: z.literal("status"),
-  cursor: z.string(),
+  sortBy: z.literal("status"),
+  cursor: z.string().nullish().optional(),
 });
 
 export const base = z.object({
@@ -73,20 +76,20 @@ export const base = z.object({
     ]),
   ),
   limit: z.number().optional(),
-  sortDirection: z.enum(["asc", "desc"]).default("asc"),
+  sortDir: z.enum(["asc", "desc"]).default("asc"),
   direction: z.enum(["forward", "backward"]), // optional, useful for bi-directional query
 });
 
-export const getManyPaymentActionSchema = z.discriminatedUnion("cursorName", [
-  createdAtCursor.merge(base),
-  amountCursor.merge(base),
-  emailCursor.merge(base),
-  statusCursor.merge(base),
+export const getManyPaymentActionSchema = z.discriminatedUnion("sortBy", [
+  createdAtCursor.merge(base).strict(),
+  amountCursor.merge(base).strict(),
+  emailCursor.merge(base).strict(),
+  statusCursor.merge(base).strict(),
 ]);
 
 /**
- * @param {import("~/config/types").Payment[]} data
- * @param {import('./types').GetManyPaymentActionInput} options
+ * @param {Payment[]} data
+ * @param {GetManyPaymentActionInput} options
  */
 export function handleFilteringAndSortingPaymentData(data, options) {
   let newData = data;
@@ -164,23 +167,21 @@ export function handleFilteringAndSortingPaymentData(data, options) {
     });
   });
 
-  switch (options.cursorName) {
+  switch (options.sortBy) {
     case "amount": {
       newData = newData.toSorted((a, b) => {
         const aValue = a.amount;
         const bValue = b.amount;
-        return options.sortDirection === "asc"
-          ? aValue - bValue
-          : bValue - aValue;
+        return options.sortDir === "asc" ? aValue - bValue : bValue - aValue;
       });
       break;
     }
 
     case "email": {
       newData = newData.toSorted((a, b) => {
-        const aValue = a[options.cursorName];
-        const bValue = b[options.cursorName];
-        return options.sortDirection === "asc"
+        const aValue = a[options.sortBy];
+        const bValue = b[options.sortBy];
+        return options.sortDir === "asc"
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             aValue - bValue
@@ -195,9 +196,7 @@ export function handleFilteringAndSortingPaymentData(data, options) {
       newData = newData.toSorted((a, b) => {
         const aValue = new Date(a.createdAt).getTime();
         const bValue = new Date(b.createdAt).getTime();
-        return options.sortDirection === "asc"
-          ? aValue - bValue
-          : bValue - aValue;
+        return options.sortDir === "asc" ? aValue - bValue : bValue - aValue;
       });
       break;
     }

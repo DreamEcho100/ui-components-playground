@@ -11,7 +11,7 @@ const defaultDebounceTimeout = 1000;
  *  value: string | number
  *  onChange: (value: string | number) => void
  *  debounce?: number
- * } & Omit<import('~/components/ui/input/types').InputProps, 'onChange'>} props
+ * } & Omit<import('~/components/ui/input/types.ts').InputProps, 'onChange'>} props
  */
 function DebouncedInput({
   value: initialValue,

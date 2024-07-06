@@ -11,9 +11,9 @@ import {
   ColorWheelTrack as _ColorWheelTrack,
   SliderOutput as _SliderOutput,
   SliderTrack as _SliderTrack,
-} from 'react-aria-components';
+} from "react-aria-components";
 
-import { cn } from '~/lib/utils';
+import { cn } from "~/lib/utils";
 
 const ColorSlider = _ColorSlider;
 
@@ -28,7 +28,7 @@ const SliderOutput = _SliderOutput;
 interface ColorWheelProps
   extends Omit<
     React.ComponentProps<typeof _ColorWheel>,
-    'outerRadius' | 'innerRadius'
+    "outerRadius" | "innerRadius"
   > {
   outerRadius?: number;
   innerRadius?: number;
@@ -57,7 +57,7 @@ function ColorArea({
   return (
     <_ColorArea
       className={cn(
-        'h-[192px] w-[192px] shrink-0 rounded-md border border-border shadow-md',
+        "h-[192px] w-[192px] shrink-0 rounded-md border border-border shadow-md",
         className,
       )}
       {...props}
@@ -72,7 +72,7 @@ function SliderTrack({
   return (
     <_SliderTrack
       className={cn(
-        'h-7 w-[192px] rounded-md border border-border ',
+        "h-7 w-[192px] rounded-md border border-border ",
         className,
       )}
       {...props}
@@ -87,7 +87,7 @@ function ColorThumb({
   return (
     <_ColorThumb
       className={cn(
-        'z-10 box-border size-5 rounded-[50%] border-2 border-white shadow-md data-[focus-visible]:size-6',
+        "z-10 box-border size-5 rounded-[50%] border-2 border-white shadow-md data-[focus-visible]:size-6",
         className,
       )}
       {...props}
@@ -101,7 +101,7 @@ function ColorSwatchPicker({
 }: React.ComponentProps<typeof _ColorSwatchPicker>) {
   return (
     <_ColorSwatchPicker
-      className={cn('flex flex-wrap gap-2', className)}
+      className={cn("flex flex-wrap gap-2", className)}
       {...props}
     />
   );
@@ -114,7 +114,7 @@ function ColorSwatchPickerItem({
   return (
     <_ColorSwatchPickerItem
       className={cn(
-        'size-8 overflow-hidden rounded-md border-2 ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring  data-[disabled]:pointer-events-none data-[selected]:border-white data-[disabled]:opacity-50',
+        "size-8 overflow-hidden rounded-md border-2 ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring  data-[disabled]:pointer-events-none data-[selected]:border-white data-[disabled]:opacity-50",
         className,
       )}
       {...props}
@@ -126,7 +126,7 @@ function ColorSwatch({
   className,
   ...props
 }: React.ComponentProps<typeof _ColorSwatch>) {
-  return <_ColorSwatch className={cn('size-8', className)} {...props} />;
+  return <_ColorSwatch className={cn("size-8", className)} {...props} />;
 }
 
 export type { ColorWheelProps };

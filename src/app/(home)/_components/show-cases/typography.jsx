@@ -1,4 +1,4 @@
-import ShowcaseArticle from '../article';
+import ShowcaseArticle from "../article";
 
 import {
   H1,
@@ -15,20 +15,20 @@ import {
   Li,
   Strong,
   Em,
-} from '~/components/ui/typography';
+} from "~/components/ui/typography";
 
 export default function TypographyShowcase() {
   return (
     <ShowcaseArticle
       header={{
-        title: 'Typography',
+        title: "Typography",
         description:
-          'Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed.',
+          "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed.",
       }}
       sections={[
         {
-          title: 'Headings',
-          description: 'Headings are used to introduce sections of content.',
+          title: "Headings",
+          description: "Headings are used to introduce sections of content.",
           content: (
             <div className="space-y-4">
               <H1>This is Heading 1</H1>
@@ -41,9 +41,9 @@ export default function TypographyShowcase() {
           ),
         },
         {
-          title: 'Paragraphs',
+          title: "Paragraphs",
           description:
-            'Paragraphs are used to group sentences that relate to a single topic or idea.',
+            "Paragraphs are used to group sentences that relate to a single topic or idea.",
           content: (
             <P>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -56,8 +56,8 @@ export default function TypographyShowcase() {
           ),
         },
         {
-          title: 'Text Styles',
-          description: 'Text styles are used to emphasize or highlight text.',
+          title: "Text Styles",
+          description: "Text styles are used to emphasize or highlight text.",
           content: (
             <div className="space-y-4">
               <Strong>Bold text</Strong>
@@ -69,9 +69,9 @@ export default function TypographyShowcase() {
           ),
         },
         {
-          title: 'Blockquotes',
+          title: "Blockquotes",
           description:
-            'Blockquotes are used to visually distinguish quoted or cited content.',
+            "Blockquotes are used to visually distinguish quoted or cited content.",
           content: (
             <Blockquote>
               This is a blockquote. Lorem ipsum dolor sit amet, consectetur
@@ -80,8 +80,8 @@ export default function TypographyShowcase() {
           ),
         },
         {
-          title: 'Lists',
-          description: 'Lists are used to group related items together.',
+          title: "Lists",
+          description: "Lists are used to group related items together.",
           content: (
             <div className="space-y-4">
               <H3>Unordered List</H3>
