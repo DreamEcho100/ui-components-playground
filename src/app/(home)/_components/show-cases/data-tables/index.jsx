@@ -2,22 +2,20 @@
 
 import { DataTableProvider } from "~/components/ui/data-table/context";
 import ShowcaseArticle from "../../article";
-import { basicPostColumns, paymentColumns } from "./config";
-import { DataTable } from "~/components/ui/data-table";
+import { basicPostColumns, routerPath } from "./config";
 import { useDataTableStore } from "~/components/ui/data-table/store/utils/hooks/data-table-store";
 
-import { paymentsData } from "~/config/utils";
 import ApiDataTable from "~/components/ui/data-table/api";
 
-function LocallySortedAndFilteredDataTableStore() {
-  const dataTableStore = useDataTableStore(paymentColumns);
+// function LocallySortedAndFilteredDataTableStore() {
+//   const dataTableStore = useDataTableStore(paymentColumns);
 
-  return (
-    <DataTableProvider store={dataTableStore}>
-      <DataTable columns={paymentColumns} data={paymentsData} rowIdKey="id" />
-    </DataTableProvider>
-  );
-}
+//   return (
+//     <DataTableProvider store={dataTableStore}>
+//       <DataTable columns={paymentColumns} data={paymentsData} rowIdKey="id" />
+//     </DataTableProvider>
+//   );
+// }
 
 // const rqDefaultLimit = 10;
 // function RqDataTableStore() {
@@ -135,7 +133,7 @@ function TrpcDataTableStore() {
 
   return (
     <DataTableProvider store={dataTableStore}>
-      <ApiDataTable columns={basicPostColumns} routerPath="posts.getMany" />
+      <ApiDataTable columns={basicPostColumns} routerPath={routerPath} />
     </DataTableProvider>
   );
 }
