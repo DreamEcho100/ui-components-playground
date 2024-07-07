@@ -15,7 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
-/** @type {PaymentColumn[]} */
+/**
+ * @type {PaymentColumn[]}
+ * @satisfies {PaymentColumn[]}
+ */
 export const paymentColumns = [
   defaultDataTableSelectColumn,
   {
@@ -117,7 +120,10 @@ export const paymentColumns = [
   },
 ];
 
-/** @type {BasicPostColumn[]} */
+/**
+ * @type {BasicPostColumn[]}
+ * @satisfies {BasicPostColumn[]}
+ */
 export const basicPostColumns = [
   defaultDataTableSelectColumn,
   {

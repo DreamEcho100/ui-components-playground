@@ -1,4 +1,10 @@
-import { type ColumnResizeMode } from "@tanstack/react-table";
+import type {
+  AccessorColumnDef,
+  DisplayColumnDef,
+  GroupColumnDef,
+  ColumnResizeMode,
+  RowData,
+} from "@tanstack/react-table";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -9,6 +15,14 @@ import {
 import { type SelectDropdownProps } from "~/components/ui/select/type";
 import { type InputProps } from "~/components/ui/input/types";
 import { type InfiniteLoadingRowTriggerProps } from "./components/infinite-loading-row-trigger/types";
+
+export type CorrectedColumnDef<
+  TData extends RowData,
+  TValue = unknown,
+> = ColumnDef<TData, TValue>;
+// | (DisplayColumnDef<TData, TValue> & { _type: "display" })
+// | (GroupColumnDef<TData, TValue> & { _type: "group" })
+// | (AccessorColumnDef<TData, TValue> & { _type?: "accessor" });
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

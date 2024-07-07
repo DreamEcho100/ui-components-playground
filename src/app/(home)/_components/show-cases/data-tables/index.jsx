@@ -1,142 +1,131 @@
 "use client";
-/** @import { GetManyPaymentActionInput } from '~/server/actions/types.ts' */
 
 import { DataTableProvider } from "~/components/ui/data-table/context";
 import ShowcaseArticle from "../../article";
-import { basicPostColumns, paymentColumns } from "./config"; // import { locallySortedAndFilteredDataTableStore as locallySortedAndFilteredDataTableStore } from '~/components/ui/data-table/store';
+import { basicPostColumns, paymentColumns } from "./config";
 import { DataTable } from "~/components/ui/data-table";
 import { useDataTableStore } from "~/components/ui/data-table/store/utils/hooks/data-table-store";
 
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import fetchPaymentsDataPageAction from "../../../../../server/actions";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useStore } from "zustand";
 import { paymentsData } from "~/config/utils";
-import { api } from "~/trpc/react";
-import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/unstable-core-do-not-import";
-// import { TRPC_ERROR_CODES_BY_KEY, TRPC_ERROR_CODES_BY_NUMBER } from "@trpc/server/shared";
+import ApiDataTable from "~/components/ui/data-table/api";
 
 function LocallySortedAndFilteredDataTableStore() {
-  const [dataTableStore, columns] = useDataTableStore(paymentColumns);
+  const dataTableStore = useDataTableStore(paymentColumns);
 
   return (
     <DataTableProvider store={dataTableStore}>
-      <DataTable columns={columns} data={paymentsData} rowIdKey="id" />
+      <DataTable columns={paymentColumns} data={paymentsData} rowIdKey="id" />
     </DataTableProvider>
   );
 }
 
-const rqDefaultLimit = 10;
-function RqDataTableStore() {
-  const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
-    initialValues: {
-      isFilteringExternal: true,
-      isSortingExternal: true,
-      sorting: [{ id: "createdAt", desc: true }],
-    },
-  });
+// const rqDefaultLimit = 10;
+// function RqDataTableStore() {
+//   const [dataTableStore, columns] = useDataTableStore(paymentColumns, {
+//     initialValues: {
+//       isFilteringExternal: true,
+//       isSortingExternal: true,
+//       sorting: [{ id: "createdAt", desc: true }],
+//     },
+//   });
 
-  const sorting = useStore(dataTableStore, (state) => state.sorting[0]);
-  const filters = useStore(dataTableStore, (state) => state.columnFilters);
+//   const sorting = useStore(dataTableStore, (state) => state.sorting[0]);
+//   const filters = useStore(dataTableStore, (state) => state.columnFilters);
 
-  const getManyInfiniteQuery = useInfiniteQuery({
-    queryKey: [
-      "payments-data",
-      {
-        limit: rqDefaultLimit,
-        sorting,
-        filters,
-      },
-    ],
-    queryFn: ({ pageParam }) => fetchPaymentsDataPageAction(pageParam),
-    initialData: {
-      pageParams: [],
-      pages: [],
-    },
-    initialPageParam: /** @type {GetManyPaymentActionInput} */ ({
-      limit: rqDefaultLimit,
-      sortBy: sorting?.id,
-      sortDir: sorting?.desc ? "desc" : "asc",
-      direction: "forward",
-      filters,
-    }),
-    placeholderData: keepPreviousData,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage?.nextCursor) {
-        return undefined;
-      }
+//   const getManyInfiniteQuery = useInfiniteQuery({
+//     queryKey: [
+//       "payments-data",
+//       {
+//         limit: rqDefaultLimit,
+//         sorting,
+//         filters,
+//       },
+//     ],
+//     queryFn: ({ pageParam }) => fetchPaymentsDataPageAction(pageParam),
+//     initialData: {
+//       pageParams: [],
+//       pages: [],
+//     },
+//     initialPageParam: /** @type {GetManyPaymentActionInput} */ ({
+//       limit: rqDefaultLimit,
+//       sortBy: sorting?.id,
+//       sortDir: sorting?.desc ? "desc" : "asc",
+//       direction: "forward",
+//       filters,
+//     }),
+//     placeholderData: keepPreviousData,
+//     getNextPageParam: (lastPage) => {
+//       if (!lastPage?.nextCursor) {
+//         return undefined;
+//       }
 
-      const lastOffset = lastPage?.nextCursor;
+//       const lastOffset = lastPage?.nextCursor;
 
-      const newCursor = /** @type {GetManyPaymentActionInput} */ ({
-        limit: rqDefaultLimit,
-        filters,
-        sortBy: sorting?.id,
-        sortDir: sorting?.desc ? "desc" : "asc",
-        cursor: lastOffset,
-        direction: "forward",
-      });
+//       const newCursor = /** @type {GetManyPaymentActionInput} */ ({
+//         limit: rqDefaultLimit,
+//         filters,
+//         sortBy: sorting?.id,
+//         sortDir: sorting?.desc ? "desc" : "asc",
+//         cursor: lastOffset,
+//         direction: "forward",
+//       });
 
-      return newCursor;
-    },
-    // refetchInterval
-    // retry
-    retry: (failureCount, error) => {
-      // Retry only for specific error types
-      if ("status" in error && error.status === 404) {
-        return false;
-      }
+//       return newCursor;
+//     },
+//     // refetchInterval
+//     // retry
+//     retry: (failureCount, error) => {
+//       // Retry only for specific error types
+//       if ("status" in error && error.status === 404) {
+//         return false;
+//       }
 
-      return failureCount < 3;
-    },
-    retryDelay: (attemptIndex, error) => {
-      // Custom logic for delay
-      return Math.min(1000 * 2 ** attemptIndex, 30000);
-    },
-  });
+//       return failureCount < 3;
+//     },
+//     retryDelay: (attemptIndex, error) => {
+//       // Custom logic for delay
+//       return Math.min(1000 * 2 ** attemptIndex, 30000);
+//     },
+//   });
 
-  const isPending = getManyInfiniteQuery.isFetching;
-  const data = getManyInfiniteQuery.data?.pages.flatMap((page) => page.items);
+//   const isPending = getManyInfiniteQuery.isFetching;
+//   const data = getManyInfiniteQuery.data?.pages.flatMap((page) => page.items);
 
-  const isLoading =
-    getManyInfiniteQuery.isFetching && !getManyInfiniteQuery.isRefetching;
+//   const isLoading =
+//     getManyInfiniteQuery.isFetching && !getManyInfiniteQuery.isRefetching;
 
-  useEffect(() => {
-    if (!getManyInfiniteQuery.isError) {
-      return;
-    }
+//   useEffect(() => {
+//     if (!getManyInfiniteQuery.isError) {
+//       return;
+//     }
 
-    toast.error("Failed to load data\n" + getManyInfiniteQuery.error.message);
-  }, [getManyInfiniteQuery.isError, getManyInfiniteQuery.error]);
+//     toast.error("Failed to load data\n" + getManyInfiniteQuery.error.message);
+//   }, [getManyInfiniteQuery.isError, getManyInfiniteQuery.error]);
 
-  return (
-    <DataTableProvider store={dataTableStore}>
-      <DataTable
-        columns={columns}
-        data={data}
-        rowIdKey="id"
-        isPending={isPending}
-        infiniteLoading={{
-          loadMore: (options) =>
-            getManyInfiniteQuery.fetchNextPage().then(options.onSuccess),
-          isPending: getManyInfiniteQuery.isFetchingNextPage,
-          isDisabled:
-            !getManyInfiniteQuery.hasNextPage ||
-            isLoading ||
-            getManyInfiniteQuery.isFetchingNextPage,
-          hasMore: getManyInfiniteQuery.hasNextPage,
-        }}
-      />
-    </DataTableProvider>
-  );
-}
+//   return (
+//     <DataTableProvider store={dataTableStore}>
+//       <DataTable
+//         columns={columns}
+//         data={data}
+//         rowIdKey="id"
+//         isPending={isPending}
+//         infiniteLoading={{
+//           loadMore: (options) =>
+//             getManyInfiniteQuery.fetchNextPage().then(options.onSuccess),
+//           isPending: getManyInfiniteQuery.isFetchingNextPage,
+//           isDisabled:
+//             !getManyInfiniteQuery.hasNextPage ||
+//             isLoading ||
+//             getManyInfiniteQuery.isFetchingNextPage,
+//           hasMore: getManyInfiniteQuery.hasNextPage,
+//         }}
+//       />
+//     </DataTableProvider>
+//   );
+// }
 
-const trpcDefaultLimit = 10;
-/** @type {any[]} */
-const defaultEmptyData = [];
 function TrpcDataTableStore() {
-  const [dataTableStore, columns] = useDataTableStore(basicPostColumns, {
+  const dataTableStore = useDataTableStore(basicPostColumns, {
     initialValues: {
       isFilteringExternal: true,
       isSortingExternal: true,
@@ -144,74 +133,9 @@ function TrpcDataTableStore() {
     },
   });
 
-  const sorting = useStore(dataTableStore, (state) => state.sorting);
-  const filters = useStore(dataTableStore, (state) => state.columnFilters);
-
-  const getManyInfiniteQuery = api.posts.getMany.useInfiniteQuery(
-    /** @type {import("~/server/api/routers/post/utils").GetManyPostsActionInput} */ ({
-      limit: trpcDefaultLimit,
-      sorting,
-      filters,
-    }),
-    {
-      initialData: { pageParams: [], pages: [] },
-      placeholderData: keepPreviousData,
-      getNextPageParam: (lastPage) => lastPage?.nextCursor,
-      getPreviousPageParam: (lastPage) => lastPage?.prevCursor,
-      retry: (failureCount, error) => {
-        // Retry only for specific error types
-        if (
-          error.shape?.code &&
-          (error.shape.code === TRPC_ERROR_CODES_BY_KEY.INTERNAL_SERVER_ERROR ||
-            error.shape.code === TRPC_ERROR_CODES_BY_KEY.TIMEOUT ||
-            error.shape.code === TRPC_ERROR_CODES_BY_KEY.TOO_MANY_REQUESTS)
-        ) {
-          return failureCount < 3;
-        }
-
-        return false;
-      },
-      retryDelay: (attemptIndex, error) => {
-        // Custom logic for delay
-        return Math.min(1000 * 2 ** attemptIndex, 30000);
-      },
-    },
-  );
-
-  const isPending = getManyInfiniteQuery.isFetching;
-  const data =
-    getManyInfiniteQuery.data?.pages.flatMap((page) => page.items) ??
-    defaultEmptyData;
-
-  const isLoading =
-    getManyInfiniteQuery.isFetching && !getManyInfiniteQuery.isRefetching;
-
-  useEffect(() => {
-    if (!getManyInfiniteQuery.isError) {
-      return;
-    }
-
-    toast.error("Failed to load data\n" + getManyInfiniteQuery.error.message);
-  }, [getManyInfiniteQuery.isError, getManyInfiniteQuery.error]);
-
   return (
     <DataTableProvider store={dataTableStore}>
-      <DataTable
-        columns={columns}
-        data={data}
-        rowIdKey="id"
-        isPending={isPending}
-        infiniteLoading={{
-          loadMore: (options) =>
-            getManyInfiniteQuery.fetchNextPage().then(options.onSuccess),
-          isPending: getManyInfiniteQuery.isFetchingNextPage,
-          isDisabled:
-            !getManyInfiniteQuery.hasNextPage ||
-            isLoading ||
-            getManyInfiniteQuery.isFetchingNextPage,
-          hasMore: getManyInfiniteQuery.hasNextPage,
-        }}
-      />
+      <ApiDataTable columns={basicPostColumns} routerPath="posts.getMany" />
     </DataTableProvider>
   );
 }

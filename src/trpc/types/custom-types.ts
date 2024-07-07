@@ -80,9 +80,10 @@ export type AppRouterVars = InferRouterVars<
   AppRouter["_def"]["_config"]["$types"],
   AppRouter["_def"]["record"]
 >;
-//
+/************************************ ************************************/
 export type AppRouterPathToVars = RouterPathToVars<AppRouterVars>;
 export type AppRouterPaths = keyof AppRouterPathToVars;
+/************************************ ************************************/
 //
 export type GetSpecificPaths<Paths, STR> = Paths extends STR // `${string}.restoreOne`
   ? Paths

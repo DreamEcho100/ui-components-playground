@@ -1,4 +1,4 @@
-export interface Payment {
+export type Payment = {
   id: string;
   amount: number;
   status: "pending" | "processing" | "success" | "failed";
@@ -9,13 +9,13 @@ export interface Payment {
     xd: string;
   };
   createdAt: string;
-}
+};
 
-export interface BasicPost {
+export type BasicPost = {
   id: string;
   name: string;
   createdAt: string;
   updateAt: string | null;
   viewCount: number;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-}
+};

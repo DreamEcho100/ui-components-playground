@@ -15,5 +15,5 @@ import { createDataTableStore } from "../..";
 export function useDataTableStore(columns, initialValues) {
   const dataTableStore = useRef(createDataTableStore(initialValues)).current;
 
-  return /** @type {const} */ ([dataTableStore, columns]);
+  return dataTableStore;
 }
