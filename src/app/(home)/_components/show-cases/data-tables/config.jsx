@@ -20,6 +20,7 @@ import {
  * @constant
  */
 export const routerPath = "posts.getMany";
+
 /**
  * @type {BasicPostColumn[]}
  * @satisfies {BasicPostColumn[]}

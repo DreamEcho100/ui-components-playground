@@ -1,9 +1,10 @@
 /** @import { Prisma } from "@prisma/client" */
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getManyPostsSchema, handleCursorPageQuery } from "./utils";
+import { handleCursorPageQuery } from "../../../utils/handle-cursor-page-query";
 import { z } from "zod";
 import { posts } from "~/server/db/schema";
+import { getManyPostsSchema } from "~/lib/schemas/get-many-posts";
 
 export const postRouter = createTRPCRouter({
   getMany: publicProcedure
