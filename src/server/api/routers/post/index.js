@@ -64,7 +64,7 @@ export const postRouter = createTRPCRouter({
         getItems: async ({ take, skip, orderBy, where }) => {
           return ctx.prisma.post.findMany({ take, orderBy, where, skip });
         },
-        defaults: { cursorName: "createdAt" },
+        // defaults: { cursorName: "createdAt" },
       });
     }),
 

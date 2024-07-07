@@ -34,7 +34,7 @@ function Content({ header: ctx, table, title, ...props }) {
     return null;
   }
 
-  const headerTitle = title ?? ctx.column.columnDef.meta?.header;
+  const headerTitle = ctx.column.columnDef.meta?.header ?? title;
 
   const canSort = ctx.column.getCanSort();
 

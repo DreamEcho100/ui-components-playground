@@ -39,13 +39,16 @@ export const getManyPostsSchema = z.object({
   ),
   sorting: z
     .array(
-      z.union([
-        z.object({ id: z.literal("createdAt"), desc: z.boolean() }),
-        z.object({ id: z.literal("updatedAt"), desc: z.boolean() }),
-        z.object({ id: z.literal("viewCount"), desc: z.boolean() }),
-        z.object({ id: z.literal("name"), desc: z.boolean() }),
-        z.object({ id: z.literal("status"), desc: z.boolean() }),
-      ]),
+      z.object({
+        id: z.enum(["createdAt", "updatedAt", "viewCount", "name", "status"]),
+        desc: z.boolean(),
+      }),
+      // z.union([
+      //   z.object({ id: z.literal("updatedAt"), desc: z.boolean() }),
+      //   z.object({ id: z.literal("viewCount"), desc: z.boolean() }),
+      //   z.object({ id: z.literal("name"), desc: z.boolean() }),
+      //   z.object({ id: z.literal("status"), desc: z.boolean() }),
+      // ]),
     )
     .max(maxSorting)
     .optional()
@@ -62,7 +65,7 @@ export const getManyPostsSchema = z.object({
 /**
  * @template {Record<string, any>} Input
  * @template R
- * @typedef {(where: { createAt?: { gte?: Date; lte?: Date }; updatedAt?: { gte?: Date; lte?: Date }; }, input: Input) => R} SetupFilters
+ * @typedef {(where: { createAt?: { gte?: Date; lte?: Date }; }, input: Input) => R} SetupFilters
  */
 
 /**
@@ -73,7 +76,7 @@ export const getManyPostsSchema = z.object({
  * }} input
  * @param {{
  *  setupFilters: SetupFilters<any, Record<string, any>>
- *  defaultCursorName: string;
+ *  defaultCursorName?: string;
  *  isMultiSorting?: boolean;
  * }} options
  */
@@ -84,6 +87,7 @@ function generateCursorPageQueryIndicators(input, options) {
   const orderBy = {};
 
   let cursorBy;
+  let cursorDirection;
 
   if (options.isMultiSorting) {
     throw new Error("Multi-sorting is not supported yet");
@@ -91,10 +95,11 @@ function generateCursorPageQueryIndicators(input, options) {
     const sort = input.sorting?.[0];
     if (sort) {
       orderBy[sort.id] = sort.desc ? "desc" : "asc";
+      cursorDirection = sort.desc ? "desc" : "asc";
     }
+
     switch (sort?.id) {
       case "createdAt":
-      case "updatedAt":
         cursorBy = sort.id;
         break;
       default:
@@ -105,8 +110,7 @@ function generateCursorPageQueryIndicators(input, options) {
   /** @type {number | undefined} */
   let skip;
   switch (cursorBy) {
-    case "createdAt":
-    case "updatedAt": {
+    case "createdAt": {
       // cursor pagination
       const schema = z.coerce.date().nullish().optional();
 
@@ -118,9 +122,9 @@ function generateCursorPageQueryIndicators(input, options) {
 
       if (cursor.data) {
         where[cursorBy] =
-          input.direction === "forward"
-            ? { gte: new Date(cursor.data) }
-            : { lte: new Date(cursor.data) };
+          cursorDirection === "asc"
+            ? { gte: cursor.data }
+            : { lte: cursor.data };
       }
       break;
     }
@@ -156,12 +160,12 @@ function generateCursorPageQueryIndicators(input, options) {
  * 	}) => Promise<Item[]>;
  *  setupFilters: SetupFilters<Input, Record<string, any>>;
  * 	input: Input;
- * 	defaults: { cursorName: string; limit?: number; }
+ * 	defaults?: { cursorName?: string; limit?: number; }
  *  isMultiSorting?: boolean;
  * }} options
  */
 export const handleCursorPageQuery = async (options) => {
-  const limit = options.input.limit ?? options?.defaults.limit ?? 10;
+  const limit = options.input.limit ?? options?.defaults?.limit ?? 10;
 
   if (
     !options.isMultiSorting &&
@@ -178,7 +182,7 @@ export const handleCursorPageQuery = async (options) => {
     options.input,
     {
       setupFilters: options.setupFilters,
-      defaultCursorName: options.defaults.cursorName,
+      defaultCursorName: options.defaults?.cursorName,
       isMultiSorting: options.isMultiSorting,
     },
   );
@@ -201,11 +205,11 @@ export const handleCursorPageQuery = async (options) => {
   // return options.resolveTo({ items, input: options.input, limit });
 
   switch (cursorBy) {
-    case "createdAt":
-    case "updatedAt": {
+    case "createdAt": {
       // cursor pagination
 
       const lastItem = items.length > limit ? items.pop() : null;
+
       const nextCursor = /** @type {string|null} */ (
         lastItem ? lastItem[cursorBy] : null
       );

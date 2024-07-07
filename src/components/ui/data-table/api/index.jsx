@@ -3,7 +3,7 @@
 /** @import { MaybeDecoratedInfiniteQuery } from 'node_modules/@trpc/react-query/dist/createTRPCReact.js' */
 /** @import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import' */
 
-import { keepPreviousData } from "@tanstack/react-query";
+// import { keepPreviousData } from "@tanstack/react-query";
 import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/unstable-core-do-not-import";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import { api } from "~/trpc/react";
 import { getItemByPath } from "./utils/index.js";
 import { useDataTableContextStore } from "../context";
 
-const trpcDefaultLimit = 10;
+// const trpcDefaultLimit = 10;
 /** @type {any[]} */
 const defaultEmptyData = [];
 /**
@@ -39,6 +39,7 @@ function useApiDataTableStore(props) {
   const tableStore = useDataTableContextStore();
   const sorting = useStore(tableStore, (state) => state.sorting);
   const filters = useStore(tableStore, (state) => state.columnFilters);
+  const limit = useStore(tableStore, (state) => state.pageLimit);
 
   const infiniteQueryObj = useMemo(
     () =>
@@ -62,10 +63,10 @@ function useApiDataTableStore(props) {
   );
 
   const getManyInfiniteQuery = infiniteQueryObj.useInfiniteQuery(
-    { limit: trpcDefaultLimit, sorting, filters },
+    { limit, sorting, filters },
     {
-      initialData: { pageParams: [], pages: [] },
-      placeholderData: keepPreviousData,
+      // initialData: { pageParams: [], pages: [] },
+      // placeholderData: keepPreviousData,
       getNextPageParam: (lastPage) => lastPage?.nextCursor,
       getPreviousPageParam: (lastPage) => lastPage?.prevCursor,
       retry: (failureCount, error) => {

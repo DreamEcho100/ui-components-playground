@@ -48,7 +48,7 @@ const valueOrUpdater =
  * @template TData
  *
  * @typedef {{
- *  initialValues?: Partial<Omit<TempInitialValues<TData>, `set${string}`>>;
+ *  initialValues?: Partial<Omit<TempInitialValues<TData>, `set${string}` | '__cache'>>;
  * }} CreateDataTableStoreInitialValues
  */
 
@@ -83,7 +83,12 @@ export function createDataTableStore(options) {
         "columnResizeDirection",
       );
 
+      const defaultSetPageLimit = valueOrUpdater(set, get, "pageLimit");
+
       return {
+        pageLimit: options?.initialValues?.pageLimit ?? 10,
+        setPageLimit: defaultSetPageLimit,
+
         columnFilters: options?.initialValues?.columnFilters ?? [],
         setColumnFilters: defaultSetColumnFilters,
 

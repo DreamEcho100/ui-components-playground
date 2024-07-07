@@ -40,6 +40,9 @@ interface ColumnFilter<TData> {
 export type ColumnFiltersState<TData> = ColumnFilter<TData>[];
 
 export interface DataTableStoreState<TData> {
+  pageLimit: number;
+  setPageLimit: (valueOrUpdater: ValueOrUpdater<number>) => void;
+
   isSortingExternal?: boolean;
   sorting: SortingState<TData>;
   setSorting: (valueOrUpdater: ValueOrUpdater<SortingState<TData>>) => void;

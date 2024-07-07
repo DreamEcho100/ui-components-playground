@@ -171,7 +171,7 @@ export const basicPostColumns = [
     filterFn: "dateBetweenFilterFn",
   },
   {
-    accessorKey: "updateAt",
+    accessorKey: "updatedAt",
     meta: {
       header: "Updated At",
       filterVariant: {
