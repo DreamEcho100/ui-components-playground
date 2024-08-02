@@ -86,6 +86,8 @@ export function createDataTableStore(options) {
       const defaultSetPageLimit = valueOrUpdater(set, get, "pageLimit");
 
       return {
+        ...options?.initialValues,
+
         pageLimit: options?.initialValues?.pageLimit ?? 10,
         setPageLimit: defaultSetPageLimit,
 
@@ -140,6 +142,15 @@ export function createDataTableStore(options) {
               },
             };
           });
+        },
+
+        __getQueryInput: () => {
+          const state = get();
+          return {
+            limit: state.pageLimit,
+            sorting: state.sorting,
+            filters: state.columnFilters,
+          };
         },
       };
     },

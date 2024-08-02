@@ -24,13 +24,10 @@ export function json2Excel(params) {
 }
 
 /**
- * @template {InferAppRouterGetManyOrManyBasic} TRouterPath
- * @template {AppRouterPathToVars[TRouterPath]['$output']['items'][number]} TData
+ * @template TData
  * @template TValue
  *
- * @param {{
- * 	columns:  ColumnDef<TData, TValue>[]
- * }} props
+ * @param {{ columns:  ColumnDef<TData, TValue>[] }} props
  */
 export default function XLSXExportButton(props) {
   const tableStore = useDataTableContextStore();
@@ -46,6 +43,7 @@ export default function XLSXExportButton(props) {
       state.canExportTo?.xlsx && Object.keys(state.rowSelection).length > 0,
   );
 
+  console.log("___ canExportToXLSX", canExportToXLSX);
   if (!canExportToXLSX) {
     return null;
   }

@@ -41,11 +41,6 @@ export type ColumnFiltersState<TData> = ColumnFilter<TData>[];
 
 export interface DataTableStoreState<TData> {
   pageLimit: number;
-
-  canExportTo?: {
-    xlsx?: boolean;
-  };
-
   setPageLimit: (valueOrUpdater: ValueOrUpdater<number>) => void;
 
   isSortingExternal?: boolean;
@@ -88,6 +83,13 @@ export interface DataTableStoreState<TData> {
     [key: string]: any;
   };
   setCache: (key: string, value: ValueOrUpdater<unknown>) => void;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  __getQueryInput: () => any;
+
+  canExportTo?: {
+    xlsx?: boolean;
+  };
 }
 
 export type DataTableStoreApi<TData> = StoreApi<DataTableStoreState<TData>>;

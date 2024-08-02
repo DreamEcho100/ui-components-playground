@@ -23,6 +23,7 @@ import { useDataTableContextStore } from "./context";
 import { DataTableColumnHeader } from "./components/column-header";
 import { dateBetweenFilterFn } from "./components/column-header/components/filters/utils";
 import InfiniteLoadingRowTrigger from "./components/infinite-loading-row-trigger";
+import XLSXExportButton from "./components/xlsx-export-button/index.jsx";
 
 /**
  * @template TData
@@ -138,11 +139,15 @@ export function DataTable(props) {
 
   return (
     <div className="flex flex-col">
-      <div className="p-4">
+      <div className="flex items-center justify-between gap-4 p-4">
         <p className="text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </p>
+
+        <div className="flex flex-wrap gap-2">
+          <XLSXExportButton columns={props.columns} />
+        </div>
       </div>
 
       <TableContainer table={table}>
