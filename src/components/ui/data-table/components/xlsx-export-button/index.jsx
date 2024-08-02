@@ -1,7 +1,6 @@
 "use client";
 
 /** @import { ColumnDef } from '@tanstack/react-table' */
-/** @import { AppRouterPathToVars, InferAppRouterGetManyOrManyBasic } from '~/trpc/types/index.js' */
 
 import { Button } from "../../../button";
 
@@ -43,7 +42,6 @@ export default function XLSXExportButton(props) {
       state.canExportTo?.xlsx && Object.keys(state.rowSelection).length > 0,
   );
 
-  console.log("___ canExportToXLSX", canExportToXLSX);
   if (!canExportToXLSX) {
     return null;
   }

@@ -12,6 +12,7 @@ import { DataTable } from "~/components/ui/data-table";
 import { api } from "~/trpc/react";
 import { getItemByPath } from "./utils/index.js";
 import { useDataTableContextStore } from "../context";
+import ExcelToJsonButton from "../components/excel-to-json-button/index.jsx";
 
 // const trpcDefaultLimit = 10;
 /** @type {any[]} */
@@ -144,6 +145,20 @@ export default function ApiDataTable(props) {
         isDisabled: !hasNextPage || isLoading || isFetchingNextPage,
         hasMore: hasNextPage,
       }}
+      topActionsButtonsStart={
+        <>
+          <ExcelToJsonButton
+            columns={props.columns}
+            disabled={isPending}
+            onSuccess={(data) => {
+              console.log("___ data", data);
+            }}
+            onError={(error) => {
+              console.error("___ error", error);
+            }}
+          />
+        </>
+      }
     />
   );
 }

@@ -89,6 +89,9 @@ importers:
       drizzle-orm:
         specifier: ^0.30.10
         version: 0.30.10(@libsql/client@0.6.2)(@types/react@18.3.3)(react@18.3.1)
+      excel2json-wasm:
+        specifier: ^1.2.0
+        version: 1.2.0
       excelize-wasm:
         specifier: ^0.0.6
         version: 0.0.6
@@ -2599,6 +2602,9 @@ packages:
 
   event-emitter@0.3.5:
     resolution: {integrity: sha512-D9rRn9y7kLPnJ+hMq7S/nhvoKwwvVJahBi2BPmx3bvbsEdK3W9ii8cBSGjP+72/LnM4n6fo3+dkCX5FeTQruXA==}
+
+  excel2json-wasm@1.2.0:
+    resolution: {integrity: sha512-LHPRhO+vs5zB9mP6rPwYqzDf4nPTvlO/1Iyu/GHJB4JJRT7Ze4AY1SQ1zCQWkC0ygKuPdM+Z9YGHb5uAJ5k0fA==}
 
   excelize-wasm@0.0.6:
     resolution: {integrity: sha512-oCM7IQXleD1A1HaROuTDKghTW5QNIOKuI1LcrhmFUEYP63zZnsktI3U9FMJx4UYeXZxB8sQjQzn0OE9NprBk6A==}
@@ -6767,6 +6773,8 @@ snapshots:
     dependencies:
       d: 1.0.2
       es5-ext: 0.10.64
+
+  excel2json-wasm@1.2.0: {}
 
   excelize-wasm@0.0.6: {}
 
