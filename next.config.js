@@ -5,6 +5,20 @@
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  webpack: (config) => {
+    // enable webassembly
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    config.experiments = {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ...config.experiments,
+      asyncWebAssembly: true,
+      topLevelAwait: true,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return config;
+  },
+};
 
 export default config;

@@ -11,7 +11,7 @@ const defaultDebounceTimeout = 1000;
  *  value: string | number
  *  onChange: (value: string | number) => void
  *  debounce?: number
- * } & Omit<import('~/components/ui/input/types.ts').InputProps, 'onChange'>} props
+ * } & Omit<import('../../../../../input/types.ts').InputProps, 'onChange'>} props
  */
 function DebouncedInput({
   value: initialValue,
@@ -63,7 +63,7 @@ export default function Filter(props) {
             //   (filter) => filter.id !== props.column.id,
             // );
             // newFilters.push({ id: props.column.id, value });
-            return [{ id: props.column.id, value }];
+            return [{ id: props.column.id, value, operator: "contains" }];
           });
         }
       : props.column.setFilterValue,

@@ -6,6 +6,7 @@ import { basicPostColumns, routerPath } from "./config";
 import { useDataTableStore } from "~/components/ui/data-table/store/utils/hooks/data-table-store";
 
 import ApiDataTable from "~/components/ui/data-table/api";
+import XLSXExportButton from "../../../../../components/ui/data-table/components/xlsx-export-button";
 
 // function LocallySortedAndFilteredDataTableStore() {
 //   const dataTableStore = useDataTableStore(paymentColumns);
@@ -128,11 +129,13 @@ function TrpcDataTableStore() {
       isFilteringExternal: true,
       isSortingExternal: true,
       sorting: [{ id: "createdAt", desc: true }],
+      canExportTo: { xlsx: true },
     },
   });
 
   return (
     <DataTableProvider store={dataTableStore}>
+      <XLSXExportButton columns={basicPostColumns} />
       <ApiDataTable columns={basicPostColumns} routerPath={routerPath} />
     </DataTableProvider>
   );

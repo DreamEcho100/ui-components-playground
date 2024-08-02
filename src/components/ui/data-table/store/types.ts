@@ -41,6 +41,11 @@ export type ColumnFiltersState<TData> = ColumnFilter<TData>[];
 
 export interface DataTableStoreState<TData> {
   pageLimit: number;
+
+  canExportTo?: {
+    xlsx?: boolean;
+  };
+
   setPageLimit: (valueOrUpdater: ValueOrUpdater<number>) => void;
 
   isSortingExternal?: boolean;
