@@ -73,7 +73,7 @@ function changeSheetHeaderByTitle2Key(title2Key) {
  * @template TData
  * @template TValue
  *
- * @param {ButtonProps & {
+ * @param {Omit<ButtonProps, 'onError'> & {
  * 	columns:  ColumnDef<TData, TValue>[];
  * 	onSuccess?: (data: Record<string, unknown>[]) => void;
  *  onError?: (error: Error) => void;
@@ -162,12 +162,12 @@ export default function ExcelToJsonButton({
           resolve(/** @type {Record<string, unknown>[]} */ (json));
           return;
         };
-        reader.onerror = (e) => {
+        reader.onerror = () => {
           reject(`Error reading ${file.name}`);
           return;
         };
 
-        reader.onabort = (e) => {
+        reader.onabort = () => {
           reject(`Reading of ${file.name} aborted`);
           return;
         };

@@ -134,7 +134,12 @@ function TrpcDataTableStore() {
 
   return (
     <DataTableProvider store={dataTableStore}>
-      <ApiDataTable columns={basicPostColumns} routerPath={routerPath} />
+      <ApiDataTable
+        columns={basicPostColumns}
+        routerPath={routerPath}
+        createManyRouterPath="posts.createMany"
+        onCreateManySuccess="revalidate"
+      />
     </DataTableProvider>
   );
 }

@@ -47,12 +47,18 @@ export type GetAppRouterOutputsByPath<RouterPaths extends AppRouterPaths> =
 /******************** ********************/
 type GetGetOnePaths<Paths> = Paths extends `${string}.getOne` ? Paths : never;
 export type InferAppRouterGetOne = GetGetOnePaths<AppRouterPaths>;
+
 type GetGetManyPaths<Paths> = Paths extends
   | `${string}.getMany`
   | `${string}.getManyBasic`
   ? Paths
   : never;
 export type InferAppRouterGetManyOrManyBasic = GetGetManyPaths<AppRouterPaths>;
+
+type GetCreateManyPaths<Paths> = Paths extends `${string}.createMany`
+  ? Paths
+  : never;
+export type InferAppRouterCreateMany = GetCreateManyPaths<AppRouterPaths>;
 
 type GetDeleteOnePaths<Paths> = Paths extends `${string}.deleteOne`
   ? Paths

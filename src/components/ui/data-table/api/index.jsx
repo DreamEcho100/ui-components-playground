@@ -1,7 +1,10 @@
-/** @import { ColumnDef, DisplayColumnDef, GroupColumnDef, AccessorColumnDef } from '@tanstack/react-table' */
-/** @import { AppRouterPathToVars, InferAppRouterGetManyOrManyBasic } from '~/trpc/types/index.js' */
-/** @import { MaybeDecoratedInfiniteQuery } from 'node_modules/@trpc/react-query/dist/createTRPCReact.js' */
-/** @import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import' */
+/**
+ * @import { ColumnDef } from '@tanstack/react-table'
+ * @import { AppRouterPathToVars, InferAppRouterGetManyOrManyBasic, InferAppRouterCreateMany } from '~/trpc/types/index.js'
+ * @import { DecoratedMutation, DecoratedQuery } from 'node_modules/@trpc/react-query/dist/createTRPCReact.js'
+ * @import { DecoratedProcedureUtilsRecord } from '@trpc/react-query/shared'
+ * @import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import'
+ */
 
 // import { keepPreviousData } from "@tanstack/react-query";
 import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/unstable-core-do-not-import";
@@ -23,11 +26,27 @@ const defaultEmptyData = [];
  * @template TValue
  *
  * @typedef {{
- *  routerPath: TRouterPath,
+ *  routerPath: TRouterPath;
  * 	columns:  ColumnDef<TData, TValue>[]
+ *  createManyRouterPath?: InferAppRouterCreateMany;
+ *  onCreateManySuccess?: 'revalidate'; // | 'refetch';
  * }} ApiDataTableStoreProps
  */
-// * // ColumnDef<TData, TValue>[]
+
+/**
+ * @typedef {{
+ * 	input: { cursor?: unknown };
+ * 	output: {
+ * 		items: unknown[];
+ * 		nextCursor: unknown;
+ * 		prevCursor: unknown;
+ * 	};
+ * 	transformer: boolean;
+ * 	errorShape: DefaultErrorShape;
+ *  ctx: any;
+ *  meta: any;
+ * }} InfiniteQueryObjTDef
+ */
 
 /**
  * @template {InferAppRouterGetManyOrManyBasic} TRouterPath
@@ -45,17 +64,7 @@ function useApiDataTableStore(props) {
   const infiniteQueryObj = useMemo(
     () =>
       /**
-       * @type {MaybeDecoratedInfiniteQuery<{
-       * 	input: { cursor?: unknown };
-       * 	output: {
-       * 		items: unknown[];
-       * 		nextCursor: unknown;
-       * 		prevCursor: unknown;
-       * 	};
-       * 	transformer:
-       * 	boolean;
-       * 	errorShape: DefaultErrorShape;
-       * }>}
+       * @type {DecoratedQuery<InfiniteQueryObjTDef>}
        */ (
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         getItemByPath(api, props.routerPath)
@@ -147,18 +156,89 @@ export default function ApiDataTable(props) {
       }}
       topActionsButtonsStart={
         <>
-          <ExcelToJsonButton
-            columns={props.columns}
-            disabled={isPending}
-            onSuccess={(data) => {
-              console.log("___ data", data);
-            }}
-            onError={(error) => {
-              console.error("___ error", error);
-            }}
-          />
+          {props.createManyRouterPath && (
+            <ExcelToJsonButtonCreateMany
+              routerPath={props.createManyRouterPath}
+              getManyRouterPath={props.routerPath}
+              columns={props.columns}
+              disabled={isPending}
+              onCreateManySuccess={props.onCreateManySuccess}
+            />
+          )}
         </>
       }
+    />
+  );
+}
+
+/**
+ * @template TData
+ * @template TValue
+ *
+ * @param {{
+ * 	routerPath: string;
+ *  getManyRouterPath: string;
+ * 	columns: ColumnDef<TData, TValue>[];
+ * 	disabled: boolean;
+ *  onCreateManySuccess?: 'revalidate' | 'refetch';
+ * }} props
+ */
+function ExcelToJsonButtonCreateMany(props) {
+  const createMayMutationObj = useMemo(
+    () =>
+      /**
+       * @type {DecoratedMutation<{
+       * 	input: { items: any[] };
+       * 	output: any;
+       * 	transformer: boolean;
+       * 	errorShape: DefaultErrorShape;
+       * }>}
+       */ (
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        getItemByPath(api, props.routerPath)
+      ),
+    [props.routerPath],
+  );
+
+  const createMayMutation = createMayMutationObj.useMutation();
+  const utils = api.useUtils();
+
+  api.posts.create.useMutation;
+
+  return (
+    <ExcelToJsonButton
+      columns={props.columns}
+      disabled={props.disabled}
+      onSuccess={async (data) => {
+        await createMayMutation.mutateAsync(
+          { items: data },
+          {
+            onError: (error) => {
+              toast.error("Failed to create data\n" + error.message);
+            },
+          },
+        );
+
+        if (typeof props.onCreateManySuccess === "string") {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const recordObj =
+            /** @type {DecoratedProcedureUtilsRecord<InfiniteQueryObjTDef, Record<string, import("@trpc/server").AnyTRPCQueryProcedure>>} */ (
+              getItemByPath(utils, props.getManyRouterPath)
+            );
+
+          switch (props.onCreateManySuccess) {
+            case "revalidate":
+              await recordObj.invalidate();
+              break;
+            // case "refetch":
+            //   await recordObj.refetch()
+            //   break;
+          }
+        }
+      }}
+      onError={(error) => {
+        toast.error("Failed to create data\n" + error.message);
+      }}
     />
   );
 }
