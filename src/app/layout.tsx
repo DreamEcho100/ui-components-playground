@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "~/styles/globals/index.css";
 import Providers from "./_components/providers";
 import type { PropsWithChildren } from "react";
+import { BreadcrumbAuto } from "~/components/ui/breadcrumb/auto";
+import { Home } from "lucide-react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,7 +22,15 @@ export default function RootLayout(props: PropsWithChildren) {
   return (
     <html lang="en">
       <body data-card-size="default" className={`group ${inter.className}`}>
-        <Providers>{props.children}</Providers>
+        <Providers>
+          <BreadcrumbAuto
+            disableLastBreadcrumb
+            excludeRoot
+            nameMap={{ "playground-tests": <Home className="size-4" /> }}
+            nameReplace={{ pattern: "-", replaceValue: " ", flags: "g" }}
+          />
+          {props.children}
+        </Providers>
       </body>
     </html>
   );
