@@ -148,6 +148,7 @@ export function DataTable(props) {
         <div className="flex flex-wrap gap-2">
           {props.topActionsButtonsStart}
           <XLSXExportButton columns={props.columns} />
+          {props.topActionsButtonsEnd}
         </div>
       </div>
 

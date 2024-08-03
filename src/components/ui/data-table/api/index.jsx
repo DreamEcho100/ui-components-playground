@@ -1,6 +1,6 @@
 /**
  * @import { ColumnDef } from '@tanstack/react-table'
- * @import { AppRouterPathToVars, InferAppRouterGetManyOrManyBasic, InferAppRouterCreateMany } from '~/trpc/types/index.js'
+ * @import { AppRouterPathToVars, InferAppRouterGetManyOrManyBasic, InferAppRouterCreateMany, InferAppRouterDeleteMany } from '~/trpc/types/index.js'
  * @import { DecoratedMutation, DecoratedQuery } from 'node_modules/@trpc/react-query/dist/createTRPCReact.js'
  * @import { DecoratedProcedureUtilsRecord } from '@trpc/react-query/shared'
  * @import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import'
@@ -16,6 +16,7 @@ import { api } from "~/trpc/react";
 import { getItemByPath } from "./utils/index.js";
 import { useDataTableContextStore } from "../context";
 import ExcelToJsonButton from "../components/excel-to-json-button/index.jsx";
+import { Button } from "../../button/index.jsx";
 
 // const trpcDefaultLimit = 10;
 /** @type {any[]} */
@@ -28,8 +29,15 @@ const defaultEmptyData = [];
  * @typedef {{
  *  routerPath: TRouterPath;
  * 	columns:  ColumnDef<TData, TValue>[]
- *  createManyRouterPath?: InferAppRouterCreateMany;
- *  onCreateManySuccess?: 'revalidate'; // | 'refetch';
+ *  createMany: {
+ *   routerPath: InferAppRouterCreateMany;
+ *   onSuccess?: 'revalidate'; // | 'refetch';
+ * 	}
+ *  deleteMany: {
+ *   routerPath: InferAppRouterDeleteMany;
+ *   onSuccess?: 'revalidate'; // | 'refetch';
+ *   getInput?: (flatRows: { original: NoInfer<TData> }[]) => unknown[] | Record<string, unknown> & { ids: unknown[] };
+ *  }
  * }} ApiDataTableStoreProps
  */
 
@@ -156,13 +164,23 @@ export default function ApiDataTable(props) {
       }}
       topActionsButtonsStart={
         <>
-          {props.createManyRouterPath && (
-            <ExcelToJsonButtonCreateMany
-              routerPath={props.createManyRouterPath}
+          {props.deleteMany && (
+            <DeleteManySelectedButton
+              routerPath={props.deleteMany.routerPath}
+              onSuccess={props.deleteMany.onSuccess}
+              getInput={props.deleteMany?.getInput}
               getManyRouterPath={props.routerPath}
               columns={props.columns}
               disabled={isPending}
-              onCreateManySuccess={props.onCreateManySuccess}
+            />
+          )}
+          {props.createMany && (
+            <ExcelToJsonCreateManyButton
+              routerPath={props.createMany.routerPath}
+              onSuccess={props.createMany.onSuccess}
+              getManyRouterPath={props.routerPath}
+              columns={props.columns}
+              disabled={isPending}
             />
           )}
         </>
@@ -180,10 +198,10 @@ export default function ApiDataTable(props) {
  *  getManyRouterPath: string;
  * 	columns: ColumnDef<TData, TValue>[];
  * 	disabled: boolean;
- *  onCreateManySuccess?: 'revalidate' | 'refetch';
+ *  onSuccess?: 'revalidate' | 'refetch';
  * }} props
  */
-function ExcelToJsonButtonCreateMany(props) {
+function ExcelToJsonCreateManyButton(props) {
   const createMayMutationObj = useMemo(
     () =>
       /**
@@ -219,14 +237,14 @@ function ExcelToJsonButtonCreateMany(props) {
           },
         );
 
-        if (typeof props.onCreateManySuccess === "string") {
+        if (typeof props.onSuccess === "string") {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const recordObj =
             /** @type {DecoratedProcedureUtilsRecord<InfiniteQueryObjTDef, Record<string, import("@trpc/server").AnyTRPCQueryProcedure>>} */ (
               getItemByPath(utils, props.getManyRouterPath)
             );
 
-          switch (props.onCreateManySuccess) {
+          switch (props.onSuccess) {
             case "revalidate":
               await recordObj.invalidate();
               break;
@@ -240,5 +258,92 @@ function ExcelToJsonButtonCreateMany(props) {
         toast.error("Failed to create data\n" + error.message);
       }}
     />
+  );
+}
+
+/**
+ * @template TData
+ * @template TValue
+ *
+ * @param {{
+ * 	routerPath: string;
+ *  getManyRouterPath: string;
+ *  getInput?: (flatRows: { original: NoInfer<TData> }[]) => unknown[] | Record<string, unknown> & { ids: unknown[] };
+ * 	columns: ColumnDef<TData, TValue>[];
+ * 	disabled: boolean;
+ *  onSuccess?: 'revalidate' | 'refetch';
+ * }} props
+ */
+function DeleteManySelectedButton(props) {
+  const tableStore = useDataTableContextStore();
+  const hasSelection = useStore(
+    tableStore,
+    (state) => Object.keys(state.rowSelection).length > 0,
+  );
+
+  const deleteManyMutationObj = useMemo(
+    () =>
+      /**
+       * @type {DecoratedMutation<{
+       * 	input: any;
+       * 	output: any;
+       * 	transformer: boolean;
+       * 	errorShape: DefaultErrorShape;
+       * }>}
+       */ (
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        getItemByPath(api, props.routerPath)
+      ),
+    [props.routerPath],
+  );
+  const deleteManyMutation = deleteManyMutationObj.useMutation();
+  const utils = api.useUtils();
+
+  return (
+    <Button
+      disabled={!hasSelection || props.disabled}
+      onClick={async () => {
+        if (!hasSelection) {
+          return;
+        }
+
+        const flatRows = tableStore
+          .getState()
+          .getTable()
+          .getSelectedRowModel().flatRows;
+
+        const input = /** @type {{ ids: unknown[] }} */ (
+          props.getInput
+            ? props.getInput(flatRows)
+            : // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+              { ids: flatRows.map((row) => row.original.id) }
+        );
+
+        await deleteManyMutation.mutateAsync(input, {
+          onError: (error) => {
+            toast.error("Failed to delete data\n" + error.message);
+          },
+        });
+
+        if (typeof props.onSuccess === "string") {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const recordObj =
+            /** @type {DecoratedProcedureUtilsRecord<InfiniteQueryObjTDef, Record<string, import("@trpc/server").AnyTRPCQueryProcedure>>} */ (
+              getItemByPath(utils, props.getManyRouterPath)
+            );
+
+          switch (props.onSuccess) {
+            case "revalidate":
+              await recordObj.invalidate();
+              break;
+            // case "refetch":
+            //   await recordObj.refetch()
+            //   break;
+          }
+        }
+      }}
+    >
+      Delete
+    </Button>
   );
 }

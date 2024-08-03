@@ -137,8 +137,14 @@ function TrpcDataTableStore() {
       <ApiDataTable
         columns={basicPostColumns}
         routerPath={routerPath}
-        createManyRouterPath="posts.createMany"
-        onCreateManySuccess="revalidate"
+        createMany={{
+          routerPath: "posts.createMany",
+          onSuccess: "revalidate",
+        }}
+        deleteMany={{
+          routerPath: "posts.deleteMany",
+          onSuccess: "revalidate",
+        }}
       />
     </DataTableProvider>
   );

@@ -31,6 +31,7 @@ export interface DataTableProps<TData, TValue> {
   isPending?: boolean;
   infiniteLoading?: InfiniteLoadingRowTriggerProps;
   topActionsButtonsStart?: React.ReactNode;
+  topActionsButtonsEnd?: React.ReactNode;
 }
 
 export type ValueOrUpdater<Value> = Value | ((prevValue: Value) => Value);

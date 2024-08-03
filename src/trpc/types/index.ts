@@ -60,6 +60,11 @@ type GetCreateManyPaths<Paths> = Paths extends `${string}.createMany`
   : never;
 export type InferAppRouterCreateMany = GetCreateManyPaths<AppRouterPaths>;
 
+type GetDeleteManyPaths<Paths> = Paths extends `${string}.deleteMany`
+  ? Paths
+  : never;
+export type InferAppRouterDeleteMany = GetDeleteManyPaths<AppRouterPaths>;
+
 type GetDeleteOnePaths<Paths> = Paths extends `${string}.deleteOne`
   ? Paths
   : never;
