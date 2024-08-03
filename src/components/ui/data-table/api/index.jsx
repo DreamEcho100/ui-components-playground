@@ -197,7 +197,7 @@ export default function ApiDataTable(props) {
  * 	routerPath: string;
  *  getManyRouterPath: string;
  * 	columns: ColumnDef<TData, TValue>[];
- * 	disabled: boolean;
+ * 	disabled?: boolean;
  *  onSuccess?: 'revalidate' | 'refetch';
  * }} props
  */
@@ -226,7 +226,7 @@ function ExcelToJsonCreateManyButton(props) {
   return (
     <ExcelToJsonButton
       columns={props.columns}
-      disabled={props.disabled}
+      disabled={createMayMutation.isPending || props.disabled}
       onSuccess={async (data) => {
         await createMayMutation.mutateAsync(
           { items: data },
@@ -270,7 +270,7 @@ function ExcelToJsonCreateManyButton(props) {
  *  getManyRouterPath: string;
  *  getInput?: (flatRows: { original: NoInfer<TData> }[]) => unknown[] | Record<string, unknown> & { ids: unknown[] };
  * 	columns: ColumnDef<TData, TValue>[];
- * 	disabled: boolean;
+ * 	disabled?: boolean;
  *  onSuccess?: 'revalidate' | 'refetch';
  * }} props
  */
@@ -301,7 +301,7 @@ function DeleteManySelectedButton(props) {
 
   return (
     <Button
-      disabled={!hasSelection || props.disabled}
+      disabled={!hasSelection || deleteManyMutation.isPending || props.disabled}
       onClick={async () => {
         if (!hasSelection) {
           return;
