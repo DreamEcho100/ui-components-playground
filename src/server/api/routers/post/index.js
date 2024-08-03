@@ -83,9 +83,7 @@ export const postRouter = createTRPCRouter({
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      await ctx.db.insert(posts).values({
-        name: input.name,
-      });
+      await ctx.prisma.post.createMany({ data: input });
     }),
 
   createMany: publicProcedure
@@ -95,6 +93,14 @@ export const postRouter = createTRPCRouter({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await ctx.db.insert(posts).values(input.items);
+    }),
+
+  deleteMany: publicProcedure
+    .input(z.object({ ids: z.array(z.number()) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.post.deleteMany({
+        where: { id: { in: input.ids } },
+      });
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
