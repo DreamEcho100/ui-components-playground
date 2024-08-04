@@ -38,7 +38,9 @@ interface ColumnFilter<TData> {
   value: unknown;
   operator: string;
 }
-export type ColumnFiltersState<TData> = ColumnFilter<TData>[];
+export type ColumnFiltersState<TData> = (ColumnFilter<TData> & {
+  operator?: string;
+})[];
 
 export interface DataTableStoreState<TData> {
   pageLimit: number;
