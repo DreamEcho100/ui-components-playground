@@ -32,11 +32,11 @@ const defaultEmptyData = [];
  * 	columns:  ColumnDef<TData, TValue>[]
  *  createMany?: {
  *   routerPath: InferAppRouterCreateMany;
- *   onSuccess?: 'revalidate'; // | 'refetch';
+ *   onSuccess?: 'invalidate'; // | 'refetch';
  * 	}
  *  deleteMany?: {
  *   routerPath: InferAppRouterDeleteMany;
- *   onSuccess?: 'revalidate'; // | 'refetch';
+ *   onSuccess?: 'invalidate'; // | 'refetch';
  *   getInput?: (flatRows: { original: NoInfer<TData> }[]) => unknown[] | Record<string, unknown> & { ids: unknown[] };
  *  }
  * }} ApiDataTableStoreProps
@@ -199,7 +199,7 @@ export default function ApiDataTable(props) {
  *  getManyRouterPath: string;
  * 	columns: ColumnDef<TData, TValue>[];
  * 	disabled?: boolean;
- *  onSuccess?: 'revalidate' | 'refetch';
+ *  onSuccess?: 'invalidate' | 'refetch';
  * }} props
  */
 function ExcelToJsonCreateManyButton(props) {
@@ -245,7 +245,7 @@ function ExcelToJsonCreateManyButton(props) {
             );
 
           switch (props.onSuccess) {
-            case "revalidate":
+            case "invalidate":
               await recordObj.invalidate();
               break;
             // case "refetch":
@@ -271,7 +271,7 @@ function ExcelToJsonCreateManyButton(props) {
  *  getInput?: (flatRows: { original: NoInfer<TData> }[]) => unknown[] | Record<string, unknown> & { ids: unknown[] };
  * 	columns: ColumnDef<TData, TValue>[];
  * 	disabled?: boolean;
- *  onSuccess?: 'revalidate' | 'refetch';
+ *  onSuccess?: 'invalidate' | 'refetch';
  * }} props
  */
 function DeleteManySelectedButton(props) {
@@ -334,7 +334,7 @@ function DeleteManySelectedButton(props) {
             );
 
           switch (props.onSuccess) {
-            case "revalidate":
+            case "invalidate":
               await recordObj.invalidate();
               break;
             // case "refetch":

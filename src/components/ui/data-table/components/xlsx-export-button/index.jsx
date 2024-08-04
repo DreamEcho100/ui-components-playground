@@ -109,7 +109,7 @@ export default function XLSXExportButton(props) {
       className="w-fit capitalize"
     >
       <Upload className="size-4" />
-      &nbsp; Export
+      &nbsp;Export
     </Button>
   );
 }

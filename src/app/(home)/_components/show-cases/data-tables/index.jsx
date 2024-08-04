@@ -139,11 +139,11 @@ function TrpcDataTableStore() {
         routerPath={routerPath}
         createMany={{
           routerPath: "posts.createMany",
-          onSuccess: "revalidate",
+          onSuccess: "invalidate",
         }}
         deleteMany={{
           routerPath: "posts.deleteMany",
-          onSuccess: "revalidate",
+          onSuccess: "invalidate",
         }}
       />
     </DataTableProvider>
