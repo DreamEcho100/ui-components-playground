@@ -73,7 +73,7 @@ export type InferAppRouterDeleteOnePaths = GetDeleteOnePaths<AppRouterPaths>;
 type GetRestoreOnePaths<Paths> = Paths extends `${string}.restoreOne`
   ? Paths
   : never;
-export type InferAppRouterRestorOne = GetRestoreOnePaths<AppRouterPaths>;
+export type InferAppRouterRestoreOne = GetRestoreOnePaths<AppRouterPaths>;
 
 export type InferInfiniteQueryData<TRouterPath extends AppRouterPaths> = ({
   items: unknown[];

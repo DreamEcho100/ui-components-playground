@@ -17,6 +17,7 @@ import { getItemByPath } from "./utils/index.js";
 import { useDataTableContextStore } from "../context";
 import ExcelToJsonButton from "../components/excel-to-json-button/index.jsx";
 import { Button } from "../../button/index.jsx";
+import { Trash } from "lucide-react";
 
 // const trpcDefaultLimit = 10;
 /** @type {any[]} */
@@ -29,11 +30,11 @@ const defaultEmptyData = [];
  * @typedef {{
  *  routerPath: TRouterPath;
  * 	columns:  ColumnDef<TData, TValue>[]
- *  createMany: {
+ *  createMany?: {
  *   routerPath: InferAppRouterCreateMany;
  *   onSuccess?: 'revalidate'; // | 'refetch';
  * 	}
- *  deleteMany: {
+ *  deleteMany?: {
  *   routerPath: InferAppRouterDeleteMany;
  *   onSuccess?: 'revalidate'; // | 'refetch';
  *   getInput?: (flatRows: { original: NoInfer<TData> }[]) => unknown[] | Record<string, unknown> & { ids: unknown[] };
@@ -163,27 +164,27 @@ export default function ApiDataTable(props) {
         hasMore: hasNextPage,
       }}
       topActionsButtonsStart={
-        <>
-          {props.deleteMany && (
-            <DeleteManySelectedButton
-              routerPath={props.deleteMany.routerPath}
-              onSuccess={props.deleteMany.onSuccess}
-              getInput={props.deleteMany?.getInput}
-              getManyRouterPath={props.routerPath}
-              columns={props.columns}
-              disabled={isPending}
-            />
-          )}
-          {props.createMany && (
-            <ExcelToJsonCreateManyButton
-              routerPath={props.createMany.routerPath}
-              onSuccess={props.createMany.onSuccess}
-              getManyRouterPath={props.routerPath}
-              columns={props.columns}
-              disabled={isPending}
-            />
-          )}
-        </>
+        props.deleteMany && (
+          <DeleteManySelectedButton
+            routerPath={props.deleteMany.routerPath}
+            onSuccess={props.deleteMany.onSuccess}
+            getInput={props.deleteMany?.getInput}
+            getManyRouterPath={props.routerPath}
+            columns={props.columns}
+            disabled={isPending}
+          />
+        )
+      }
+      topActionsButtonsEnd={
+        props.createMany && (
+          <ExcelToJsonCreateManyButton
+            routerPath={props.createMany.routerPath}
+            onSuccess={props.createMany.onSuccess}
+            getManyRouterPath={props.routerPath}
+            columns={props.columns}
+            disabled={isPending}
+          />
+        )
       }
     />
   );
@@ -221,10 +222,9 @@ function ExcelToJsonCreateManyButton(props) {
   const createMayMutation = createMayMutationObj.useMutation();
   const utils = api.useUtils();
 
-  api.posts.create.useMutation;
-
   return (
     <ExcelToJsonButton
+      variant="outline"
       columns={props.columns}
       disabled={createMayMutation.isPending || props.disabled}
       onSuccess={async (data) => {
@@ -301,6 +301,7 @@ function DeleteManySelectedButton(props) {
 
   return (
     <Button
+      variant="outline"
       disabled={!hasSelection || deleteManyMutation.isPending || props.disabled}
       onClick={async () => {
         if (!hasSelection) {
@@ -343,7 +344,8 @@ function DeleteManySelectedButton(props) {
         }
       }}
     >
-      Delete
+      <Trash className="size-4" />
+      &nbsp; Delete
     </Button>
   );
 }

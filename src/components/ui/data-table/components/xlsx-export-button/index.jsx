@@ -7,6 +7,7 @@ import { Button } from "../../../button";
 import { utils as XLSXUtils, writeFile as XLSXWriteFile } from "xlsx";
 import { useDataTableContextStore } from "../../../data-table/context";
 import { useStore } from "zustand";
+import { Upload } from "lucide-react";
 
 /**
  * @param {{ item: unknown[]; header?: string[]; }} params
@@ -48,6 +49,7 @@ export default function XLSXExportButton(props) {
 
   return (
     <Button
+      variant="outline"
       disabled={!hasRowSelection}
       onClick={() => {
         /** @type {string[]} */
@@ -106,7 +108,8 @@ export default function XLSXExportButton(props) {
       }}
       className="w-fit capitalize"
     >
-      Export
+      <Upload className="size-4" />
+      &nbsp; Export
     </Button>
   );
 }

@@ -1,10 +1,4 @@
-import type {
-  AccessorColumnDef,
-  DisplayColumnDef,
-  GroupColumnDef,
-  ColumnResizeMode,
-  RowData,
-} from "@tanstack/react-table";
+import type { ColumnResizeMode, RowData } from "@tanstack/react-table";
 import {
   type ColumnDef,
   type ColumnFiltersState,
