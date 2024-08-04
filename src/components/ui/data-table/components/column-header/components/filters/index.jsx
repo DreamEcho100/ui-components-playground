@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "~/components/ui/input";
 import { SelectDropdown } from "~/components/ui/select";
 import { formatDate, isValidDate } from "./utils";
@@ -55,13 +55,10 @@ export default function Filter(props) {
 
   const columnId = props.column.id;
 
-  console.log("___ columnId", columnId);
-
-  const setFilterValue =
+  const setFilterValue = useCallback(
     /** @param {string} operator */
 
-
-      (operator) =>
+    (operator) =>
       /** @param {(old: any) => unknown} updater */
       (updater) => {
         /** @type {unknown} */
@@ -73,7 +70,6 @@ export default function Filter(props) {
 
         /** @type {unknown} */
         const newValues = updater(oldValues);
-        console.log(newValues);
 
         if (
           typeof newValues === "undefined" ||
@@ -88,12 +84,9 @@ export default function Filter(props) {
               ),
             );
         }
-        console.log("object");
         dataTableStore.getState().setColumnFilters((old) => {
-          console.log(old);
           let isFound = false;
           const updatedFilters = old.map((filter) => {
-            console.log(filter);
             if (filter.id === columnId && filter.operator === operator) {
               isFound = true;
               return {
@@ -116,20 +109,14 @@ export default function Filter(props) {
 
           return updatedFilters;
         });
-      };
-
-  // const value = useMemo(() => {}, []);
-  // const onChange = useCallback(
-  //   /** @param {any} value */
-  //   (value) => {},
-  //   [],
-  // );
+      },
+    [columnId, dataTableStore],
+  );
 
   if (!filterVariant?.type) {
     return null;
   }
 
-  console.log("___ columnFilterValue", columnFilterValue);
   if (filterVariant.type === "select") {
     const operator = "exact";
     return (
@@ -147,7 +134,6 @@ export default function Filter(props) {
                 return;
               }
 
-              console.log(value);
               return value;
             },
           );
@@ -159,16 +145,19 @@ export default function Filter(props) {
   }
 
   if (filterVariant.type === "range-date") {
-    const values = /** @type {[Date, Date]} */ (columnFilterValue);
-    const startDate = values?.[0];
-    const endDate = values?.[1];
+    const values =
+      /** @type {[Date|null|undefined, Date|null|undefined] | undefined} */ (
+        columnFilterValue
+      );
+    const from = values?.[0];
+    const to = values?.[1];
     const operator = "between";
 
     return (
       <div className="flex space-x-2">
         <DebouncedInput
           type="date"
-          value={startDate ? formatDate(startDate) : ""}
+          value={from ? formatDate(from) : ""}
           onChange={(value) => {
             const newValue =
               isValidDate(value) && value !== "" && value !== "Invalid Date"
@@ -193,10 +182,11 @@ export default function Filter(props) {
             );
           }}
           name="from"
+          max={to?.toISOString().split("T")[0]}
         />
         <DebouncedInput
           type="date"
-          value={endDate ? formatDate(endDate) : ""}
+          value={to ? formatDate(to) : ""}
           onChange={(value) => {
             const newValue =
               isValidDate(value) && value !== "" && value !== "Invalid Date"
@@ -211,7 +201,7 @@ export default function Filter(props) {
 
                 if (
                   (!item1 && !item2) ||
-                  (item1 && item2 && item1.getTime() < item2.getTime())
+                  (item1 && item2 && item1.getTime() > item2.getTime())
                 ) {
                   return;
                 }
@@ -221,26 +211,26 @@ export default function Filter(props) {
             );
           }}
           name="to"
+          min={from?.toISOString().split("T")[0]}
         />
       </div>
     );
   }
 
   if (filterVariant.type === "range-number") {
+    const values =
+      /** @type {[number|null|undefined, number|null|undefined] | undefined} */ (
+        columnFilterValue
+      );
+    const from = values?.[0];
+    const to = values?.[1];
     const operator = "between";
+
     return (
       <div className="flex space-x-2">
-        {/* 
-				include abbreviation: 
-				exclude abbreviation: 
-				
-
-				 */}
-        {/* <select */}
-        {/* See faceted column filters example for from to values functionality */}
         <DebouncedInput
           type="number"
-          value={/** @type {[number, number]} */ (columnFilterValue)?.[0] ?? ""}
+          value={from ?? ""}
           onChange={(value) =>
             setFilterValue(operator)(
               /** @param {[number|null|undefined, number|null|undefined] | undefined} old  */
@@ -251,7 +241,7 @@ export default function Filter(props) {
                 if (
                   isNaN(item1) ||
                   (!item1 && !item2) ||
-                  (item1 && item2 && item1 < item2)
+                  (item1 && item2 && item1 > item2)
                 ) {
                   return;
                 }
@@ -263,13 +253,14 @@ export default function Filter(props) {
           placeholder={`Min`}
           name="from"
           className="w-24 rounded border shadow"
+          max={to ?? undefined}
         />
         <DebouncedInput
           type="number"
-          value={/** @type {[number, number]} */ (columnFilterValue)?.[1] ?? ""}
+          value={to ?? ""}
           onChange={(value) =>
             setFilterValue(operator)(
-              /** @param {[number, number]} old  */
+              /** @param {[number|null|undefined, number|null|undefined] | undefined} old  */
               (old) => {
                 const item1 = old?.[0] ?? null;
                 const item2 = typeof value === "number" ? value : Number(value);
@@ -277,7 +268,7 @@ export default function Filter(props) {
                 if (
                   isNaN(item2) ||
                   (!item1 && !item2) ||
-                  (item1 && item2 && item1 < item2)
+                  (item1 && item2 && item1 > item2)
                 ) {
                   return;
                 }
@@ -289,6 +280,7 @@ export default function Filter(props) {
           placeholder={`Max`}
           name="to"
           className="w-24 rounded border shadow"
+          min={from ?? undefined}
         />
       </div>
     );
@@ -313,7 +305,6 @@ export default function Filter(props) {
                 return;
               }
 
-              console.log(value);
               return value;
             },
           );

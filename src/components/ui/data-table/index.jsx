@@ -24,6 +24,8 @@ import { DataTableColumnHeader } from "./components/column-header";
 import { dateBetweenFilterFn } from "./components/column-header/components/filters/utils";
 import InfiniteLoadingRowTrigger from "./components/infinite-loading-row-trigger";
 import XLSXExportButton from "./components/xlsx-export-button/index.jsx";
+import { Chip } from "../chip/index.jsx";
+import { Button } from "../button/index.jsx";
 
 /**
  * @template TData
@@ -137,35 +139,182 @@ export function DataTable(props) {
   //   </div>
   // </div>
 
-  console.log(columnFilters);
-
   return (
-    <div className="flex flex-col gap-4">
-      {/* Display filters as a name and a value (badges that can be added ore removed depending on the type) */}
-      {/* <div className="5 flex flex-col gap-0">
+    <div className="flex flex-col gap-4 rounded-md bg-background px-4 pt-4 text-foreground">
+      <div className="flex flex-col justify-center gap-2">
         {columnFilters.map((filter) => {
           if (filter.operator === "between") {
+            /** @type {any} */
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            let from = filter.value?.[0];
+            /** @type {any} */
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            let to = filter.value?.[1];
+
+            if (from instanceof Date) {
+              from = from.toLocaleDateString();
+            }
+
+            if (to instanceof Date) {
+              to = to.toLocaleDateString();
+            }
+
+            const hasAnyValue = !!(from || to);
+
+            if (!hasAnyValue) {
+              return null;
+            }
+
             return (
-              <div className="flex gap-2" key={filter.id}>
-                <p>{filter.id}</p>
-                <p>{filter.value[0]}</p>
-                <p>and</p>
-                <p>{filter.value[1]}</p>
+              <div
+                className="flex flex-wrap items-center gap-2"
+                key={filter.id}
+              >
+                <p>{filter.id}: </p>
+                <div className="flex flex-wrap gap-2">
+                  {from && (
+                    <Chip variant="secondary" className="py-0 ps-0">
+                      <Button
+                        type="button"
+                        className="h-7 rounded-s-full py-0 pe-1 ps-2"
+                        variant="light"
+                        onClick={() => {
+                          dataTableStore.getState().setColumnFilters((old) => {
+                            /** @type {any[]} */
+                            const newFilters = [];
+
+                            for (const oldFilter of old) {
+                              if (
+                                oldFilter.id === filter.id &&
+                                oldFilter.operator === filter.operator
+                              ) {
+                                const item1 = null;
+                                /** @type {Date|null|undefined} */
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                const item2 = oldFilter?.value?.[1] ?? null;
+
+                                if (!item1 && !item2) {
+                                  continue;
+                                }
+
+                                newFilters.push({
+                                  ...oldFilter,
+                                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                  // @ts-ignore
+                                  value: [item1, item2],
+                                });
+                              } else {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                newFilters.push(oldFilter);
+                              }
+                            }
+
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                            return newFilters;
+                          });
+                        }}
+                      >
+                        x
+                      </Button>
+                      &nbsp; From: {from}
+                    </Chip>
+                  )}
+                  {to && (
+                    <Chip variant="secondary" className="py-0 ps-0">
+                      <Button
+                        type="button"
+                        className="h-7 rounded-s-full py-0 pe-1 ps-2"
+                        variant="light"
+                        onClick={() => {
+                          dataTableStore.getState().setColumnFilters((old) => {
+                            /** @type {any[]} */
+                            const newFilters = [];
+
+                            for (const oldFilter of old) {
+                              if (
+                                oldFilter.id === filter.id &&
+                                oldFilter.operator === filter.operator
+                              ) {
+                                /** @type {Date|null|undefined} */
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                const item1 = oldFilter?.value?.[0] ?? null;
+                                const item2 = null;
+
+                                if (!item1 && !item2) {
+                                  continue;
+                                }
+
+                                newFilters.push({
+                                  ...oldFilter,
+                                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                  // @ts-ignore
+                                  value: [item1, item2],
+                                });
+                              } else {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                newFilters.push(oldFilter);
+                              }
+                            }
+
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                            return newFilters;
+                          });
+                        }}
+                      >
+                        x
+                      </Button>
+                      &nbsp; To: {to}
+                    </Chip>
+                  )}
+                </div>
               </div>
             );
           }
 
+          /** @type {any} */
+          const value = filter.value;
+
           return (
-            <div className="flex gap-2" key={filter.id}>
-              <p>{filter.id}</p>
-              <p>{filter.value}</p>
-              <p>{filter.operator}</p>
+            <div className="flex flex-wrap items-center gap-2" key={filter.id}>
+              <p>{filter.id}: </p>
+              <Chip variant="secondary" className="py-0 ps-0">
+                <Button
+                  type="button"
+                  className="h-7 rounded-s-full py-0 pe-1 ps-2"
+                  variant="light"
+                  onClick={() => {
+                    dataTableStore.getState().setColumnFilters((old) => {
+                      return old.filter(
+                        (oldFilter) =>
+                          !(
+                            oldFilter.id === filter.id &&
+                            oldFilter.operator === filter.operator
+                          ),
+                      );
+                    });
+                  }}
+                >
+                  x
+                </Button>
+                &nbsp;
+                {value}
+              </Chip>
             </div>
           );
         })}
-      </div> */}
+      </div>
 
-      <div className="flex items-center justify-between gap-4 px-4">
+      <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.

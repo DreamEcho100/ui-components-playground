@@ -52,7 +52,7 @@ export const postRouter = createTRPCRouter({
               }
             }
           }
-          console.log(where);
+
           return where;
         },
         getItems: async ({ take, skip, orderBy, where }) => {
