@@ -14,24 +14,17 @@ export const getManyPostsSchema = z.object({
         value: z.string(),
       }),
       z.object({
-        id: z.literal("createdAt"),
+        id: z.enum(["createdAt", "updatedAt"]),
         value: z.tuple([
-          z.string().nullish().optional(), // from
-          z.string().nullish().optional(), // to
+          z.coerce.date().nullish().optional(), // from
+          z.coerce.date().nullish().optional(), // to
         ]),
       }),
       z.object({
         id: z.literal("viewCount"),
         value: z.tuple([
-          z.number().nullish().optional(), // from
-          z.number().nullish().optional(), // to
-        ]),
-      }),
-      z.object({
-        id: z.literal("updatedAt"),
-        value: z.tuple([
-          z.string().nullish().optional(), // from
-          z.string().nullish().optional(), // to
+          z.coerce.number().nullish().optional(), // from
+          z.coerce.number().nullish().optional(), // to
         ]),
       }),
     ]),

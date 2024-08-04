@@ -43,7 +43,7 @@ export const basicPostColumns = [
         props: {
           placeholder: "All",
           options: [
-            { label: "All", value: "" },
+            { label: "All", value: null },
             { label: "Draft", value: "DRAFT" },
             { label: "Published", value: "PUBLISHED" },
             { label: "Archived", value: "ARCHIVED" },

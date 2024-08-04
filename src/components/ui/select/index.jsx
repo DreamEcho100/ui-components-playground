@@ -176,7 +176,7 @@ const SelectDropdown = forwardRef(
    * @param {SelectTriggerProps & {
    * 	placeholder?: string;
    *  options: { value: Option; label: ReactNode }[];
-   *  value?: Option;
+   *  value?: Option | null;
    *  onValueChange?: import('@radix-ui/react-select').SelectProps['onValueChange']
    * }} props
    * @param {ForwardedRef<ElementRef<typeof SelectPrimitive.Trigger>>} ref

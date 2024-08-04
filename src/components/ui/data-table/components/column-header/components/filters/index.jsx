@@ -3,7 +3,6 @@ import { Input } from "~/components/ui/input";
 import { SelectDropdown } from "~/components/ui/select";
 import { formatDate, isValidDate } from "./utils";
 import { useDataTableContextStore } from "~/components/ui/data-table/context";
-import { useStore } from "zustand";
 
 const defaultDebounceTimeout = 1000;
 /**
@@ -54,20 +53,70 @@ export default function Filter(props) {
   const dataTableStore = useDataTableContextStore();
   const columnFilterValue = props.column.getFilterValue();
 
-  const setFilterValue = useStore(dataTableStore, (state) =>
-    state.isFilteringExternal
-      ? /** @param {any} value */
-        (value) => {
-          state.setColumnFilters((old) => {
-            // const newFilters = old.filter(
-            //   (filter) => filter.id !== props.column.id,
-            // );
-            // newFilters.push({ id: props.column.id, value });
-            return [{ id: props.column.id, value, operator: "contains" }];
-          });
+  const columnId = props.column.id;
+
+  console.log("___ columnId", columnId);
+
+  const setFilterValue =
+    /** @param {string} operator */
+
+
+      (operator) =>
+      /** @param {(old: any) => unknown} updater */
+      (updater) => {
+        /** @type {unknown} */
+        const oldValues = dataTableStore
+          .getState()
+          .columnFilters.find(
+            (filter) => filter.id === columnId && filter.operator === operator,
+          )?.value;
+
+        /** @type {unknown} */
+        const newValues = updater(oldValues);
+        console.log(newValues);
+
+        if (
+          typeof newValues === "undefined" ||
+          (typeof newValues === "object" && !newValues)
+        ) {
+          return dataTableStore
+            .getState()
+            .setColumnFilters((old) =>
+              old.filter(
+                (filter) =>
+                  !(filter.id === columnId && filter.operator === operator),
+              ),
+            );
         }
-      : props.column.setFilterValue,
-  );
+        console.log("object");
+        dataTableStore.getState().setColumnFilters((old) => {
+          console.log(old);
+          let isFound = false;
+          const updatedFilters = old.map((filter) => {
+            console.log(filter);
+            if (filter.id === columnId && filter.operator === operator) {
+              isFound = true;
+              return {
+                id: columnId,
+                value: newValues,
+                operator,
+              };
+            }
+
+            return filter;
+          });
+
+          if (!isFound) {
+            updatedFilters.push({
+              id: columnId,
+              value: newValues,
+              operator,
+            });
+          }
+
+          return updatedFilters;
+        });
+      };
 
   // const value = useMemo(() => {}, []);
   // const onChange = useCallback(
@@ -80,11 +129,29 @@ export default function Filter(props) {
     return null;
   }
 
+  console.log("___ columnFilterValue", columnFilterValue);
   if (filterVariant.type === "select") {
+    const operator = "exact";
     return (
       <SelectDropdown
         {...filterVariant.props}
-        onValueChange={setFilterValue}
+        onValueChange={(value) => {
+          setFilterValue(operator)(
+            /** @param {string | undefined} old  */
+            (old) => {
+              // if (old === value) {
+              // 	return;
+              // }
+
+              if (typeof value !== "string" || value === "") {
+                return;
+              }
+
+              console.log(value);
+              return value;
+            },
+          );
+        }}
         value={columnFilterValue?.toString()}
         name="select"
       />
@@ -95,6 +162,8 @@ export default function Filter(props) {
     const values = /** @type {[Date, Date]} */ (columnFilterValue);
     const startDate = values?.[0];
     const endDate = values?.[1];
+    const operator = "between";
+
     return (
       <div className="flex space-x-2">
         <DebouncedInput
@@ -106,11 +175,11 @@ export default function Filter(props) {
                 ? new Date(value)
                 : null;
 
-            setFilterValue(
-              /** @param {[Date, Date]} old  */
+            setFilterValue(operator)(
+              /** @param {[Date|null|undefined, Date|null|undefined] | undefined} old  */
               (old) => {
                 const item1 = newValue;
-                const item2 = old?.[1];
+                const item2 = old?.[1] ?? null;
 
                 if (
                   (!item1 && !item2) ||
@@ -134,15 +203,15 @@ export default function Filter(props) {
                 ? new Date(value)
                 : null;
 
-            setFilterValue(
-              /** @param {[Date, Date]} old  */
+            setFilterValue(operator)(
+              /** @param {[Date|null|undefined, Date|null|undefined] | undefined} old  */
               (old) => {
-                const item1 = old?.[0];
+                const item1 = old?.[0] ?? null;
                 const item2 = newValue;
 
                 if (
                   (!item1 && !item2) ||
-                  (item1 && item2 && item1.getTime() > item2.getTime())
+                  (item1 && item2 && item1.getTime() < item2.getTime())
                 ) {
                   return;
                 }
@@ -158,6 +227,7 @@ export default function Filter(props) {
   }
 
   if (filterVariant.type === "range-number") {
+    const operator = "between";
     return (
       <div className="flex space-x-2">
         {/* 
@@ -172,16 +242,16 @@ export default function Filter(props) {
           type="number"
           value={/** @type {[number, number]} */ (columnFilterValue)?.[0] ?? ""}
           onChange={(value) =>
-            setFilterValue(
-              /** @param {[number, number]} old  */
+            setFilterValue(operator)(
+              /** @param {[number|null|undefined, number|null|undefined] | undefined} old  */
               (old) => {
                 const item1 = typeof value === "number" ? value : Number(value);
-                const item2 = old?.[1];
+                const item2 = old?.[1] ?? null;
 
                 if (
                   isNaN(item1) ||
                   (!item1 && !item2) ||
-                  (item1 && item2 && item1 > item2)
+                  (item1 && item2 && item1 < item2)
                 ) {
                   return;
                 }
@@ -198,16 +268,16 @@ export default function Filter(props) {
           type="number"
           value={/** @type {[number, number]} */ (columnFilterValue)?.[1] ?? ""}
           onChange={(value) =>
-            setFilterValue(
+            setFilterValue(operator)(
               /** @param {[number, number]} old  */
               (old) => {
-                const item1 = old?.[0];
+                const item1 = old?.[0] ?? null;
                 const item2 = typeof value === "number" ? value : Number(value);
 
                 if (
                   isNaN(item2) ||
                   (!item1 && !item2) ||
-                  (item1 && item2 && item1 > item2)
+                  (item1 && item2 && item1 < item2)
                 ) {
                   return;
                 }
@@ -225,11 +295,29 @@ export default function Filter(props) {
   }
 
   if (filterVariant.type === "text") {
+    const operator = "contains";
+
     return (
       <DebouncedInput
         {...filterVariant?.props}
         className="w-36 rounded border shadow"
-        onChange={(value) => setFilterValue(value)}
+        onChange={(value) => {
+          setFilterValue(operator)(
+            /** @param {string | undefined} old  */
+            (old) => {
+              // if (old === value) {
+              // 	return;
+              // }
+
+              if (typeof value !== "string" || value === "") {
+                return;
+              }
+
+              console.log(value);
+              return value;
+            },
+          );
+        }}
         placeholder={`Search...`}
         type="text"
         name="search"

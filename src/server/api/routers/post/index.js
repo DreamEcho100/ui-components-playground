@@ -20,23 +20,20 @@ export const postRouter = createTRPCRouter({
             for (const filter of input.filters) {
               switch (filter.id) {
                 case "name": {
-                  where.AND.push({ name: { contains: filter.value } });
+                  where.AND.push({ [filter.id]: { contains: filter.value } });
                   break;
                 }
 
                 case "status": {
-                  where.AND.push({
-                    status: filter.value,
-                  });
+                  where.AND.push({ [filter.id]: filter.value });
                   break;
                 }
 
                 case "viewCount": {
-                  const [from, to] = filter.value ?? {};
                   where.AND.push({
-                    viewCount: {
-                      gte: from ? Number(from) : undefined,
-                      lte: to ? Number(to) : undefined,
+                    [filter.id]: {
+                      gte: filter.value[0] ?? undefined,
+                      lte: filter.value[1] ?? undefined,
                     },
                   });
                   break;
@@ -46,12 +43,8 @@ export const postRouter = createTRPCRouter({
                 case "updatedAt": {
                   where.AND.push({
                     [filter.id]: {
-                      gte: filter.value[0]
-                        ? new Date(filter.value[0])
-                        : undefined,
-                      lte: filter.value[1]
-                        ? new Date(filter.value[1])
-                        : undefined,
+                      gte: filter.value[0] ?? undefined,
+                      lte: filter.value[1] ?? undefined,
                     },
                   });
                   break;
@@ -59,7 +52,7 @@ export const postRouter = createTRPCRouter({
               }
             }
           }
-
+          console.log(where);
           return where;
         },
         getItems: async ({ take, skip, orderBy, where }) => {

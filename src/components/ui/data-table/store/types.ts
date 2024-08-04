@@ -36,6 +36,7 @@ type VisibilityState<TData> = {
 interface ColumnFilter<TData> {
   id: ItemDeepPathsSeparatedByDots<TData> & string; //  | (string & {});
   value: unknown;
+  operator: string;
 }
 export type ColumnFiltersState<TData> = ColumnFilter<TData>[];
 

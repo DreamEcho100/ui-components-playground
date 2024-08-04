@@ -54,7 +54,7 @@ export function BreadcrumbBuilder({
 
       if (!disableRoot_) {
         breadcrumbItems.push(
-          <BreadcrumbItem>
+          <BreadcrumbItem key="root-item">
             <BreadcrumbLink asChild>
               <Link href="/">{rootName}</Link>
             </BreadcrumbLink>
@@ -62,14 +62,14 @@ export function BreadcrumbBuilder({
         );
       } else {
         breadcrumbItems.push(
-          <BreadcrumbItem>
+          <BreadcrumbItem key="root-item">
             <BreadcrumbPage>{rootName}</BreadcrumbPage>
           </BreadcrumbItem>,
         );
       }
 
       if (parts.length > 0) {
-        breadcrumbItems.push(<BreadcrumbSeparator />);
+        breadcrumbItems.push(<BreadcrumbSeparator key="root-separator" />);
       }
     }
 
@@ -118,11 +118,11 @@ export function BreadcrumbBuilder({
         disabled ||
           (i === 0 && disableFirstBreadcrumb) ||
           (i === parts.length - 1 && disableLastBreadcrumb) ? (
-          <BreadcrumbItem>
+          <BreadcrumbItem key={`${i}-${part}-item`}>
             <BreadcrumbPage>{name}</BreadcrumbPage>
           </BreadcrumbItem>
         ) : (
-          <BreadcrumbItem>
+          <BreadcrumbItem key={`${i}-${part}-item`}>
             <BreadcrumbLink asChild>
               <Link href={href}>{name}</Link>
             </BreadcrumbLink>
@@ -131,7 +131,9 @@ export function BreadcrumbBuilder({
       );
 
       if (i < parts.length - 1) {
-        breadcrumbItems.push(<BreadcrumbSeparator />);
+        breadcrumbItems.push(
+          <BreadcrumbSeparator key={`${i}-${part}-separator`} />,
+        );
       }
     }
 

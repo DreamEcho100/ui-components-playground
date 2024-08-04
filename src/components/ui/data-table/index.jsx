@@ -137,9 +137,35 @@ export function DataTable(props) {
   //   </div>
   // </div>
 
+  console.log(columnFilters);
+
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between gap-4 p-4">
+    <div className="flex flex-col gap-4">
+      {/* Display filters as a name and a value (badges that can be added ore removed depending on the type) */}
+      {/* <div className="5 flex flex-col gap-0">
+        {columnFilters.map((filter) => {
+          if (filter.operator === "between") {
+            return (
+              <div className="flex gap-2" key={filter.id}>
+                <p>{filter.id}</p>
+                <p>{filter.value[0]}</p>
+                <p>and</p>
+                <p>{filter.value[1]}</p>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex gap-2" key={filter.id}>
+              <p>{filter.id}</p>
+              <p>{filter.value}</p>
+              <p>{filter.operator}</p>
+            </div>
+          );
+        })}
+      </div> */}
+
+      <div className="flex items-center justify-between gap-4 px-4">
         <p className="text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
