@@ -11,6 +11,7 @@ import { Input } from "~/components/ui/input";
 import ChipsShowCase from "./_components/show-cases/chips";
 import TypographyShowcase from "./_components/show-cases/typography";
 import BreadcrumbsShowCase from "./_components/show-cases/breadcrumbs";
+import SwitchesShowCase from "./_components/show-cases/Switches";
 
 export default function Home() {
   return (
@@ -67,6 +68,7 @@ export default function Home() {
       <TextareasShowCase />
       <DataTablesShowCase />
       <ChipsShowCase />
+      <SwitchesShowCase />
     </main>
   );
 }
