@@ -164,7 +164,7 @@ export function useXLSXWriteFileWorker(cb) {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("~/libs/xlsx/workers/json2Excel.worker.ts", import.meta.url),
+      new URL("~/libss/xlsx/workers/json2Excel.worker.ts", import.meta.url),
     );
     const current = workerRef.current;
 
@@ -193,7 +193,7 @@ export function useJson2ExcelWorker(cb) {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("~/libs/xlsx/workers/excel2json.worker.ts", import.meta.url),
+      new URL("~/libss/xlsx/workers/excel2json.worker.ts", import.meta.url),
     );
     const current = workerRef.current;
 

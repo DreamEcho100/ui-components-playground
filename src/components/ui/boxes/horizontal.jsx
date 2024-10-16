@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 import { useMemo } from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 
 const horizontalBoxSeparator = cva("", {
   variants: {

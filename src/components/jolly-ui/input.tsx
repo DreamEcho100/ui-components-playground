@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Input } from "react-aria-components";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const _Input = ({ className, ...props }: InputProps) => {
   return (

@@ -10,7 +10,7 @@ import {
   type LinkProps,
 } from "react-aria-components";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 
 const _Breadcrumbs = <T extends object>({
   className,

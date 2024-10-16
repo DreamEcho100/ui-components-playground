@@ -13,7 +13,7 @@ import {
   SliderTrack as _SliderTrack,
 } from "react-aria-components";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 
 const ColorSlider = _ColorSlider;
 

@@ -3,7 +3,7 @@
 /** @import { ButtonProps } from './types.ts' */
 
 import { forwardRef } from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 import { buttonVariants } from "./utils";
 
 const Button = forwardRef(

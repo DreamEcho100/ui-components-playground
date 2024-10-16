@@ -13,7 +13,7 @@ import {
   type PopoverProps,
 } from "react-aria-components";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 import { Button } from "~/components/jolly-ui/button";
 import { Popover } from "~/components/jolly-ui/popover";
 

@@ -7,7 +7,7 @@ import {
   type TooltipProps,
 } from "react-aria-components";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 
 const _TooltipTrigger = TooltipTrigger;
 

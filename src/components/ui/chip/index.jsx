@@ -1,7 +1,7 @@
 /** @import { ForwardedRef } from 'react' */
 /** @import { BadgeProps } from './types.ts' */
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 import { badgeVariants } from "./utils";
 import { forwardRef } from "react";
 

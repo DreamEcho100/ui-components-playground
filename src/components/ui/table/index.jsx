@@ -2,7 +2,7 @@
 /** @import { TableProps, TableHeaderProps, TableBodyProps, TableFooterProps, TableRowProps, TableHeadProps, TableCellProps, TableCaptionProps } from './types.ts' */
 
 import { forwardRef } from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 import { tableVariants, tableHeadVariants, tableCellVariants } from "./utils";
 
 const Table = forwardRef(

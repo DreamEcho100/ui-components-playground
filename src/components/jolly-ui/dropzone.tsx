@@ -3,7 +3,7 @@
 import * as React from "react";
 import { DropZone, type DropZoneProps } from "react-aria-components";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/libs/utils";
 
 const _DropZone = ({ className, ...props }: DropZoneProps) => (
   <DropZone
