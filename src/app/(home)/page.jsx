@@ -1,5 +1,5 @@
 import HorizontalBox from "~/components/ui/boxes/horizontal";
-import InputsShowCase from "./_components/show-cases/Inputs";
+import InputsShowCase from "./_components/show-cases/inputs";
 import AccordionsShowCase from "./_components/show-cases/accordions";
 import ButtonsShowSase from "./_components/show-cases/buttons";
 import CardsShowCase from "./_components/show-cases/cards";

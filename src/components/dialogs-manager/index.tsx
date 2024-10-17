@@ -1,10 +1,13 @@
-// https://chatgpt.com/c/66e986ea-daa4-8013-a3a6-620e8639803e
 // https://github.com/remult/remult/blob/main/examples/shadcn-react-table/src/components/dialog/dialog-context.tsx
+// https://chatgpt.com/c/66e986ea-daa4-8013-a3a6-620e8639803e
+// https://claude.ai/chat/263168dd-b3c7-4041-b19f-ea7b73c1715a
+//
 // Area of improvement
 // - Store the active dialogs ids in a Set on the store itself for global tracking while keeping the local tracking for cleanup
-// - Use a `Date.now()` or a generated unique ID for dialog IDs
+// - Consider using a more robust ID generation system instead of a simple incrementing number to avoid potential conflicts.
 // - Handling Dialog Nesting/Stacking, by keeping track of the active dialog IDs in a stack. ensure that the topmost dialog is the one that is focused and rendered, and the rest could be hidden or disabled, and when the topmost dialog is closed, the next dialog in the stack should be focused and rendered, and so on, until the stack is empty.
-//
+// - Add a mechanism to update dialog content without closing and reopening the dialog.
+// - Add some form of logging or telemetry to track dialog usage and any errors that occur.
 
 "use client";
 
@@ -24,7 +27,8 @@ import { useStore } from "zustand";
 type DialogId = number;
 
 export type DialogContentRender<T> = (
-  resolve: (result?: T) => void,
+  resolve: (result: T) => void,
+  managedDialogId: DialogId,
 ) => ReactNode;
 
 // Define Zustand store for managing dialogs
@@ -33,6 +37,8 @@ interface DialogsManagerStore {
     id: DialogId;
     onClose: () => void;
     render: () => ReactNode;
+    stopCloseOn?: ("escape_key" | "click_outside")[];
+    hide?: ("default_close_button" | "overlay")[];
   }[];
   addDialog: (dialog: DialogsManagerStore["dialogs"][0]) => void;
   removeDialog: (id: DialogId) => void;
@@ -40,6 +46,8 @@ interface DialogsManagerStore {
     render: DialogContentRender<T>,
     options?: {
       defaultResult?: T;
+      stopCloseOn?: ("escape_key" | "click_outside")[];
+      hide?: ("default_close_button" | "overlay")[];
       manageCleanup?: {
         setDialogId: (id: DialogId) => void;
         removeDialogId: (id: DialogId) => void;
@@ -94,6 +102,8 @@ export const dialogsManagerStore = createStore<DialogsManagerStore>(
 
           addDialog({
             id,
+            stopCloseOn: options.stopCloseOn,
+            hide: options.hide,
             onClose: () => {
               removeDialog(id);
               resolve(options.defaultResult);
@@ -102,7 +112,7 @@ export const dialogsManagerStore = createStore<DialogsManagerStore>(
               render((result?: T) => {
                 removeDialog(id);
                 resolve(result);
-              }),
+              }, id),
           });
         });
 
@@ -136,6 +146,8 @@ export const dialogsManagerStore = createStore<DialogsManagerStore>(
 function MyDialog(
   props: PropsWithChildren<{
     onClose: VoidFunction;
+    stopCloseOn?: ("escape_key" | "click_outside")[];
+    hide?: ("default_close_button" | "overlay")[];
   }>,
 ) {
   const [open, setOpen] = useState(true);
@@ -150,7 +162,21 @@ function MyDialog(
         setOpen(open);
       }}
     >
-      <DialogContent>{props.children}</DialogContent>
+      <DialogContent
+        hide={props.hide}
+        onInteractOutside={(event) => {
+          if (props.stopCloseOn?.includes("click_outside")) {
+            event.preventDefault();
+          }
+        }}
+        onEscapeKeyDown={(event) => {
+          if (props.stopCloseOn?.includes("escape_key")) {
+            event.preventDefault();
+          }
+        }}
+      >
+        {props.children}
+      </DialogContent>
     </Dialog>
   );
 }
@@ -174,11 +200,16 @@ function MyDialog(
  */
 export function DialogsManagerItemsRenderer() {
   const dialogs = useStore(dialogsManagerStore, (state) => state.dialogs);
+  console.log("___ dialogs", dialogs);
 
   return dialogs.map((item) => {
     const Item = item.render;
     return (
-      <MyDialog key={item.id} onClose={item.onClose}>
+      <MyDialog
+        key={item.id}
+        onClose={item.onClose}
+        stopCloseOn={item.stopCloseOn}
+      >
         <Item />
       </MyDialog>
     );
@@ -199,7 +230,7 @@ export function DialogsManagerItemsRenderer() {
  * manageCleanup.removeDialogId(1); // Remove dialog ID from tracking
  * ```
  */
-function useManagedDialogCleanup() {
+function useManagedDialogsCleanup() {
   const dialogsIdsRef = useRef<Set<DialogId>>(new Set());
 
   const setDialogId = useCallback((id: DialogId) => {
@@ -247,13 +278,15 @@ function useManagedDialogCleanup() {
  */
 export function useShowDialog() {
   const showDialog = useStore(dialogsManagerStore, (state) => state.showDialog);
-  const manageCleanup = useManagedDialogCleanup();
+  const manageCleanup = useManagedDialogsCleanup();
 
   return useCallback(
     <T,>(
       render: DialogContentRender<T>,
       options: {
         defaultResult?: T;
+        stopCloseOn?: ("escape_key" | "click_outside")[];
+        hide?: ("default_close_button" | "overlay")[];
       } = {},
     ) => showDialog(render, { ...options, manageCleanup }),
     [showDialog, manageCleanup],

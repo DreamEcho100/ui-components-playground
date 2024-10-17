@@ -4,6 +4,8 @@
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import ShowcaseArticle from "../article";
+import { useShowDialog } from "~/components/dialogs-manager";
+import { DialogDescription, DialogTitle } from "~/components/ui/dialog";
 
 const buttonThemes = /** @type {const} */ ([
   "default",
@@ -30,6 +32,7 @@ const buttonSizes = /** @type {const} */ ([
 ]);
 
 export default function ButtonsShowSase() {
+  const showDialog = useShowDialog();
   const [size, setSize] = useState(
     /** @type {ButtonVariant['size'] | null} */ ("default"),
   );
@@ -63,7 +66,84 @@ export default function ButtonsShowSase() {
 
               <div className="flex flex-wrap gap-4">
                 {buttonThemes.map((theme) => (
-                  <Button key={theme} variant={theme} size={size}>
+                  <Button
+                    key={theme}
+                    variant={theme}
+                    size={size}
+                    onClick={async () => {
+                      /** @typedef {{ answer: "Yes" } | { answer: "No" } | { answer: "Ha???"; userId: number; id: number; title: string, completed: boolean } | undefined} Answer */
+
+                      /** @type {Answer} */
+                      const answer = await showDialog(
+                        (dialogResolve, managedDialogId) => (
+                          <>
+                            <DialogTitle>Dialog Title</DialogTitle>
+                            <DialogDescription>
+                              Dialog description
+                            </DialogDescription>
+                            <div className="flex flex-col">
+                              <h2 className="title">Button Clicked</h2>
+                              <p className="description">
+                                You clicked the {theme} button.
+                              </p>
+                              <p>Do you want to continue?</p>
+                              {/* button collections wrapper */}
+                              <div className="mt-1 flex gap-2">
+                                <Button
+                                  onClick={() => {
+                                    dialogResolve({ answer: "Yes" });
+                                  }}
+                                >
+                                  Yes
+                                </Button>
+                                <Button
+                                  onClick={async () => {
+                                    dialogResolve({ answer: "No" });
+                                  }}
+                                >
+                                  No
+                                </Button>
+                                <Button
+                                  onClick={async () => {
+                                    try {
+                                      const apiCall = await fetch(
+                                        "https://jsonplaceholder.typicode.com/todos/1",
+                                      ).then(
+                                        (response) =>
+                                          /** @type {Promise<{ userId: number; id: number; title: string, completed: boolean }>} */ (
+                                            response.json()
+                                          ),
+                                      );
+                                      dialogResolve({
+                                        answer: "Ha???",
+                                        ...apiCall,
+                                      });
+                                    } catch (e) {
+                                      console.log(e);
+                                      dialogResolve({ answer: "No" });
+                                    }
+                                  }}
+                                >
+                                  test
+                                </Button>
+                              </div>
+                            </div>
+                          </>
+                        ),
+                        {
+                          // /** @type {Answer} */
+                          // defaultResult: {
+                          //   answer: "No",
+                          // },
+                          // stopCloseOn: ["escape_key", "click_outside"],
+                        },
+                      );
+
+                      alert(
+                        `You clicked: {${answer?.answer}}, on the dialog for the: {${theme}}, and button with size: {${size}}.`,
+                      );
+                    }}
+                  >
                     {theme}
                   </Button>
                 ))}
