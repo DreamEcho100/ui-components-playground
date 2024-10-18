@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import ShowcaseArticle from "../article";
-import { useShowDialog } from "~/components/dialogs-manager";
+import { useShowDialog } from "~/stores/dialogs-manager";
 import { DialogDescription, DialogTitle } from "~/components/ui/dialog";
 
 const buttonThemes = /** @type {const} */ ([

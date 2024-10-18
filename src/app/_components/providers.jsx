@@ -4,7 +4,7 @@
 import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { DialogsManagerItemsRenderer } from "~/components/dialogs-manager";
+import { DialogsManagerItemsRenderer } from "~/stores/dialogs-manager";
 
 /** @param {PropsWithChildren} props */
 export default function Providers(props) {

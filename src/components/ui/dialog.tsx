@@ -36,7 +36,7 @@ const DialogContent = React.forwardRef<
   }
 >(({ className, children, hide, ...props }, ref) => (
   <DialogPortal>
-    {!hide?.includes("default_close_button") && <DialogClose />}
+    {!hide?.includes("overlay") && <DialogOverlay />}
     <DialogPrimitive.Content
       ref={ref}
       className={cn(

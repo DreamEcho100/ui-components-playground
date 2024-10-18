@@ -21,7 +21,7 @@ import {
   type PropsWithChildren,
   type ReactNode,
 } from "react";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent } from "~/components/ui/dialog";
 import { useStore } from "zustand";
 
 type DialogId = number;
