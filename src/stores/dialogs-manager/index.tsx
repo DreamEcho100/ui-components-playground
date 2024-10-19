@@ -1,6 +1,5 @@
 // https://github.com/remult/remult/blob/main/examples/shadcn-react-table/src/components/dialog/dialog-context.tsx
-// https://chatgpt.com/c/66e986ea-daa4-8013-a3a6-620e8639803e
-// https://claude.ai/chat/263168dd-b3c7-4041-b19f-ea7b73c1715a
+// https://claude.ai/chat/05bd29bb-f0ff-48e1-8316-ddb7c9ad681a
 //
 // Area of improvement
 // - Store the active dialogs ids in a Set on the store itself for global tracking while keeping the local tracking for cleanup
@@ -8,50 +7,59 @@
 // - Handling Dialog Nesting/Stacking, by keeping track of the active dialog IDs in a stack. ensure that the topmost dialog is the one that is focused and rendered, and the rest could be hidden or disabled, and when the topmost dialog is closed, the next dialog in the stack should be focused and rendered, and so on, until the stack is empty.
 // - Add a mechanism to update dialog content without closing and reopening the dialog.
 // - Add some form of logging or telemetry to track dialog usage and any errors that occur.
+// - Consider adding a timeout for the closing animation. If for some reason the onTransitionEnd or onAnimationEnd events don't fire, you'll want to ensure the dialog still gets removed.
+// - You might want to add a prop to MyDialog that allows for custom transition durations, making the component more flexible.
+// - Consider implementing a focus management system to improve accessibility, especially when dealing with multiple open dialogs.
+// - You could add a method to update existing dialogs without fully closing and reopening them, which could be useful for dynamic content.
 
 "use client";
 
-import { createStore } from "zustand/vanilla";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type PropsWithChildren,
-  type ReactNode,
-} from "react";
-import { Dialog, DialogContent } from "~/components/ui/dialog";
+import type { PropsWithChildren, ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 
-type DialogId = number;
+import { Dialog, DialogContent } from "~/components/ui/dialog";
+
+type DialogId = string;
+type ValueOrUpdater<T> = T | ((value: T) => T);
 
 export type DialogContentRender<T> = (
   resolve: (result: T) => void,
   managedDialogId: DialogId,
 ) => ReactNode;
 
-// Define Zustand store for managing dialogs
+interface ManagedDialog {
+  id: DialogId;
+  dialogCompSelfClose?: () => void;
+  onClose: () => void;
+  render: () => ReactNode;
+  stopCloseOn?: ("escape_key" | "click_outside")[];
+  hide?: ("default_close_button" | "overlay")[];
+  removeOnNavigation: boolean;
+  createdAt: number;
+  lastUpdatedat: number;
+}
+
 interface DialogsManagerStore {
-  dialogs: {
-    id: DialogId;
-    onClose: () => void;
-    render: () => ReactNode;
-    stopCloseOn?: ("escape_key" | "click_outside")[];
-    hide?: ("default_close_button" | "overlay")[];
-  }[];
-  addDialog: (dialog: DialogsManagerStore["dialogs"][0]) => void;
+  dialogsIds: DialogId[];
+  dialogs: ManagedDialog[];
+  addDialog: (dialog: ManagedDialog) => void;
   removeDialog: (id: DialogId) => void;
+  updateDialogById: (
+    dialogId: DialogId,
+    valueOrUpdater: ValueOrUpdater<ManagedDialog>,
+  ) => void;
   showDialog: <T>(
     render: DialogContentRender<T>,
     options?: {
       defaultResult?: T;
       stopCloseOn?: ("escape_key" | "click_outside")[];
       hide?: ("default_close_button" | "overlay")[];
-      manageCleanup?: {
-        setDialogId: (id: DialogId) => void;
-        removeDialogId: (id: DialogId) => void;
-      };
+      removeOnNavigation?: boolean;
+      onDialogOpen?: (dialog: ManagedDialog) => void;
+      onDialogClose?: (dialog: ManagedDialog) => void;
       onDialogError?: (err: unknown) => void;
     },
   ) => Promise<T | undefined>;
@@ -65,13 +73,41 @@ let lastId = 0;
  */
 export const dialogsManagerStore = createStore<DialogsManagerStore>(
   (set, get) => ({
+    dialogsIds: [],
     dialogs: [],
     addDialog: (dialog) =>
-      set((state) => ({ dialogs: [...state.dialogs, dialog] })),
+      set((state) => ({
+        dialogs: [...state.dialogs, dialog],
+        dialogsIds: [...state.dialogsIds, dialog.id],
+      })),
     removeDialog: (id) =>
       set((state) => ({
         dialogs: state.dialogs.filter((dialog) => dialog.id !== id),
+        dialogsIds: state.dialogsIds.filter((dialogId) => dialogId !== id),
       })),
+    updateDialogById: (dialogId, valueOrUpdater) => {
+      set((state) => ({
+        dialogs: state.dialogs.map((dialog) => {
+          if (dialog.id === dialogId) {
+            let updatedDialog: ManagedDialog;
+            if (typeof valueOrUpdater === "function") {
+              updatedDialog = valueOrUpdater(dialog);
+            } else {
+              updatedDialog = {
+                ...dialog,
+                ...valueOrUpdater,
+              };
+
+              updatedDialog.lastUpdatedat = Date.now();
+
+              return updatedDialog;
+            }
+          }
+
+          return dialog;
+        }),
+      }));
+    },
 
     /**
      * Show a new dialog.
@@ -98,32 +134,44 @@ export const dialogsManagerStore = createStore<DialogsManagerStore>(
       try {
         const result = await new Promise<T | undefined>((resolve) => {
           const { addDialog, removeDialog } = get();
-          const id = lastId++;
+          const dialogId = `dialog-${lastId++}-${Date.now()}`;
 
-          addDialog({
-            id,
+          const dialog: ManagedDialog = {
+            id: dialogId,
             stopCloseOn: options.stopCloseOn,
             hide: options.hide,
+            removeOnNavigation: options.removeOnNavigation ?? true,
+            createdAt: Date.now(),
+            lastUpdatedat: Date.now(),
             onClose: () => {
-              removeDialog(id);
+              options.onDialogClose?.(dialog);
+              removeDialog(dialogId);
               resolve(options.defaultResult);
             },
-            render: () =>
-              render((result?: T) => {
-                removeDialog(id);
-                resolve(result);
-              }, id),
-          });
-        });
+            render: () => {
+              options.onDialogOpen?.(dialog);
+              return render((result?: T) => {
+                const dialogCompSelfClose = get().dialogs.find(
+                  (dialog) => dialog.id === dialogId,
+                )?.dialogCompSelfClose;
 
-        if (options.manageCleanup) {
-          options.manageCleanup.removeDialogId(lastId);
-        }
+                if (dialogCompSelfClose) {
+                  return dialogCompSelfClose();
+                }
+
+                options.onDialogClose?.(dialog);
+                removeDialog(dialogId);
+                resolve(result);
+              }, dialogId);
+            },
+          };
+
+          addDialog(dialog);
+        });
 
         return result;
       } catch (err) {
         console.error("Error displaying dialog", err);
-        options.manageCleanup?.removeDialogId(lastId);
         options.onDialogError?.(err);
         return undefined;
       }
@@ -145,37 +193,81 @@ export const dialogsManagerStore = createStore<DialogsManagerStore>(
  */
 function MyDialog(
   props: PropsWithChildren<{
-    onClose: VoidFunction;
-    stopCloseOn?: ("escape_key" | "click_outside")[];
-    hide?: ("default_close_button" | "overlay")[];
+    dialogId: DialogId;
   }>,
 ) {
-  const [open, setOpen] = useState(true);
+  const dialog = useStore(dialogsManagerStore, (state) =>
+    state.dialogs.find((dialog) => dialog.id === props.dialogId),
+  );
+  const [isOpen, setIsOpen] = useState(true);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const navRef = useRef({ pathname, searchParams });
+  const dialogRender = dialog?.render;
+  const Item = useMemo(() => dialogRender?.(), [dialogRender]);
+
+  useEffect(() => {
+    if (!dialog?.id) {
+      return;
+    }
+
+    dialogsManagerStore.getState().updateDialogById(dialog.id, (value) => ({
+      ...value,
+      dialogCompSelfClose: () => {
+        setIsOpen(false);
+      },
+    }));
+  }, []);
+
+  useEffect(() => {
+    if (!dialog?.removeOnNavigation) {
+      return;
+    }
+
+    if (navRef.current.pathname === pathname) {
+      return;
+    }
+
+    setIsOpen(false);
+  }, [pathname, searchParams, dialog?.removeOnNavigation]);
+
+  if (!dialog) {
+    return null;
+  }
 
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onOpenChange={(open) => {
-        if (!open) {
-          props.onClose();
-        }
-        setOpen(open);
+        setIsOpen(open);
       }}
     >
       <DialogContent
-        hide={props.hide}
+        onTransitionEnd={() => {
+          if (isOpen) {
+            return;
+          }
+          dialog.onClose();
+        }}
+        onAnimationEnd={() => {
+          if (isOpen) {
+            return;
+          }
+          dialog.onClose();
+        }}
+        hide={dialog.hide}
         onInteractOutside={(event) => {
-          if (props.stopCloseOn?.includes("click_outside")) {
+          if (dialog.stopCloseOn?.includes("click_outside")) {
             event.preventDefault();
           }
         }}
         onEscapeKeyDown={(event) => {
-          if (props.stopCloseOn?.includes("escape_key")) {
+          if (dialog.stopCloseOn?.includes("escape_key")) {
             event.preventDefault();
           }
         }}
       >
-        {props.children}
+        {Item}
       </DialogContent>
     </Dialog>
   );
@@ -199,96 +291,11 @@ function MyDialog(
  * ```
  */
 export function DialogsManagerItemsRenderer() {
-  const dialogs = useStore(dialogsManagerStore, (state) => state.dialogs);
-  console.log("___ dialogs", dialogs);
+  const dialogsIds = useStore(dialogsManagerStore, (state) => state.dialogsIds);
 
-  return dialogs.map((item) => {
-    const Item = item.render;
-    return (
-      <MyDialog
-        key={item.id}
-        onClose={item.onClose}
-        stopCloseOn={item.stopCloseOn}
-      >
-        <Item />
-      </MyDialog>
-    );
-  });
+  return dialogsIds.map((dialogId) => (
+    <MyDialog key={dialogId} dialogId={dialogId} />
+  ));
 }
 
-/**
- * Custom hook to manage dialog cleanup.
- *
- * Tracks active dialogs and ensures they are cleaned up when the component is unmounted.
- *
- * @returns An object with `setDialogId` and `removeDialogId` methods to manage dialog IDs.
- *
- * @example
- * ```tsx
- * const manageCleanup = useManagedDialogCleanup();
- * manageCleanup.setDialogId(1); // Track a dialog ID
- * manageCleanup.removeDialogId(1); // Remove dialog ID from tracking
- * ```
- */
-function useManagedDialogsCleanup() {
-  const dialogsIdsRef = useRef<Set<DialogId>>(new Set());
-
-  const setDialogId = useCallback((id: DialogId) => {
-    dialogsIdsRef.current.add(id);
-  }, []);
-  const removeDialogId = useCallback((id: DialogId) => {
-    dialogsIdsRef.current.delete(id);
-  }, []);
-
-  useEffect(() => {
-    const dialogsIdsRefCurrent = dialogsIdsRef.current;
-
-    return () => {
-      for (const id of dialogsIdsRefCurrent) {
-        dialogsManagerStore.getState().removeDialog(id);
-        dialogsIdsRefCurrent.delete(id);
-      }
-    };
-  }, []);
-
-  return useMemo(
-    () => ({ setDialogId, removeDialogId }),
-    [setDialogId, removeDialogId],
-  );
-}
-
-/**
- * Hook to show a dialog.
- *
- * Returns a function that, when called, displays a dialog and manages its lifecycle.
- *
- * @returns A function that shows a dialog with a given render function and options.
- *
- * @example
- * ```tsx
- * const showDialog = useShowDialog();
- * const result = await showDialog((resolve) => (
- *   <div>
- *     <p>Do you confirm?</p>
- *     <button onClick={() => resolve(true)}>Confirm</button>
- *   </div>
- * ), { defaultResult: false });
- * console.log(result); // true or false
- * ```
- */
-export function useShowDialog() {
-  const showDialog = useStore(dialogsManagerStore, (state) => state.showDialog);
-  const manageCleanup = useManagedDialogsCleanup();
-
-  return useCallback(
-    <T,>(
-      render: DialogContentRender<T>,
-      options: {
-        defaultResult?: T;
-        stopCloseOn?: ("escape_key" | "click_outside")[];
-        hide?: ("default_close_button" | "overlay")[];
-      } = {},
-    ) => showDialog(render, { ...options, manageCleanup }),
-    [showDialog, manageCleanup],
-  );
-}
+export const showDialog = dialogsManagerStore.getState().showDialog;
